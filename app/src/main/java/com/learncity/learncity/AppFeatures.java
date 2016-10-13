@@ -17,8 +17,9 @@ public class AppFeatures {
     };
     /*
      * class encapsulating a feature/module of the app.
+     * TODO: The getters and setters are not required probably. Remove them
      */
-    private static class AppFeature {
+    public static class AppFeature {
 
         public String mSearchFeatureName;
         public String mSearchFeatureIcon;
