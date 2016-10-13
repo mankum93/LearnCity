@@ -2,6 +2,7 @@ package com.learncity.learncity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -12,7 +13,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 }
 
-class HomeDrawerViewAdapter extends ArrayAdapter<HomeListItems>{
+class HomeDrawerViewAdapter extends ArrayAdapter<AppFeature> {
 
 
 }
