@@ -1,4 +1,4 @@
-package com.learncity.learncity;
+package com.learncity.main;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -15,7 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.learncity.learncity.R;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -70,6 +70,9 @@ public class HomeActivity extends AppCompatActivity {
 
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
 
     }
     /* Called whenever we call invalidateOptionsMenu() */

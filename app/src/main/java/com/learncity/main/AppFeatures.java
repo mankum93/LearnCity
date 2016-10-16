@@ -1,4 +1,4 @@
-package com.learncity.learncity;
+package com.learncity.main;
 
 /**
  * Created by DJ on 10/13/2016.
