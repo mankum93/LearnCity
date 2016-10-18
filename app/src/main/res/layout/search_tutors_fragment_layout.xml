@@ -14,11 +14,28 @@
             android:layout_height="match_parent">
 
             <!--This linear layout shall be a container of fragments/views
-            with each constituting  a search parameter s-->
+            with each constituting  a search parameter -->
+            <fragment
+                android:id="@+id/subject_search_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.learncity.search.SubjectSearchFragment"/>
+            <fragment
+                android:id="@+id/location_search_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.learncity.search.LocationSearchFragment"/>
+            <fragment
+                android:id="@+id/qualification_search_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.learncity.search.QualificationSearchFragment"/>
+
         </LinearLayout>
 
     </ScrollView>
 
+    <!--Floating Button-->
     <Button
         android:id="@+id/search_button"
         android:layout_width="match_parent"
