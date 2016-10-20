@@ -8,9 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.AppCompatMultiAutoCompleteTextView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Filterable;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.learncity.learncity.R;
@@ -42,11 +41,21 @@ public class SubjectSearchFragment extends Fragment {
         AppCompatMultiAutoCompleteTextView customMultiAutoCompleteTextView = (SubjectMultiAutoCompleteTextView)root.findViewById(R.id.subject_multi_auto_complete_view);
 
         //Initialize the adapter with dummy data and set it up
-        customMultiAutoCompleteTextView.setAdapter(new SubjectSearchAdapter(getActivity(), R.layout.search_by_subject_list_item_1,subjects));
-        //TODO: Define an item  click listener for this view
+        customMultiAutoCompleteTextView.setAdapter(new SubjectSearchAdapter(getActivity(), R.layout.search_by_subject_list_item_1, subjects));
+
         /*Thought: After a subject is clicked/selected, it should be stored somewhere until the user presses the Search Button.
         * This "somewhere" has to be account for combination of search parameters from various search interfaces in the same
         * activity.*/
+        AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String subjectName = (String)parent.getAdapter().getItem(position);
+                //TODO: Stash this subject name at an appropriate place for later use.
+            }
+        };
+        customMultiAutoCompleteTextView.setOnItemClickListener(listener);
+        //BEWARE!: Don't forget to set the Tokenizer. The suggestions won't show without it.
+        customMultiAutoCompleteTextView.setTokenizer(new AppCompatMultiAutoCompleteTextView.CommaTokenizer());
         return root;
     }
 
@@ -57,7 +66,7 @@ class SubjectSearchAdapter extends ArrayAdapter<String>{
     public SubjectSearchAdapter(Context context, int listLayoutId, String[] subjectNames) {
         super(context, listLayoutId, subjectNames);
     }
-
+    @Override
     public View getView(int position, View recycleView, ViewGroup parent) {
         //Get the subject for this position
         String subjectName = getItem(position);

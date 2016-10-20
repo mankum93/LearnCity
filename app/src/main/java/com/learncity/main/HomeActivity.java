@@ -1,6 +1,7 @@
 package com.learncity.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -11,11 +12,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.learncity.learncity.R;
+import com.learncity.search.SearchActivity;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -70,6 +73,7 @@ public class HomeActivity extends AppCompatActivity {
 
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -111,6 +115,16 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            //TEST: Start the Search Activity for the right condition
+            if(AppFeatures.appFeatures[position].getSearchFeatureName() == "SEARCH TUTORS"){
+                startActivity(new Intent(HomeActivity.this, SearchActivity.class));
+            }
+        }
+    }
+
 }
 
 class HomeDrawerViewAdapter extends ArrayAdapter<AppFeatures.AppFeature> {
@@ -150,4 +164,3 @@ class HomeDrawerViewAdapter extends ArrayAdapter<AppFeatures.AppFeature> {
         //TODO: Insert an icon for the app feature
     }
 }
-

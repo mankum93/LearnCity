@@ -7,8 +7,9 @@
 
     <com.learncity.search.SubjectMultiAutoCompleteTextView
         android:id="@+id/subject_multi_auto_complete_view"
-        android:layout_width="wrap_content"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
-        android:completionThreshold="1"/>
+        android:completionThreshold="1"
+        android:ems="10"/>
 
 </LinearLayout>
