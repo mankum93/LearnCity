@@ -41,7 +41,6 @@ public class HomeActivity extends AppCompatActivity {
         // Set the adapter for the list view
         mDrawerList.setAdapter(new HomeDrawerViewAdapter(this,
                 R.layout.home_drawer_list_item_1, AppFeatures.appFeatures));
-        // TODO: Set the list's click listener
 
         /*The v7.app.ActionBarDrawerToggle doesn't let you pass a cutom icon for the drawer indicator.
         **This is only available in v4 compat lib. v7 provides a default "hamburger" icon in the implementation
@@ -147,7 +146,6 @@ class HomeDrawerViewAdapter extends ArrayAdapter<AppFeatures.AppFeature> {
                 recycleView = inflater.inflate(R.layout.home_drawer_list_item_1, parent, false);
                 viewHolder.appFeatureName = (TextView) recycleView.findViewById(R.id.drawer_list_item_text_view);
                 recycleView.setTag(viewHolder);
-                //TODO: Set a click listener on the text view
             }
             else {
                 viewHolder = (ViewHolder) recycleView.getTag();

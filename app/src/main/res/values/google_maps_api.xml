@@ -1,0 +1,19 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=67:3B:86:F3:16:D2:9F:5B:BA:5E:F5:16:15:18:C5:48:5B:6D:67:F2%3Bcom.learncity.hellomaps
+
+    You can also add your credentials to an existing key, using this line:
+    67:3B:86:F3:16:D2:9F:5B:BA:5E:F5:16:15:18:C5:48:5B:6D:67:F2;com.learncity.hellomaps
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyAREL6F44Hgwt4G1DqivXBLG2uiJIm0hrs</string>
+</resources>

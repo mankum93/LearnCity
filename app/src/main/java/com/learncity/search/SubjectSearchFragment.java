@@ -97,3 +97,9 @@ class SubjectSearchAdapter extends ArrayAdapter<String>{
         //TODO: Insert a subject icon/image with the text view
     }
 }
+class SubjectMultiAutoCompleteTextView extends AppCompatMultiAutoCompleteTextView{
+
+    public SubjectMultiAutoCompleteTextView(Context context, AttributeSet attrs){
+        super(context, attrs);
+    }
+}
