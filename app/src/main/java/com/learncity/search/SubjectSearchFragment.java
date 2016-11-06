@@ -13,11 +13,16 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.learncity.learncity.R;
+import com.learncity.search.searchApi.model.SearchQuery;
 
 /**
  * Created by DJ on 10/16/2016.
  */
 public class SubjectSearchFragment extends Fragment {
+
+    private String mEnteredSubjectSearchQuery;
+    private SubjectSearchQueryCallback mCallback;
+
 
     //Dummy data source for the adapter
     String[] subjects = new String[] {
@@ -50,13 +55,28 @@ public class SubjectSearchFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String subjectName = (String)parent.getAdapter().getItem(position);
-                //TODO: Stash this subject name at an appropriate place for later use.
+                //Stash this subject name at an appropriate place for later use.
+                mEnteredSubjectSearchQuery = subjectName;
+                //If the hosting activity or whoever has set the callback for getting the search query; bless them with one
+                if(mCallback == null){
+                    //No blessing
+                }
+                else{
+                    mCallback.onSubjectSearchQuery(mEnteredSubjectSearchQuery);
+                }
             }
         };
         customMultiAutoCompleteTextView.setOnItemClickListener(listener);
         //BEWARE!: Don't forget to set the Tokenizer. The suggestions won't show without it.
         customMultiAutoCompleteTextView.setTokenizer(new AppCompatMultiAutoCompleteTextView.CommaTokenizer());
         return root;
+    }
+
+    public interface SubjectSearchQueryCallback{
+        public abstract void onSubjectSearchQuery(String subjectsSearchQuery);
+    }
+    public void setSubjectSearchQueryCallback(SubjectSearchQueryCallback callback){
+        mCallback = callback;
     }
 
 }

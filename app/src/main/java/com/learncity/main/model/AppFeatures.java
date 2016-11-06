@@ -1,4 +1,4 @@
-package com.learncity.main;
+package com.learncity.main.model;
 
 /**
  * Created by DJ on 10/13/2016.
@@ -24,19 +24,19 @@ public class AppFeatures {
         public String mSearchFeatureName;
         public String mSearchFeatureIcon;
 
-        String getSearchFeatureName() {
+        public String getSearchFeatureName() {
             return mSearchFeatureName;
         }
 
-        void setSearchFeatureName(String mSearchFeatureName) {
+        public void setSearchFeatureName(String mSearchFeatureName) {
             this.mSearchFeatureName = mSearchFeatureName;
         }
 
-        String getSearchFeatureIcon() {
+        public String getSearchFeatureIcon() {
             return mSearchFeatureIcon;
         }
 
-        void setSearchFeatureIcon(String mSearchFeatureIcon) {
+        public void setSearchFeatureIcon(String mSearchFeatureIcon) {
             this.mSearchFeatureIcon = mSearchFeatureIcon;
         }
 

@@ -17,7 +17,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.learncity.account.create.NewAccountActivity;
 import com.learncity.learncity.R;
+import com.learncity.main.model.AppFeatures;
+import com.learncity.account.profile.MyProfileActivity;
 import com.learncity.search.SearchActivity;
 
 public class HomeActivity extends AppCompatActivity {
@@ -28,6 +31,16 @@ public class HomeActivity extends AppCompatActivity {
     private CharSequence mDrawerTitle;
     //We could also consider going without a member variable to hold the title. Could directly call Activity.getTitle()
     private CharSequence mTitle;
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        //Just before the Activity is about to take an "interface", we should start the Splash screens if there are any
+        //for the first, second time etc.
+
+        //For testing purposes, I am launching the account creation activity at the start.
+        startActivity(new Intent(this, NewAccountActivity.class));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +133,9 @@ public class HomeActivity extends AppCompatActivity {
             //TEST: Start the Search Activity for the right condition
             if(AppFeatures.appFeatures[position].getSearchFeatureName() == "SEARCH TUTORS"){
                 startActivity(new Intent(HomeActivity.this, SearchActivity.class));
+            }
+            else if(AppFeatures.appFeatures[position].getSearchFeatureName() == "MY PROFILE"){
+                startActivity(new Intent(HomeActivity.this, MyProfileActivity.class));
             }
         }
     }

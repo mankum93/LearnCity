@@ -1,9 +1,13 @@
 package com.learncity.search;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -12,6 +16,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.learncity.learncity.R;
+import com.learncity.search.searchApi.SearchApi;
+import com.learncity.search.searchApi.model.SearchQuery;
 
 /**
  * Created by DJ on 10/18/2016.
@@ -19,6 +25,7 @@ import com.learncity.learncity.R;
 public class SearchActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap;
+    private SearchQuery mSearchQuery;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -41,6 +48,35 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_search_fragment);
         mapFragment.getMapAsync(this);
+
+        SubjectSearchFragment subjectSearchFragment = (SubjectSearchFragment) getSupportFragmentManager().findFragmentById(R.id.subject_search_fragment);
+        subjectSearchFragment.setSubjectSearchQueryCallback(new SubjectSearchFragment.SubjectSearchQueryCallback() {
+            @Override
+            public void onSubjectSearchQuery(String subjectsSearchQuery) {
+                mSearchQuery.setSubject(subjectsSearchQuery);
+            }
+        });
+        QualificationSearchFragment qualificationSearchFragment = (QualificationSearchFragment) getSupportFragmentManager().findFragmentById(R.id.qualification_search_fragment);
+        qualificationSearchFragment.setQualificationSearchQueryCallback(new QualificationSearchFragment.QualificationSearchQueryCallback() {
+            @Override
+            public void onQualificationSearchQuery(String qualificationsSearchQuery) {
+                mSearchQuery.setQualification(qualificationsSearchQuery);
+            }
+        });
+
+        //First get the reference to the root view
+        final ViewGroup viewGroup = (ViewGroup) ((ViewGroup) this
+                .findViewById(android.R.id.content)).getChildAt(0);
+        //Lets handle the click of the floating search button
+        Button searchButton = (Button) viewGroup.findViewById(R.id.search_button);
+
+        searchButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                //Search the Tutor profiles from the DB.
+                new SearchTutorsAsyncTask().execute(mSearchQuery);
+            }
+        });
     }
     /**
      * Manipulates the map once available.

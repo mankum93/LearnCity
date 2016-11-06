@@ -19,6 +19,9 @@ import com.learncity.learncity.R;
  */
 public class QualificationSearchFragment extends Fragment {
 
+    private String mEnteredQualificationSearchQuery;
+    private QualificationSearchFragment.QualificationSearchQueryCallback mCallback;
+
     //Dummy data source for the adapter
     String[] qualifications = new String[] {
             "College/University Professor", "College/University student",
@@ -46,13 +49,27 @@ public class QualificationSearchFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String subjectName = (String)parent.getAdapter().getItem(position);
-                //TODO: Stash this subject name at an appropriate place for later use.
+                mEnteredQualificationSearchQuery = subjectName;
+                //If the hosting activity or whoever has set the callback for getting the search query; bless them with one
+                if(mCallback == null){
+                    //No blessing
+                }
+                else{
+                    mCallback.onQualificationSearchQuery(mEnteredQualificationSearchQuery);
+                }
             }
         };
         customMultiAutoCompleteTextView.setOnItemClickListener(listener);
         //BEWARE!: Don't forget to set the Tokenizer. The suggestions won't show without it.
         customMultiAutoCompleteTextView.setTokenizer(new AppCompatMultiAutoCompleteTextView.CommaTokenizer());
         return root;
+    }
+
+    public interface QualificationSearchQueryCallback{
+        public abstract void onQualificationSearchQuery(String qualificationsSearchQuery);
+    }
+    public void setQualificationSearchQueryCallback(QualificationSearchQueryCallback callback){
+        mCallback = callback;
     }
 
 }
