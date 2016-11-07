@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Learn City</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <string name="search_tutors_string">SEARCH TUTORS</string>
+
+    <string name="search_by_subject_label">Subject</string>
+    <string name="search_by_qualification_label">Qualification</string>
+    <string name="search_by_location_label">Location</string>
+
+    <!--NEW ACCOUNT CREATION ACTIVITY LABELS-->
+    <string name="account_person_name_label">Name</string>
+    <string name="account_person_emailId_label">Email ID</string>
+    <string name="account_person_phoneNo_label">Phone No</string>
+    <string name="account_person_password_label">Password</string>
+    <string name="account_person_retypePassword_label">Retype Password</string>
+    <string name="learner_tutor_status_label">I am here to...</string>
+    <string-array name="learner_tutor_status">
+        <item>Learn</item>
+        <item>Tutor</item>
+        <item>Learn/Tutor</item>
+    </string-array>
+
+
+    <string name="create_account_string"> Create Account</string>
+
+</resources>
