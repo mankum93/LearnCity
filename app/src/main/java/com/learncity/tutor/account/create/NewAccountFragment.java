@@ -1,4 +1,4 @@
-package com.learncity.account.create;
+package com.learncity.tutor.account.create;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,7 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.learncity.account.profile.model.MyProfile;
+import com.learncity.learn.account.create.NewAccountCreateAsyncTask;
+import com.learncity.learn.account.profile.model.MyProfile;
 import com.learncity.learncity.R;
 
 /**

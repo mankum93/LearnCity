@@ -1,9 +1,4 @@
-package com.learncity.account.profile.model;
-
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.learncity.account.profile.database.MyProfileDbSchema.MyProfileTable;
+package com.learncity.tutor.account.profile.model;
 
 /**
  * Created by DJ on 10/22/2016.

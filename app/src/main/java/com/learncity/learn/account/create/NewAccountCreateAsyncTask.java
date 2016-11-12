@@ -1,4 +1,4 @@
-package com.learncity.account.create;
+package com.learncity.learn.account.create;
 
 
 import android.os.AsyncTask;
@@ -8,7 +8,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.learncity.account.profile.model.MyProfile;
+import com.learncity.learn.account.profile.model.MyProfile;
 import com.learncity.persistence.profileApi.ProfileApi;
 import com.learncity.persistence.profileApi.model.Profile;
 

@@ -1,4 +1,4 @@
-package com.learncity.account.create;
+package com.learncity.learn.account.create;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

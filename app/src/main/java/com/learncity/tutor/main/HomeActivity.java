@@ -1,12 +1,12 @@
-package com.learncity.main;
+package com.learncity.tutor.main;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,10 +18,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.learncity.learn.account.create.NewAccountActivity;
+import com.learncity.learncity.R;
+import com.learncity.learn.main.model.AppFeatures;
 import com.learncity.learn.account.profile.MyProfileActivity;
 import com.learncity.learn.search.SearchActivity;
-import com.learncity.learncity.R;
-import com.learncity.main.model.AppFeatures;
 
 public class HomeActivity extends AppCompatActivity {
 

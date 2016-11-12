@@ -1,4 +1,4 @@
-package com.learncity.account.profile;
+package com.learncity.learn.account.profile;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.learncity.learncity.R;
-import com.learncity.account.profile.model.MyProfile;
+import com.learncity.learn.account.profile.model.MyProfile;
 
 /**
  * Created by DJ on 10/22/2016.

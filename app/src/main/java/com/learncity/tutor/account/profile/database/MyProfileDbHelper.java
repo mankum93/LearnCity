@@ -1,13 +1,13 @@
-package com.learncity.account.profile.database;
+package com.learncity.tutor.account.profile.database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.learncity.account.profile.model.MyProfile;
+import com.learncity.learn.account.profile.model.MyProfile;
 
-import static com.learncity.account.profile.database.MyProfileDbSchema.MyProfileTable;
+import static com.learncity.learn.account.profile.database.MyProfileDbSchema.MyProfileTable;
 
 /**
  * Created by DJ on 10/23/2016.

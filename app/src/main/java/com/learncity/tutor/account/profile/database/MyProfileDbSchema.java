@@ -1,4 +1,4 @@
-package com.learncity.account.profile.database;
+package com.learncity.tutor.account.profile.database;
 
 /**
  * Created by DJ on 10/23/2016.
