@@ -17,9 +17,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.learncity.learn.account.create.NewAccountActivity;
+import com.learncity.generic.learner.account.create.GenericLearnerNewAccountActivity;
 import com.learncity.learncity.R;
-import com.learncity.learn.main.model.AppFeatures;
+import com.learncity.learn.main.model.LearnerDrawerLayoutListItems;
 import com.learncity.learn.account.profile.MyProfileActivity;
 import com.learncity.learn.search.SearchActivity;
 
@@ -39,7 +39,7 @@ public class HomeActivity extends AppCompatActivity {
         //for the first, second time etc.
 
         //For testing purposes, I am launching the account creation activity at the start.
-        startActivity(new Intent(this, NewAccountActivity.class));
+        startActivity(new Intent(this, GenericLearnerNewAccountActivity.class));
     }
 
     @Override
@@ -53,7 +53,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new HomeDrawerViewAdapter(this,
-                R.layout.home_drawer_list_item_1, AppFeatures.appFeatures));
+                R.layout.home_drawer_list_item_1, LearnerDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMs));
 
         /*The v7.app.ActionBarDrawerToggle doesn't let you pass a cutom icon for the drawer indicator.
         **This is only available in v4 compat lib. v7 provides a default "hamburger" icon in the implementation
@@ -131,10 +131,10 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             //TEST: Start the Search Activity for the right condition
-            if(AppFeatures.appFeatures[position].getSearchFeatureName() == "SEARCH TUTORS"){
+            if(LearnerDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMs[position].getSearchFeatureName() == "SEARCH TUTORS"){
                 startActivity(new Intent(HomeActivity.this, SearchActivity.class));
             }
-            else if(AppFeatures.appFeatures[position].getSearchFeatureName() == "MY PROFILE"){
+            else if(LearnerDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMs[position].getSearchFeatureName() == "MY PROFILE"){
                 startActivity(new Intent(HomeActivity.this, MyProfileActivity.class));
             }
         }
@@ -142,15 +142,15 @@ public class HomeActivity extends AppCompatActivity {
 
 }
 
-class HomeDrawerViewAdapter extends ArrayAdapter<AppFeatures.AppFeature> {
+class HomeDrawerViewAdapter extends ArrayAdapter<LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem> {
 
-        public HomeDrawerViewAdapter(Context context, int listLayoutId, AppFeatures.AppFeature[] appFeatures) {
-            super(context, listLayoutId, appFeatures);
+        public HomeDrawerViewAdapter(Context context, int listLayoutId, LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem[] learnerDrawerLayoutItems) {
+            super(context, listLayoutId, learnerDrawerLayoutItems);
         }
 
         public View getView(int position, View recycleView, ViewGroup parent) {
             //Get the feature for this position
-            AppFeatures.AppFeature appFeature = getItem(position);
+            LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem learnerDrawerLayoutItem = getItem(position);
 
             // Check if an existing view is being reused, otherwise inflate the view
             ViewHolder viewHolder; // view lookup cache stored in tag
@@ -166,7 +166,7 @@ class HomeDrawerViewAdapter extends ArrayAdapter<AppFeatures.AppFeature> {
             else {
                 viewHolder = (ViewHolder) recycleView.getTag();
             }
-            viewHolder.appFeatureName.setText(appFeature.getSearchFeatureName());
+            viewHolder.appFeatureName.setText(learnerDrawerLayoutItem.getSearchFeatureName());
 
         return recycleView;
         }

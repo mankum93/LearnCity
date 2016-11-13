@@ -23,7 +23,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAREL6F44Hgwt4G1DqivXBLG2uiJIm0hrs" />
 
-        <activity android:name="com.learncity.learn.main.HomeActivity">
+        <activity android:name="com.learncity.generic.learner.account.create.GenericLearnerNewAccountActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,7 +32,6 @@
         </activity>
         <activity android:name="com.learncity.learn.search.SearchActivity" />
         <activity android:name="com.learncity.learn.account.profile.MyProfileActivity" />
-        <activity android:name="com.learncity.learn.account.create.NewAccountActivity" />
     </application>
 
 </manifest>

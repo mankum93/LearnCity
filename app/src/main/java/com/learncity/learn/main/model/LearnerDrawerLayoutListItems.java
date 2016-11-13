@@ -5,21 +5,21 @@ package com.learncity.learn.main.model;
  */
 
 /**
- * This class stores the app related features as an array of AppFeature class
+ * This class stores the app related features as an array of LearnerDrawerLayoutItem class
  */
-public class AppFeatures {
+public class LearnerDrawerLayoutListItems {
 
-    public static final AppFeature[] appFeatures = new AppFeature[]{
-            new AppFeature("SEARCH TUTORS", "PATH"),
-            new AppFeature("MY MATERIAL", "PATH"),
-            new AppFeature("MY PROFILE", "PATH"),
-            new AppFeature("SETTINGS", "PATH")
+    public static final LearnerDrawerLayoutItem[] LEARNER_DRAWER_LAYOUT_ITEMs = new LearnerDrawerLayoutItem[]{
+            new LearnerDrawerLayoutItem("SEARCH TUTORS", "PATH"),
+            new LearnerDrawerLayoutItem("MY MATERIAL", "PATH"),
+            new LearnerDrawerLayoutItem("MY PROFILE", "PATH"),
+            new LearnerDrawerLayoutItem("SETTINGS", "PATH")
     };
     /*
      * class encapsulating a feature/module of the app.
      * TODO: The getters and setters are not required probably. Remove them
      */
-    public static class AppFeature {
+    public static class LearnerDrawerLayoutItem {
 
         public String mSearchFeatureName;
         public String mSearchFeatureIcon;
@@ -40,7 +40,7 @@ public class AppFeatures {
             this.mSearchFeatureIcon = mSearchFeatureIcon;
         }
 
-        AppFeature(String searchFeatureName, String searchFeatureIcon){
+        LearnerDrawerLayoutItem(String searchFeatureName, String searchFeatureIcon){
             mSearchFeatureName = searchFeatureName;
             mSearchFeatureIcon = searchFeatureIcon;
         }

@@ -8,7 +8,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.learncity.learn.account.profile.model.MyProfile;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable;
 import com.learncity.persistence.profileApi.ProfileApi;
 import com.learncity.persistence.profileApi.model.Profile;
 
@@ -18,14 +18,14 @@ import java.io.IOException;
  * Created by DJ on 10/30/2016.
  */
 
-class NewAccountCreateAsyncTask extends AsyncTask<MyProfile, Void, Void> {
+public class NewLearnerAccountCreateAsyncTask extends AsyncTask<GenericLearnerProfileParcelable, Void, Void> {
     private static final String TAG = "NewAccountAsyncTask";
 
     private static ProfileApi myApiService = null;
 
 
     @Override
-    protected Void doInBackground(MyProfile... params) {
+    protected Void doInBackground(GenericLearnerProfileParcelable... params) {
         if(myApiService == null) {  // Only do this once
             ProfileApi.Builder builder = new ProfileApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
@@ -47,7 +47,7 @@ class NewAccountCreateAsyncTask extends AsyncTask<MyProfile, Void, Void> {
         }
 
         //Now, get the profile info./object that needs to be pushed to the datastore
-        MyProfile profile = params[0];
+        GenericLearnerProfileParcelable profile = params[0];
 
         //Populate the entity object with the profile info.
         Profile profileEntity = new Profile();
@@ -69,7 +69,7 @@ class NewAccountCreateAsyncTask extends AsyncTask<MyProfile, Void, Void> {
         //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
     }
 
-    private void populateProfileEntity(MyProfile profile, Profile profileEntity){
+    private void populateProfileEntity(GenericLearnerProfileParcelable profile, Profile profileEntity){
         profileEntity.setName(profile.getName());
         profileEntity.setEmailID(profile.getEmailID());
         profileEntity.setPhoneNo(profile.getPhoneNo());

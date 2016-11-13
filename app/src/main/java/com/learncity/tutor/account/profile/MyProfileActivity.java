@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.learncity.learn.account.profile.MyProfileFragment;
 import com.learncity.learncity.R;
-import com.learncity.learn.account.profile.model.MyProfile;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 
 /**
  * Created by DJ on 10/22/2016.
@@ -15,7 +15,7 @@ import com.learncity.learn.account.profile.model.MyProfile;
 
 public class MyProfileActivity extends AppCompatActivity {
 
-    private MyProfile myProfile;
+    private GenericLearnerProfile myProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

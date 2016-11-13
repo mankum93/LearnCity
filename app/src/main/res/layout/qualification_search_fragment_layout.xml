@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:text="@string/search_by_qualification_label"/>
 
-    <QualificationMultiAutoCompleteTextView
+    <com.learncity.learn.search.QualificationMultiAutoCompleteTextView
         android:id="@+id/qualification_multi_auto_complete_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -6,9 +6,8 @@
     android:layout_height="match_parent">
 
     <fragment
-        android:id="@+id/new_account_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.learncity.generic.learner.account.create.GenericLearnerNewAccountFragment"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:name="com.learncity.tutor.account.create.AdditionalAccountCreationInfoFragment"/>
 
 </LinearLayout>

@@ -18,11 +18,23 @@
     <string name="learner_tutor_status_label">I am here to...</string>
     <string-array name="learner_tutor_status">
         <item>Learn</item>
-        <item>Tutor</item>
-        <item>Learn/Tutor</item>
+        <item>Tutor/Learn</item>
     </string-array>
 
 
     <string name="create_account_string"> Create Account</string>
+
+    <!--ADDITIONAL INFO. FOR TUTOR ACCOUNT CREATION -->
+    <string name="educational_qualification_label">Educational Qualification</string>
+    <string name="high_school_qualification_label">10th Standard</string>
+    <string name="senior_secondary_qualification_label"> 12th Standard</string>
+    <string name="year_of_passing_label">Year of Passing</string>
+    <string name="institution_label">Institution</string>
+    <string name="duration_label">Duration</string>
+
+    <string name="occupation_label">Current Occupation</string>
+    <string name="organization_label"> Organization</string>
+    <string name="designation_label">Designation</string>
+    <string name="experience_label">Experience</string>
 
 </resources>

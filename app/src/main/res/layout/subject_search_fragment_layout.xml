@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:text="@string/search_by_subject_label"/>
 
-    <SubjectMultiAutoCompleteTextView
+    <com.learncity.learn.search.SubjectMultiAutoCompleteTextView
         android:id="@+id/subject_multi_auto_complete_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

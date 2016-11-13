@@ -5,7 +5,7 @@ package com.learncity.tutor.main.model;
  */
 
 /**
- * This class stores the app related features as an array of AppFeature class
+ * This class stores the app related features as an array of LearnerDrawerLayoutItem class
  */
 public class AppFeatures {
 

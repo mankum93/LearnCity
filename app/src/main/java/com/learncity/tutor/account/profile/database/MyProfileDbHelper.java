@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.learncity.learn.account.profile.model.MyProfile;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 
 import static com.learncity.learn.account.profile.database.MyProfileDbSchema.MyProfileTable;
 
@@ -37,7 +37,7 @@ public class MyProfileDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
 
     }
-    private static ContentValues getContentValues(MyProfile myProfile){
+    private static ContentValues getContentValues(GenericLearnerProfile myProfile){
 
         ContentValues values = new ContentValues();
         values.put(MyProfileTable.cols.NAME, myProfile.getName());
@@ -50,14 +50,14 @@ public class MyProfileDbHelper extends SQLiteOpenHelper {
         return values;
     }
 
-    public static void addProfileToDatabase(SQLiteDatabase database, MyProfile profile){
+    public static void addProfileToDatabase(SQLiteDatabase database, GenericLearnerProfile profile){
         ContentValues values = getContentValues(profile);
 
         database.insert(MyProfileTable.NAME, null, values);
 
     }
 
-    public static void updateProfileInDatabase(SQLiteDatabase database, MyProfile profile){
+    public static void updateProfileInDatabase(SQLiteDatabase database, GenericLearnerProfile profile){
 
         //Assumption is that the Email ID will be unique for the accounts.
         String emailId = profile.getEmailID();

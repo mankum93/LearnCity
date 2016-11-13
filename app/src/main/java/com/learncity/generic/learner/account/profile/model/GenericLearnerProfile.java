@@ -1,10 +1,10 @@
-package com.learncity.tutor.account.profile.model;
+package com.learncity.generic.learner.account.profile.model;
 
 /**
  * Created by DJ on 10/22/2016.
  */
 
-public class MyProfile {
+public class GenericLearnerProfile {
 
     private String mName;
     private String mEmailID;
@@ -14,7 +14,7 @@ public class MyProfile {
     private String mPassword;
 
     //These are the required profile fields to create an A/C
-    public MyProfile(String name, String emailID, String phoneNo, String currentStatus, String password){
+    public GenericLearnerProfile(String name, String emailID, String phoneNo, String currentStatus, String password){
         mName = name;
         mEmailID = emailID;
         mPhoneNo = phoneNo;
@@ -22,7 +22,7 @@ public class MyProfile {
         mPassword = password;
     }
 
-    public MyProfile(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password) {
+    public GenericLearnerProfile(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password) {
         this(name, emailID, phoneNo, currentStatus, password);
         mImagePath = imagePath;
     }
