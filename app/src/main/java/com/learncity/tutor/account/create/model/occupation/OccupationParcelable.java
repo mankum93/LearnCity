@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.learncity.tutor.account.create.model.Duration;
+import com.learncity.tutor.account.create.model.DurationParcelable;
 
 /**
  * Created by DJ on 11/13/2016.
@@ -13,7 +14,19 @@ public class OccupationParcelable implements Parcelable {
 
     private String mCurrentOrganization;
     private String mCurrentDesignation;
-    private Duration mCurrentExperience;
+    private DurationParcelable mCurrentExperience;
+
+    //Designation names list
+    public static String[] designationNamesList = new String[]{
+            "Manager",
+            "Asst. Manager",
+            "Sr. Manager",
+            "Secretary",
+            "General Manager",
+            "Team Leader",
+            "Analyst",
+            "Intern"
+    };
 
     //I think a person should be able to specify his/her current organization as well as their designation
     public OccupationParcelable(String mCurrentOrganization, String mCurrentDesignation) {
@@ -21,7 +34,7 @@ public class OccupationParcelable implements Parcelable {
         this.mCurrentDesignation = mCurrentDesignation;
     }
 
-    public OccupationParcelable(String mCurrentOrganization, Duration mCurrentExperience, String mCurrentDesignation) {
+    public OccupationParcelable(String mCurrentOrganization, DurationParcelable mCurrentExperience, String mCurrentDesignation) {
         this(mCurrentOrganization, mCurrentDesignation);
         this.mCurrentExperience = mCurrentExperience;
     }
@@ -42,18 +55,18 @@ public class OccupationParcelable implements Parcelable {
         this.mCurrentDesignation = mCurrentDesignation;
     }
 
-    public Duration getCurrentExperience() {
+    public DurationParcelable getCurrentExperience() {
         return mCurrentExperience;
     }
 
-    public void setCurrentExperience(Duration mCurrentExperience) {
+    public void setCurrentExperience(DurationParcelable mCurrentExperience) {
         this.mCurrentExperience = mCurrentExperience;
     }
 
     protected OccupationParcelable(Parcel in) {
         mCurrentOrganization = in.readString();
         mCurrentDesignation = in.readString();
-        mCurrentExperience = (Duration) in.readValue(Duration.class.getClassLoader());
+        mCurrentExperience = (DurationParcelable) in.readValue(Duration.class.getClassLoader());
     }
 
     @Override

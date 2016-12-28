@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout
+    android:id="@+id/tutor_new_account_additional_info_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -147,7 +148,7 @@
                             android:id="@+id/add_more_qualification_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/drawable_add_new_qualification"/>
+                            android:background="@drawable/drawable_add_new_qualification"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -175,7 +176,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/organization_label"/>
                     <EditText
-                        android:id="@+id/occupation"
+                        android:id="@+id/organization"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>

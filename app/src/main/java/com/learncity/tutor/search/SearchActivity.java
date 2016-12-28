@@ -13,7 +13,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.learncity.learn.search.QualificationSearchFragment;
-import com.learncity.learn.search.SearchTutorsAsyncTask;
 import com.learncity.learn.search.SubjectSearchFragment;
 import com.learncity.learncity.R;
 import com.learncity.search.searchApi.model.SearchQuery;

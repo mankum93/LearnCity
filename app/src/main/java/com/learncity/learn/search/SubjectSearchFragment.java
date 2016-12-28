@@ -48,7 +48,7 @@ public class SubjectSearchFragment extends Fragment {
         customMultiAutoCompleteTextView.setAdapter(new SubjectSearchAdapter(getActivity(), R.layout.search_by_subject_list_item_1, subjects));
 
         /*Thought: After a subject is clicked/selected, it should be stored somewhere until the user presses the Search Button.
-        * This "somewhere" has to be account for combination of search parameters from various search interfaces in the same
+        * This "somewhere" has to account for combination of search parameters from various search interfaces in the same
         * activity.*/
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
@@ -72,7 +72,7 @@ public class SubjectSearchFragment extends Fragment {
     }
 
     public interface SubjectSearchQueryCallback{
-        public abstract void onSubjectSearchQuery(String subjectsSearchQuery);
+        void onSubjectSearchQuery(String subjectsSearchQuery);
     }
     public void setSubjectSearchQueryCallback(SubjectSearchQueryCallback callback){
         mCallback = callback;

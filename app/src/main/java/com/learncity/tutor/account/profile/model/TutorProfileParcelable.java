@@ -13,8 +13,24 @@ import com.learncity.tutor.account.create.model.qualification.educational.Educat
 
 public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
 
-    private EducationalQualificationParcelable educationalQualification;
+    private EducationalQualificationParcelable[] educationalQualifications;
     private OccupationParcelable occupation;
+
+    public EducationalQualificationParcelable[] getEducationalQualifications() {
+        return educationalQualifications;
+    }
+
+    public void setEducationalQualifications(EducationalQualificationParcelable[] educationalQualifications) {
+        this.educationalQualifications = educationalQualifications;
+    }
+
+    public OccupationParcelable getOccupation() {
+        return occupation;
+    }
+
+    public void setOccupation(OccupationParcelable occupation) {
+        this.occupation = occupation;
+    }
 
     //Start of Constructors
 
@@ -26,9 +42,9 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String currentStatus, String password, EducationalQualificationParcelable educationalQualification) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, String currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications) {
         super(name, emailID, phoneNo, currentStatus, password);
-        this.educationalQualification = educationalQualification;
+        this.educationalQualifications = educationalQualifications;
     }
 
     public TutorProfileParcelable(String name, String emailID, String phoneNo, String currentStatus, String password, OccupationParcelable occupation) {
@@ -36,15 +52,15 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
         this.occupation = occupation;
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String currentStatus, String password, EducationalQualificationParcelable educationalQualification, OccupationParcelable occupation) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, String currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications, OccupationParcelable occupation) {
         super(name, emailID, phoneNo, currentStatus, password);
-        this.educationalQualification = educationalQualification;
+        this.educationalQualifications = educationalQualifications;
         this.occupation = occupation;
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, EducationalQualificationParcelable educationalQualification) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications) {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
-        this.educationalQualification = educationalQualification;
+        this.educationalQualifications = educationalQualifications;
     }
 
     public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, OccupationParcelable occupation) {
@@ -52,15 +68,15 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
         this.occupation = occupation;
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, EducationalQualificationParcelable educationalQualification, OccupationParcelable occupation) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications, OccupationParcelable occupation) {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
-        this.educationalQualification = educationalQualification;
+        this.educationalQualifications = educationalQualifications;
         this.occupation = occupation;
     }
 
     public TutorProfileParcelable(Parcel in) {
         super(in);
-        this.educationalQualification = (EducationalQualificationParcelable)in.readParcelable(EducationalQualificationParcelable.class.getClassLoader());
+        this.educationalQualifications = (EducationalQualificationParcelable[])in.readParcelableArray(EducationalQualificationParcelable[].class.getClassLoader());
         this.occupation = (OccupationParcelable)in.readParcelable(OccupationParcelable.class.getClassLoader());
     }
 
@@ -69,9 +85,9 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
         this.occupation = occupation;
     }
 
-    public TutorProfileParcelable(Parcel in, EducationalQualificationParcelable educationalQualification, OccupationParcelable occupation) {
+    public TutorProfileParcelable(Parcel in, EducationalQualificationParcelable[] educationalQualifications, OccupationParcelable occupation) {
         super(in);
-        this.educationalQualification = educationalQualification;
+        this.educationalQualifications = educationalQualifications;
         this.occupation = occupation;
     }
 
@@ -80,7 +96,7 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeValue(educationalQualification);
+        dest.writeArray(educationalQualifications);
         dest.writeValue(occupation);
     }
 
@@ -96,4 +112,5 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
             return new TutorProfileParcelable[size];
         }
     };
+
 }

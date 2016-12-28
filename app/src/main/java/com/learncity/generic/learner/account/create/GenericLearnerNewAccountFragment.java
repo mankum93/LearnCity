@@ -16,6 +16,7 @@ import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile
 import com.learncity.learn.account.create.NewLearnerAccountCreateAsyncTask;
 import com.learncity.learncity.R;
 import com.learncity.tutor.account.create.AdditionalAccountCreationInfoActivity;
+import com.learncity.tutor.account.profile.model.TutorProfileParcelable;
 
 /**
  * Created by DJ on 10/30/2016.
@@ -26,6 +27,9 @@ public class GenericLearnerNewAccountFragment extends Fragment {
     public static String GENERIC_PROFILE = "com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable";
 
     public static String TAG = "NewAccountFragment";
+
+    NewLearnerAccountCreateAsyncTask task;
+
     public static GenericLearnerNewAccountFragment newInstance(){
         return new GenericLearnerNewAccountFragment();
     }
@@ -59,30 +63,30 @@ public class GenericLearnerNewAccountFragment extends Fragment {
             @Override
             public void onClick(View v){
 
-                //Important: Remember to validate the entity before stashing it
-                String selectedStatus = spinner.getSelectedItem().toString();
-                GenericLearnerProfileParcelable profile = new GenericLearnerProfileParcelable(name.getText().toString(),
-                        emailId.getText().toString(),
-                        phoneNo.getText().toString(),
-                        password.getText().toString(),
-                        selectedStatus);
-
                 //Revised plan: Through this activity, we are aiming to populate a generic profile interface which collects
                 //the necessary details for existence of an account. Then, next screen is gonna be "optionally" asking
                 //for necessary tutor details which can be filled later depending on what was chosen on the account creation
                 //activity. OR, it will lead directly lead to learner's profile otherwise
 
-                if(selectedStatus == "Learn"){
+                //Important: Remember to validate the entity before stashing it
+                String selectedStatus = spinner.getSelectedItem().toString();
+                if(selectedStatus.equals("Learn")){
                     Log.i(TAG, "User is a Learner");
                     //For now, our generic learner is THE learner so we need to do a few things here:
                     //First: We need to start an async task to push the profile info. to local DB
                     //Second: We need to again start an async task for creation of account on the server
                     //Third: We need to create an account on the server
 
+                    GenericLearnerProfileParcelable profile = new GenericLearnerProfileParcelable(name.getText().toString(),
+                            emailId.getText().toString(),
+                            phoneNo.getText().toString(),
+                            selectedStatus,
+                            password.getText().toString());
+
                     //Create Account from this info. on the server with a profile bean.
-                    //This is the point where we need are going to communicate with backend.
+                    //This is the point where we are going to communicate with backend.
                     //TODO: Create an account on the server
-                    new NewLearnerAccountCreateAsyncTask().execute(profile);
+                    createAccountOnServer(profile);
 
                     //Now that we have enough info. for an account/profile creation, lets populate it into a Profile object
                     //and write it to the Google Datastore. Don't forget though to queue the "Store this info." in the local
@@ -93,6 +97,11 @@ public class GenericLearnerNewAccountFragment extends Fragment {
                 else{
                     Log.i(TAG, "User wants to Tutor/Learn");
                     //Collect additional profile details from the user
+                    GenericLearnerProfileParcelable profile = new TutorProfileParcelable(name.getText().toString(),
+                            emailId.getText().toString(),
+                            phoneNo.getText().toString(),
+                            selectedStatus,
+                            password.getText().toString());
                     Intent i = new Intent(getActivity(), AdditionalAccountCreationInfoActivity.class);
                     Bundle b = new Bundle();
                     b.putParcelable(GENERIC_PROFILE, profile);
@@ -102,5 +111,20 @@ public class GenericLearnerNewAccountFragment extends Fragment {
         });
 
         return root;
+    }
+    @Override
+    public void onPause(){
+        //Cancelling the task of "Account creation". User is gonna have to reenter the info. on opening the App next time
+        if(task != null){
+            if(!task.isCancelled()){
+                task.cancel(true);
+                //TODO: Ensure that if this is an untimely cancellation then it will have to be recorded and also other implications must be taken care of
+            }
+        }
+        super.onPause();
+    }
+    private void createAccountOnServer(GenericLearnerProfileParcelable profile){
+        task = new NewLearnerAccountCreateAsyncTask();
+        task.execute(profile);
     }
 }

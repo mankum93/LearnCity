@@ -32,6 +32,7 @@
         </activity>
         <activity android:name="com.learncity.learn.search.SearchActivity" />
         <activity android:name="com.learncity.learn.account.profile.MyProfileActivity" />
+        <activity android:name="com.learncity.tutor.account.create.AdditionalAccountCreationInfoActivity" />
     </application>
 
 </manifest>

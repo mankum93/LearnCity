@@ -27,6 +27,10 @@ public class EducationalQualificationParcelable implements Parcelable {
         this.mYearOfPassing = mYearOfPassing;
     }
 
+    public String getmQualificationName() {
+        return mQualificationName;
+    }
+
     public void setQualificationName(String mQualificationName) {
         this.mQualificationName = mQualificationName;
     }
