@@ -1,4 +1,4 @@
-package com.learncity.learn.main.model;
+package com.learncity.learner.main.model;
 
 /**
  * Created by DJ on 10/13/2016.

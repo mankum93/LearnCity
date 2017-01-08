@@ -1,4 +1,4 @@
-package com.learncity.learn.search;
+package com.learncity.learner.search;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

@@ -19,7 +19,7 @@
                 android:id="@+id/subject_search_fragment"
                 android:layout_width="240dp"
                 android:layout_height="100dp"
-                android:name="com.learncity.learn.search.SubjectSearchFragment"
+                android:name="com.learncity.learner.search.SubjectSearchFragment"
                 android:background="@android:drawable/dialog_holo_dark_frame"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
 
@@ -27,7 +27,7 @@
                 android:id="@+id/qualification_search_fragment"
                 android:layout_width="240dp"
                 android:layout_height="100dp"
-                android:name="com.learncity.learn.search.QualificationSearchFragment"
+                android:name="com.learncity.learner.search.QualificationSearchFragment"
                 android:background="@android:drawable/dialog_holo_light_frame"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
 
@@ -49,7 +49,7 @@
                     android:id="@+id/map_search_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="240dp"
-                    android:name="com.learncity.learn.search.LocationSearchFragment"
+                    android:name="com.learncity.learner.search.LocationSearchFragment"
                     android:background="@android:drawable/dialog_holo_light_frame"/>
             </LinearLayout>
 

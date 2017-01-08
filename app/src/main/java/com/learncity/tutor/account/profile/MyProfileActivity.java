@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.learncity.learn.account.profile.MyProfileFragment;
+import com.learncity.learner.account.profile.MyProfileFragment;
 import com.learncity.learncity.R;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 

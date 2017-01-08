@@ -1,4 +1,4 @@
-package com.learncity.learn.account.profile;
+package com.learncity.learner.account.profile;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

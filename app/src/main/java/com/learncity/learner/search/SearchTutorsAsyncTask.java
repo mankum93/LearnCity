@@ -1,4 +1,4 @@
-package com.learncity.learn.search;
+package com.learncity.learner.search;
 
 /**
  * Created by DJ on 11/5/2016.

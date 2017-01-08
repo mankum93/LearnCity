@@ -1,4 +1,4 @@
-package com.learncity.learn.search;
+package com.learncity.learner.search;
 
 import android.content.Context;
 import android.os.Bundle;

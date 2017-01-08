@@ -34,41 +34,41 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
 
     //Start of Constructors
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String currentStatus, String password) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, int currentStatus, String password) {
         super(name, emailID, phoneNo, currentStatus, password);
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password) {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, int currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications) {
         super(name, emailID, phoneNo, currentStatus, password);
         this.educationalQualifications = educationalQualifications;
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String currentStatus, String password, OccupationParcelable occupation) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, int currentStatus, String password, OccupationParcelable occupation) {
         super(name, emailID, phoneNo, currentStatus, password);
         this.occupation = occupation;
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications, OccupationParcelable occupation) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, int currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications, OccupationParcelable occupation) {
         super(name, emailID, phoneNo, currentStatus, password);
         this.educationalQualifications = educationalQualifications;
         this.occupation = occupation;
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications) {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
         this.educationalQualifications = educationalQualifications;
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, OccupationParcelable occupation) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password, OccupationParcelable occupation) {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
         this.occupation = occupation;
     }
 
-    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications, OccupationParcelable occupation) {
+    public TutorProfileParcelable(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password, EducationalQualificationParcelable[] educationalQualifications, OccupationParcelable occupation) {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
         this.educationalQualifications = educationalQualifications;
         this.occupation = occupation;

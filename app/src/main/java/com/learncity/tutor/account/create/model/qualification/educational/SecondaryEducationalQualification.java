@@ -8,13 +8,18 @@ import com.learncity.tutor.account.create.model.Duration;
 
 public class SecondaryEducationalQualification extends EducationalQualification {
 
-    private String board;
+    private String mBoard;
 
-    public SecondaryEducationalQualification(String mQualificationName, String mInstitution, Duration mDuration) {
-        super(mQualificationName, mInstitution, mDuration);
+    public SecondaryEducationalQualification(String boardName, String mInstitution, int mYearOfPassing){
+        super("High School/10th Standard", mYearOfPassing, mInstitution, new Duration(1,0,0));
+        mBoard = boardName;
     }
 
-    public SecondaryEducationalQualification(String mQualificationName, int mYearOfPassing, String mInstitution, Duration mDuration) {
-        super(mQualificationName, mYearOfPassing, mInstitution, mDuration);
+    public String getmBoard() {
+        return mBoard;
+    }
+
+    public void setmBoard(String mBoard) {
+        this.mBoard = mBoard;
     }
 }

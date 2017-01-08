@@ -1,4 +1,4 @@
-package com.learncity.learn.main;
+package com.learncity.learner.main;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,11 +17,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.learncity.generic.learner.account.create.GenericLearnerNewAccountActivity;
+import com.learncity.generic.learner.account.create.NewAccountActivity;
 import com.learncity.learncity.R;
-import com.learncity.learn.main.model.LearnerDrawerLayoutListItems;
-import com.learncity.learn.account.profile.MyProfileActivity;
-import com.learncity.learn.search.SearchActivity;
+import com.learncity.learner.main.model.LearnerDrawerLayoutListItems;
+import com.learncity.learner.account.profile.MyProfileActivity;
+import com.learncity.learner.search.SearchActivity;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -37,9 +37,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         //Just before the Activity is about to take an "interface", we should start the Splash screens if there are any
         //for the first, second time etc.
-
-        //For testing purposes, I am launching the account creation activity at the start.
-        startActivity(new Intent(this, GenericLearnerNewAccountActivity.class));
     }
 
     @Override

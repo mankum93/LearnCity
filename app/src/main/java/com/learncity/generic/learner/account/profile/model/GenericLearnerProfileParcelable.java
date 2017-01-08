@@ -9,15 +9,18 @@ import android.os.Parcelable;
 
 public class GenericLearnerProfileParcelable implements Parcelable {
 
+    public static int STATUS_LEARNER = 0x01;
+    public static int STATUS_TUTOR = 0x02;
+
     private String mName;
     private String mEmailID;
     private String mPhoneNo;
     private String mImagePath;
-    private String mCurrentStatus;
+    private int mCurrentStatus;
     private String mPassword;
 
     //These are the required profile fields to create an A/C
-    public GenericLearnerProfileParcelable(String name, String emailID, String phoneNo, String currentStatus, String password){
+    public GenericLearnerProfileParcelable(String name, String emailID, String phoneNo, int currentStatus, String password){
         mName = name;
         mEmailID = emailID;
         mPhoneNo = phoneNo;
@@ -25,7 +28,7 @@ public class GenericLearnerProfileParcelable implements Parcelable {
         mPassword = password;
     }
 
-    public GenericLearnerProfileParcelable(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password) {
+    public GenericLearnerProfileParcelable(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password) {
         this(name, emailID, phoneNo, currentStatus, password);
         mImagePath = imagePath;
     }
@@ -38,11 +41,11 @@ public class GenericLearnerProfileParcelable implements Parcelable {
         this.mPassword = mPassword;
     }
 
-    public String getCurrentStatus() {
+    public int getCurrentStatus() {
         return mCurrentStatus;
     }
 
-    public void setCurrentStatus(String mCurrentStatus) {
+    public void setCurrentStatus(int mCurrentStatus) {
         this.mCurrentStatus = mCurrentStatus;
     }
 
@@ -83,7 +86,7 @@ public class GenericLearnerProfileParcelable implements Parcelable {
         mEmailID = in.readString();
         mPhoneNo = in.readString();
         mImagePath = in.readString();
-        mCurrentStatus = in.readString();
+        mCurrentStatus = in.readInt();
         mPassword = in.readString();
     }
 
@@ -98,7 +101,7 @@ public class GenericLearnerProfileParcelable implements Parcelable {
         dest.writeString(mEmailID);
         dest.writeString(mPhoneNo);
         dest.writeString(mImagePath);
-        dest.writeString(mCurrentStatus);
+        dest.writeInt(mCurrentStatus);
         dest.writeString(mPassword);
     }
 

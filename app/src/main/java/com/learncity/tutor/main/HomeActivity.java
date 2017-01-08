@@ -17,11 +17,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.learncity.generic.learner.account.create.GenericLearnerNewAccountActivity;
+import com.learncity.generic.learner.account.create.NewAccountActivity;
 import com.learncity.learncity.R;
-import com.learncity.learn.main.model.LearnerDrawerLayoutListItems;
-import com.learncity.learn.account.profile.MyProfileActivity;
-import com.learncity.learn.search.SearchActivity;
+import com.learncity.learner.main.model.LearnerDrawerLayoutListItems;
+import com.learncity.learner.account.profile.MyProfileActivity;
+import com.learncity.learner.search.SearchActivity;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -39,7 +39,7 @@ public class HomeActivity extends AppCompatActivity {
         //for the first, second time etc.
 
         //For testing purposes, I am launching the account creation activity at the start.
-        startActivity(new Intent(this, GenericLearnerNewAccountActivity.class));
+        startActivity(new Intent(this, NewAccountActivity.class));
     }
 
     @Override

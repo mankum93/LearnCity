@@ -37,41 +37,41 @@ public class TutorProfile extends GenericLearnerProfile {
 
     }
 
-    public TutorProfile(String name, String emailID, String phoneNo, String currentStatus, String password) {
+    public TutorProfile(String name, String emailID, String phoneNo, int currentStatus, String password) {
         super(name, emailID, phoneNo, currentStatus, password);
     }
 
-    public TutorProfile(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password) {
+    public TutorProfile(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password) {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
     }
 
-    public TutorProfile(String name, String emailID, String phoneNo, String currentStatus, String password, EducationalQualification[] educationalQualifications) {
+    public TutorProfile(String name, String emailID, String phoneNo, int currentStatus, String password, EducationalQualification[] educationalQualifications) {
         super(name, emailID, phoneNo, currentStatus, password);
         this.educationalQualifications = educationalQualifications;
     }
 
-    public TutorProfile(String name, String emailID, String phoneNo, String currentStatus, String password, Occupation occupation) {
+    public TutorProfile(String name, String emailID, String phoneNo, int currentStatus, String password, Occupation occupation) {
         super(name, emailID, phoneNo, currentStatus, password);
         this.occupation = occupation;
     }
 
-    public TutorProfile(String name, String emailID, String phoneNo, String currentStatus, String password, EducationalQualification[] educationalQualifications, Occupation occupation) {
+    public TutorProfile(String name, String emailID, String phoneNo, int currentStatus, String password, EducationalQualification[] educationalQualifications, Occupation occupation) {
         super(name, emailID, phoneNo, currentStatus, password);
         this.educationalQualifications = educationalQualifications;
         this.occupation = occupation;
     }
 
-    public TutorProfile(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, EducationalQualification[] educationalQualifications) {
+    public TutorProfile(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password, EducationalQualification[] educationalQualifications) {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
         this.educationalQualifications = educationalQualifications;
     }
 
-    public TutorProfile(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, Occupation occupation) {
+    public TutorProfile(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password, Occupation occupation) {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
         this.occupation = occupation;
     }
 
-    public TutorProfile(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password, EducationalQualification[] educationalQualifications, Occupation occupation) {
+    public TutorProfile(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password, EducationalQualification[] educationalQualifications, Occupation occupation) {
         super(name, emailID, phoneNo, imagePath, currentStatus, password);
         this.educationalQualifications = educationalQualifications;
         this.occupation = occupation;

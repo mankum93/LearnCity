@@ -15,11 +15,11 @@ public class GenericLearnerProfile {
     private String mEmailID;
     private String mPhoneNo;
     private String mImagePath;
-    private String mCurrentStatus;
+    private int mCurrentStatus;
     private String mPassword;
 
     //These are the required profile fields to create an A/C
-    public GenericLearnerProfile(String name, String emailID, String phoneNo, String currentStatus, String password){
+    public GenericLearnerProfile(String name, String emailID, String phoneNo, int currentStatus, String password){
         mName = name;
         mEmailID = emailID;
         mPhoneNo = phoneNo;
@@ -32,7 +32,7 @@ public class GenericLearnerProfile {
 
     }
 
-    public GenericLearnerProfile(String name, String emailID, String phoneNo, String imagePath, String currentStatus, String password) {
+    public GenericLearnerProfile(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password) {
         this(name, emailID, phoneNo, currentStatus, password);
         mImagePath = imagePath;
     }
@@ -45,11 +45,11 @@ public class GenericLearnerProfile {
         this.mPassword = mPassword;
     }
 
-    public String getCurrentStatus() {
+    public int getCurrentStatus() {
         return mCurrentStatus;
     }
 
-    public void setCurrentStatus(String mCurrentStatus) {
+    public void setCurrentStatus(int mCurrentStatus) {
         this.mCurrentStatus = mCurrentStatus;
     }
 

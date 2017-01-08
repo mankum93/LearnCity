@@ -18,7 +18,7 @@
     <string name="learner_tutor_status_label">I am here to...</string>
     <string-array name="learner_tutor_status">
         <item>Learn</item>
-        <item>Tutor/Learn</item>
+        <item>Teach</item>
     </string-array>
 
 

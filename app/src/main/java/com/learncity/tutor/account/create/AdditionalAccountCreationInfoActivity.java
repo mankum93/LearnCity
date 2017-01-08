@@ -7,7 +7,7 @@ import com.learncity.learncity.R;
 
 /**
  * Created by DJ on 11/12/2016.
- * This activity will always be started by the Account creation activity - GenericLearnerNewAccountActivity
+ * This activity will always be started by the Account creation activity - NewAccountActivity
  */
 
 public class AdditionalAccountCreationInfoActivity extends AppCompatActivity {
