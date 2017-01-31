@@ -10,11 +10,14 @@ import com.googlecode.objectify.annotation.Id;
 @Entity
 public class GenericLearnerProfile {
 
+    //Profile fields
     private String mName;
     @Id
     private String mEmailID;
     private String mPhoneNo;
-    private String mImagePath;
+    private String mDisplayPicturePath;
+    //A unique integer Id associated with every account on the server. This ID will start the directory for user-content
+    private int mUserId;
     private int mCurrentStatus;
     private String mPassword;
 
@@ -34,7 +37,7 @@ public class GenericLearnerProfile {
 
     public GenericLearnerProfile(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password) {
         this(name, emailID, phoneNo, currentStatus, password);
-        mImagePath = imagePath;
+        mDisplayPicturePath = imagePath;
     }
 
     public String getPassword() {
@@ -54,11 +57,11 @@ public class GenericLearnerProfile {
     }
 
     public String getImagePath() {
-        return mImagePath;
+        return mDisplayPicturePath;
     }
 
     public void setImagePath(String mImagePath) {
-        this.mImagePath = mImagePath;
+        this.mDisplayPicturePath = mImagePath;
     }
 
     public String getName() {

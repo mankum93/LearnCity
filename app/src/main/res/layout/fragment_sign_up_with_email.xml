@@ -29,31 +29,35 @@
             <EditText
                 android:id="@+id/person_emailId"
                 android:layout_width="80dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/account_person_phoneNo_label"/>
+                android:text="@string/account_person_phoneNo_label" />
             <EditText
                 android:id="@+id/person_phoneNo"
                 android:layout_width="80dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/account_person_password_label"/>
+                android:text="@string/account_person_password_label" />
             <EditText
                 android:id="@+id/password"
                 android:layout_width="80dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/account_person_retypePassword_label"/>
+                android:text="@string/account_person_retypePassword_label" />
             <EditText
                 android:id="@+id/retype_password"
                 android:layout_width="80dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
 
             <TextView
                 android:layout_width="match_parent"

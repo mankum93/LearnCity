@@ -23,7 +23,7 @@ public class ProfileDbHelper extends SQLiteOpenHelper {
     private static final String TAG = "ProfileDbHelper";
 
     private static final int VERSION  = 1;
-    private static final String DATABASE_NAME = "learnerProfileBase.db";
+    public static final String DATABASE_NAME = "learnerProfileBase.db";
     private final int currentAccountStatus;
 
     public ProfileDbHelper(Context context, int currentAccountStatus){

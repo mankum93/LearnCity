@@ -9,13 +9,15 @@ import android.os.Parcelable;
 
 public class GenericLearnerProfileParcelable implements Parcelable {
 
+    public static int STATUS_UNDEFINED = 0x00;
     public static int STATUS_LEARNER = 0x01;
     public static int STATUS_TUTOR = 0x02;
 
     private String mName;
     private String mEmailID;
     private String mPhoneNo;
-    private String mImagePath;
+    //For reference to the profile picture locally
+    private String mDisplayPicturePath;
     private int mCurrentStatus;
     private String mPassword;
 
@@ -30,7 +32,7 @@ public class GenericLearnerProfileParcelable implements Parcelable {
 
     public GenericLearnerProfileParcelable(String name, String emailID, String phoneNo, String imagePath, int currentStatus, String password) {
         this(name, emailID, phoneNo, currentStatus, password);
-        mImagePath = imagePath;
+        mDisplayPicturePath = imagePath;
     }
 
     public String getPassword() {
@@ -50,11 +52,11 @@ public class GenericLearnerProfileParcelable implements Parcelable {
     }
 
     public String getImagePath() {
-        return mImagePath;
+        return mDisplayPicturePath;
     }
 
     public void setImagePath(String mImagePath) {
-        this.mImagePath = mImagePath;
+        this.mDisplayPicturePath = mImagePath;
     }
 
     public String getName() {
@@ -85,7 +87,7 @@ public class GenericLearnerProfileParcelable implements Parcelable {
         mName = in.readString();
         mEmailID = in.readString();
         mPhoneNo = in.readString();
-        mImagePath = in.readString();
+        mDisplayPicturePath = in.readString();
         mCurrentStatus = in.readInt();
         mPassword = in.readString();
     }
@@ -100,7 +102,7 @@ public class GenericLearnerProfileParcelable implements Parcelable {
         dest.writeString(mName);
         dest.writeString(mEmailID);
         dest.writeString(mPhoneNo);
-        dest.writeString(mImagePath);
+        dest.writeString(mDisplayPicturePath);
         dest.writeInt(mCurrentStatus);
         dest.writeString(mPassword);
     }

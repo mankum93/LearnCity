@@ -1,12 +1,11 @@
-package com.learncity.learner.main;
+package com.learncity.generic.learner.account.main;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,11 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.learncity.generic.learner.account.create.NewAccountActivity;
+import com.learncity.generic.learner.account.main.model.LearnerDrawerLayoutListItems;
 import com.learncity.learncity.R;
-import com.learncity.learner.main.model.LearnerDrawerLayoutListItems;
-import com.learncity.learner.account.profile.MyProfileActivity;
-import com.learncity.learner.search.SearchActivity;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -31,6 +27,17 @@ public class HomeActivity extends AppCompatActivity {
     private CharSequence mDrawerTitle;
     //We could also consider going without a member variable to hold the title. Could directly call Activity.getTitle()
     private CharSequence mTitle;
+
+    private LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem[] learnerDrawerLayoutItems;
+    private AdapterView.OnItemClickListener listener;
+
+    protected void setLearnerDrawerLayoutItems(LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem[] learnerDrawerLayoutItems) {
+        this.learnerDrawerLayoutItems = learnerDrawerLayoutItems;
+    }
+
+    protected void setAdapterViewItemClickListener(AdapterView.OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     @Override
     public void onResume(){
@@ -49,8 +56,7 @@ public class HomeActivity extends AppCompatActivity {
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
-        mDrawerList.setAdapter(new HomeDrawerViewAdapter(this,
-                R.layout.home_drawer_list_item_1, LearnerDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMs));
+        setDrawerViewAdapter();
 
         /*The v7.app.ActionBarDrawerToggle doesn't let you pass a cutom icon for the drawer indicator.
         **This is only available in v4 compat lib. v7 provides a default "hamburger" icon in the implementation
@@ -82,12 +88,28 @@ public class HomeActivity extends AppCompatActivity {
 
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        setDrawerListItemClickListener();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
 
     }
+
+    private void setDrawerListItemClickListener() {
+        if(listener == null){
+            throw new NullPointerException("The DrawerListItemClickListener has not been set");
+        }
+        mDrawerList.setOnItemClickListener(listener);
+    }
+
+    private void setDrawerViewAdapter() {
+        if(learnerDrawerLayoutItems == null){
+            throw new NullPointerException("The DrawerLayoutItems Adapter has not been set");
+        }
+        mDrawerList.setAdapter(new HomeDrawerViewAdapter(this,
+                R.layout.home_drawer_list_item_1, learnerDrawerLayoutItems));
+    }
+
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu){
@@ -124,18 +146,7 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            //TEST: Start the Search Activity for the right condition
-            if(LearnerDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMs[position].getSearchFeatureName() == "SEARCH TUTORS"){
-                startActivity(new Intent(HomeActivity.this, SearchActivity.class));
-            }
-            else if(LearnerDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMs[position].getSearchFeatureName() == "MY PROFILE"){
-                startActivity(new Intent(HomeActivity.this, MyProfileActivity.class));
-            }
-        }
-    }
+
 
 }
 

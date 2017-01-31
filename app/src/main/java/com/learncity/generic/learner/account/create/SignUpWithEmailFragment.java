@@ -31,8 +31,9 @@ import com.learncity.backend.persistence.tutorProfileApi.model.TutorProfile;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable;
 import com.learncity.learncity.R;
 import com.learncity.generic.learner.account.profile.database.ProfileDbHelper;
-import com.learncity.learner.main.HomeActivity;
+import com.learncity.learner.main.LearnerHomeActivity;
 import com.learncity.tutor.account.profile.model.TutorProfileParcelable;
+import com.learncity.tutor.main.TutorHomeActivity;
 
 import java.io.IOException;
 
@@ -40,11 +41,11 @@ import java.io.IOException;
  * Created by DJ on 10/30/2016.
  */
 
-public class NewAccountFragment extends Fragment{
+public class SignUpWithEmailFragment extends Fragment{
 
     public static String GENERIC_PROFILE = "com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable";
 
-    public static String TAG = "NewAccountFragment";
+    public static String TAG = "SignUpWithEmailFragment";
 
     private NewAccountCreateOnServerAsyncTask newAccountCreateOnServerAsyncTask;
     private NewAccountCreateLocalDbAsyncTask newAccountCreateLocalDbAsyncTask;
@@ -59,16 +60,12 @@ public class NewAccountFragment extends Fragment{
     private boolean isAccountCreationOnServerCompleted = false;
     private boolean isAccountCreationOnLocalDbCompleted = false;
 
-    //This has to be made static in order to be accessible to the A/C creation AsyncTasks so
-    //that they can know about the A/C creation retrial process
-    private static boolean mShouldAccountCreationBeRetried = false;
-
     public static boolean shouldAccountCreationBeRetried() {
-        return mShouldAccountCreationBeRetried;
+        return NewAccountCreationActivity.mShouldAccountCreationBeRetried;
     }
 
-    public static NewAccountFragment newInstance(){
-        return new NewAccountFragment();
+    public static SignUpWithEmailFragment newInstance(){
+        return new SignUpWithEmailFragment();
     }
 
     @Override
@@ -76,7 +73,7 @@ public class NewAccountFragment extends Fragment{
         //RESET: A/C creation retry is a flag set up to prevent the creation of A/C on local Db if it hasn't
         //been created on the server. Even if the A/C creation goes successful for n number of times,
         //for the (n+1)th time, it should be reset so that A/C creation can proceed normally
-        mShouldAccountCreationBeRetried = false;
+        NewAccountCreationActivity.mShouldAccountCreationBeRetried = false;
 
         super.onCreate(savedInstanceState);
 
@@ -89,7 +86,7 @@ public class NewAccountFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         super.onCreateView(inflater, container, savedInstanceState);
-        View root = inflater.inflate(R.layout.new_account_fragment_layout, container, false);
+        View root = inflater.inflate(R.layout.fragment_sign_up_with_email, container, false);
 
         final EditText name = (EditText) root.findViewById(R.id.person_name);
         //TODO: Validate the Email ID field
@@ -161,20 +158,6 @@ public class NewAccountFragment extends Fragment{
                     createAccountOnLocalDb(profile);
                 }
                 else{
-
-                    /*
-                    Log.i(TAG, "User wants to Tutor/Learn");
-                    //Collect additional profile details from the user
-                    GenericLearnerProfileParcelable profile = new TutorProfileParcelable(name.getText().toString(),
-                            emailId.getText().toString(),
-                            phoneNo.getText().toString(),
-                            Integer.parseInt(selectedStatus),
-                            password.getText().toString());
-                    Intent i = new Intent(getActivity(), AdditionalAccountCreationInfoActivity.class);
-                    Bundle b = new Bundle();
-                    b.putParcelable(GENERIC_PROFILE, profile);
-                    startActivity(i.putExtras(b));
-                    */
                     Log.i(TAG, "User is a Tutor");
                     //We need to do a few things here:
                     //First: We need to start an async newAccountCreateOnServerAsyncTask to push the profile info. to local DB
@@ -233,7 +216,7 @@ public class NewAccountFragment extends Fragment{
             getActivity().finish();
         }
     }
-    private void createAccountOnServer(GenericLearnerProfileParcelable profile){
+    private void createAccountOnServer(final GenericLearnerProfileParcelable profile){
         newAccountCreateOnServerAsyncTask = new NewAccountCreateOnServerAsyncTask();
         newAccountCreateOnServerAsyncTask.setAccountCreationListener(new NewAccountCreateOnServerAsyncTask.AccountCreationOnServerListener() {
             @Override
@@ -249,20 +232,26 @@ public class NewAccountFragment extends Fragment{
                     mProgressbarHolder.setVisibility(View.GONE);
 
                     //Show the user the Account Home interface
-                    startActivity(new Intent(NewAccountFragment.this.getActivity(), HomeActivity.class));
+                    if(profile.getCurrentStatus()== GenericLearnerProfileParcelable.STATUS_LEARNER){
+                        startActivity(new Intent(SignUpWithEmailFragment.this.getActivity(), LearnerHomeActivity.class));
+                    }
+                    else{
+                        startActivity(new Intent(SignUpWithEmailFragment.this.getActivity(), TutorHomeActivity.class));
+                    }
+
                 }
             }
             @Override
             public void onAccountCreationRetry(){
                 //Indication that the Account creation has been unsuccessful and should be retried
                 //Set a flag inside the Activity to store this indication;
-                mShouldAccountCreationBeRetried = true;
+                NewAccountCreationActivity.mShouldAccountCreationBeRetried = true;
             }
         });
         newAccountCreateOnServerAsyncTask.execute(profile);
         //newAccountCreateOnServerAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, profile);
     }
-    private void createAccountOnLocalDb(GenericLearnerProfileParcelable profile){
+    private void createAccountOnLocalDb(final GenericLearnerProfileParcelable profile){
         newAccountCreateLocalDbAsyncTask = new NewAccountCreateLocalDbAsyncTask(getActivity());
         newAccountCreateLocalDbAsyncTask.setAccountCreationonLocalDbListener(new NewAccountCreateLocalDbAsyncTask.AccountCreationOnLocalDbListener() {
             @Override
@@ -278,7 +267,12 @@ public class NewAccountFragment extends Fragment{
                     mProgressbarHolder.setVisibility(View.GONE);
 
                     //Show the user the Account Home interface
-                    startActivity(new Intent(NewAccountFragment.this.getActivity(), HomeActivity.class));
+                    if(profile.getCurrentStatus()== GenericLearnerProfileParcelable.STATUS_LEARNER){
+                        startActivity(new Intent(SignUpWithEmailFragment.this.getActivity(), LearnerHomeActivity.class));
+                    }
+                    else{
+                        startActivity(new Intent(SignUpWithEmailFragment.this.getActivity(), TutorHomeActivity.class));
+                    }
                 }
             }
         });
@@ -476,7 +470,7 @@ class NewAccountCreateLocalDbAsyncTask extends AsyncTask<GenericLearnerProfilePa
             throw new RuntimeException("Context to be passed during Db creation is null");
         }
         //If the A/C has NOT been created on the server, don't mind creating it on the local Db either
-        if(NewAccountFragment.shouldAccountCreationBeRetried()){
+        if(SignUpWithEmailFragment.shouldAccountCreationBeRetried()){
             Log.d(TAG, "NewAccountCreateLocalDbAsyncTask - A/C creation on the local Db has been stopped due to"
             + "it being unable of being created on the server");
             return null;
@@ -487,7 +481,8 @@ class NewAccountCreateLocalDbAsyncTask extends AsyncTask<GenericLearnerProfilePa
         SQLiteDatabase db = new ProfileDbHelper(context, profile.getCurrentStatus()).getWritableDatabase();
         //Insert into the database
         ProfileDbHelper.addProfileToDatabase(db, profile);
-
+        //Close the connection
+        db.close();
         //Account creation complete
         isAccountCreationComplete = true;
         return null;

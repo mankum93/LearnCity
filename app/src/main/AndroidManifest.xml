@@ -12,6 +12,8 @@
         android:protectionLevel="signature" />
 
     <uses-permission android:name="com.example.gcm.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
 
     <application
         android:allowBackup="true"
@@ -23,14 +25,18 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAREL6F44Hgwt4G1DqivXBLG2uiJIm0hrs" />
 
-        <activity android:name="com.learncity.generic.learner.account.create.NewAccountActivity">
+        <activity android:name="com.learncity.generic.learner.account.main.SplashScreen1Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.learncity.learner.main.HomeActivity" />
+        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithGoogleAccountActivity"/>
+        <activity android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivity"/>
+        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithEmailActivity"/>
+        <activity android:name="com.learncity.learner.main.LearnerHomeActivity" />
+        <activity android:name="com.learncity.tutor.main.TutorHomeActivity" />
         <activity android:name="com.learncity.learner.search.SearchActivity" />
         <activity android:name="com.learncity.learner.account.profile.MyProfileActivity" />
         <activity android:name="com.learncity.tutor.account.create.AdditionalAccountCreationInfoActivity" />

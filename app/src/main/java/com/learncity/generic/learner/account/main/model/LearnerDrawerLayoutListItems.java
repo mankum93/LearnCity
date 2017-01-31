@@ -1,4 +1,4 @@
-package com.learncity.learner.main.model;
+package com.learncity.generic.learner.account.main.model;
 
 /**
  * Created by DJ on 10/13/2016.
@@ -9,8 +9,14 @@ package com.learncity.learner.main.model;
  */
 public class LearnerDrawerLayoutListItems {
 
-    public static final LearnerDrawerLayoutItem[] LEARNER_DRAWER_LAYOUT_ITEMs = new LearnerDrawerLayoutItem[]{
+    public static final LearnerDrawerLayoutItem[] LEARNER_DRAWER_LAYOUT_ITEMS = new LearnerDrawerLayoutItem[]{
             new LearnerDrawerLayoutItem("SEARCH TUTORS", "PATH"),
+            new LearnerDrawerLayoutItem("MY MATERIAL", "PATH"),
+            new LearnerDrawerLayoutItem("MY PROFILE", "PATH"),
+            new LearnerDrawerLayoutItem("SETTINGS", "PATH")
+    };
+    public static final LearnerDrawerLayoutItem[] TUTOR_DRAWER_LAYOUT_ITEMS = new LearnerDrawerLayoutItem[]{
+            new LearnerDrawerLayoutItem("JOB VACANCIES", "PATH"),
             new LearnerDrawerLayoutItem("MY MATERIAL", "PATH"),
             new LearnerDrawerLayoutItem("MY PROFILE", "PATH"),
             new LearnerDrawerLayoutItem("SETTINGS", "PATH")

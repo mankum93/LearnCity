@@ -20,6 +20,7 @@ import com.learncity.search.searchApi.model.SearchQuery;
 class SearchTutorsAsyncTask extends AsyncTask<SearchQuery, Void, Void> {
     private static final String TAG = "SearchTutorsAsyncTask";
 
+    //Client that is gonna talk to the endpoint
     private static SearchApi myApiService = null;
 
 
@@ -47,7 +48,7 @@ class SearchTutorsAsyncTask extends AsyncTask<SearchQuery, Void, Void> {
         //Now, get the search query object
         SearchQuery query = params[0];
 
-        //Now push the info. to the database
+        //Now push the query to the server
         try{
             myApiService.searchTutors(query).execute();
         }
