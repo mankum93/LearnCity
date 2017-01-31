@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "294076902789",
+    "project_id": "unified-surfer-147104"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294076902789:android:5f304c73a035a05c",
+        "android_client_info": {
+          "package_name": "com.learncity.learncity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "294076902789-qhtuqjmfdtjkiqe1gpi0ajgdn5o3cqpk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.learncity.learncity",
+            "certificate_hash": "673B86F316D29F5BBA5EF5161518C5485B6D67F2"
+          }
+        },
+        {
+          "client_id": "294076902789-ghvq8m3fjjdfhtr1ter8kh8utp6dr4ci.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSi1Df1lZNv207--_xddTvrpwHiyNXeJk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

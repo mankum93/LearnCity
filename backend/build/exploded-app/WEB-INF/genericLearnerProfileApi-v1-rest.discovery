@@ -1,0 +1,244 @@
+{
+ "kind": "discovery#restDescription",
+ "etag": "\"ODRTh3xaRR64wpeXJSlF33HMN-0/7G_a9LSKMlHQSiciG-9pqAlOef4\"",
+ "discoveryVersion": "v1",
+ "id": "genericLearnerProfileApi:v1",
+ "name": "genericLearnerProfileApi",
+ "version": "v1",
+ "description": "This is an API",
+ "ownerDomain": "persistence.backend.learncity.com",
+ "ownerName": "persistence.backend.learncity.com",
+ "icons": {
+  "x16": "https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png",
+  "x32": "https://www.gstatic.com/images/branding/product/1x/googleg_32dp.png"
+ },
+ "protocol": "rest",
+ "baseUrl": "https://myApplicationId.appspot.com/_ah/api/genericLearnerProfileApi/v1/",
+ "basePath": "/_ah/api/genericLearnerProfileApi/v1/",
+ "rootUrl": "https://myApplicationId.appspot.com/_ah/api/",
+ "servicePath": "genericLearnerProfileApi/v1/",
+ "batchPath": "batch",
+ "parameters": {
+  "alt": {
+   "type": "string",
+   "description": "Data format for the response.",
+   "default": "json",
+   "enum": [
+    "json"
+   ],
+   "enumDescriptions": [
+    "Responses with Content-Type of application/json"
+   ],
+   "location": "query"
+  },
+  "fields": {
+   "type": "string",
+   "description": "Selector specifying which fields to include in a partial response.",
+   "location": "query"
+  },
+  "key": {
+   "type": "string",
+   "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+   "location": "query"
+  },
+  "oauth_token": {
+   "type": "string",
+   "description": "OAuth 2.0 token for the current user.",
+   "location": "query"
+  },
+  "prettyPrint": {
+   "type": "boolean",
+   "description": "Returns response with indentations and line breaks.",
+   "default": "true",
+   "location": "query"
+  },
+  "quotaUser": {
+   "type": "string",
+   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "location": "query"
+  },
+  "userIp": {
+   "type": "string",
+   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "location": "query"
+  }
+ },
+ "auth": {
+  "oauth2": {
+   "scopes": {
+    "https://www.googleapis.com/auth/userinfo.email": {
+     "description": "View your email address"
+    }
+   }
+  }
+ },
+ "schemas": {
+  "CollectionResponse_GenericLearnerProfile": {
+   "id": "CollectionResponse_GenericLearnerProfile",
+   "type": "object",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "GenericLearnerProfile"
+     }
+    },
+    "nextPageToken": {
+     "type": "string"
+    }
+   }
+  },
+  "GenericLearnerProfile": {
+   "id": "GenericLearnerProfile",
+   "type": "object",
+   "properties": {
+    "currentStatus": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "emailID": {
+     "type": "string"
+    },
+    "imagePath": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "password": {
+     "type": "string"
+    },
+    "phoneNo": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ "methods": {
+  "get": {
+   "id": "genericLearnerProfileApi.get",
+   "path": "genericLearnerProfile/{mEmailID}",
+   "httpMethod": "GET",
+   "parameters": {
+    "mEmailID": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "mEmailID"
+   ],
+   "response": {
+    "$ref": "GenericLearnerProfile"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "insert": {
+   "id": "genericLearnerProfileApi.insert",
+   "path": "genericLearnerProfile",
+   "httpMethod": "POST",
+   "request": {
+    "$ref": "GenericLearnerProfile",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "GenericLearnerProfile"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "list": {
+   "id": "genericLearnerProfileApi.list",
+   "path": "genericLearnerProfile",
+   "httpMethod": "GET",
+   "parameters": {
+    "cursor": {
+     "type": "string",
+     "location": "query"
+    },
+    "limit": {
+     "type": "integer",
+     "format": "int32",
+     "location": "query"
+    }
+   },
+   "response": {
+    "$ref": "CollectionResponse_GenericLearnerProfile"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "patch": {
+   "id": "genericLearnerProfileApi.patch",
+   "path": "genericLearnerProfile/{mEmailID}",
+   "httpMethod": "PATCH",
+   "parameters": {
+    "mEmailID": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "mEmailID"
+   ],
+   "request": {
+    "$ref": "GenericLearnerProfile"
+   },
+   "response": {
+    "$ref": "GenericLearnerProfile"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "remove": {
+   "id": "genericLearnerProfileApi.remove",
+   "path": "genericLearnerProfile/{mEmailID}",
+   "httpMethod": "DELETE",
+   "parameters": {
+    "mEmailID": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "mEmailID"
+   ],
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "update": {
+   "id": "genericLearnerProfileApi.update",
+   "path": "genericLearnerProfile/{mEmailID}",
+   "httpMethod": "PUT",
+   "parameters": {
+    "mEmailID": {
+     "type": "string",
+     "required": true,
+     "location": "path"
+    }
+   },
+   "parameterOrder": [
+    "mEmailID"
+   ],
+   "request": {
+    "$ref": "GenericLearnerProfile",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "GenericLearnerProfile"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  }
+ }
+}
