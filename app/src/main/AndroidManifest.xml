@@ -25,7 +25,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAREL6F44Hgwt4G1DqivXBLG2uiJIm0hrs" />
 
-        <activity android:name="com.learncity.generic.learner.account.main.SplashScreen1Activity">
+        <activity android:name="com.learncity.generic.learner.main.SplashScreen1Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

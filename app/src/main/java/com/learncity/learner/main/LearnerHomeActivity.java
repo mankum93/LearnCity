@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.learncity.generic.learner.account.main.HomeActivity;
-import com.learncity.generic.learner.account.main.model.LearnerDrawerLayoutListItems;
+import com.learncity.generic.learner.main.HomeActivity;
+import com.learncity.generic.learner.main.model.LearnerDrawerLayoutListItems;
 import com.learncity.learner.account.profile.MyProfileActivity;
 import com.learncity.learner.search.SearchActivity;
 

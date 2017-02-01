@@ -18,7 +18,7 @@ import android.widget.Spinner;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable;
 import com.learncity.learncity.R;
 import com.learncity.learner.main.LearnerHomeActivity;
-import com.learncity.tutor.account.profile.model.TutorProfileParcelable;
+import com.learncity.tutor.account.profile.TutorProfileParcelable;
 import com.learncity.tutor.main.TutorHomeActivity;
 
 /**

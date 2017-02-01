@@ -14,10 +14,9 @@
         <init-param>
             <param-name>services</param-name>
             <param-value>
-                com.learncity.backend.persistence.ProfileEndpoint,
                 com.learncity.backend.search.SearchEndpoint,
-                com.learncity.backend.persistence.TutorProfileEndpoint,
-                com.learncity.backend.persistence.GenericLearnerProfileEndpoint</param-value>
+                com.learncity.backend.persistence.endpoints.TutorProfilePersistenceEndpoint,
+                com.learncity.backend.persistence.endpoints.GenericLearnerProfilePersistenceEndpoint</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

@@ -7,12 +7,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable;
-import com.learncity.tutor.account.create.model.DurationParcelable;
-import com.learncity.tutor.account.create.model.occupation.OccupationParcelable;
-import com.learncity.tutor.account.create.model.qualification.educational.EducationalQualificationParcelable;
-import com.learncity.tutor.account.create.model.qualification.educational.SecondaryEducationalQualificationParcelable;
-import com.learncity.tutor.account.create.model.qualification.educational.SeniorSecondaryEducationalQualificationParcelable;
-import com.learncity.tutor.account.profile.model.TutorProfileParcelable;
+import com.learncity.tutor.account.profile.model.DurationParcelable;
+import com.learncity.tutor.account.profile.model.occupation.OccupationParcelable;
+import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualificationParcelable;
+import com.learncity.tutor.account.profile.model.qualification.educational.SecondaryEducationalQualificationParcelable;
+import com.learncity.tutor.account.profile.model.qualification.educational.SeniorSecondaryEducationalQualificationParcelable;
+import com.learncity.tutor.account.profile.TutorProfileParcelable;
 
 /**
  * Created by DJ on 10/23/2016.

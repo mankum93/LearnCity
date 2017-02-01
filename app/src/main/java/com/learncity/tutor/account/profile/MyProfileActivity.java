@@ -1,13 +1,16 @@
 package com.learncity.tutor.account.profile;
 
+/**
+ * Created by DJ on 2/2/2017.
+ */
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.learncity.learner.account.profile.MyProfileFragment;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable;
 import com.learncity.learncity.R;
-import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 
 /**
  * Created by DJ on 10/22/2016.
@@ -15,7 +18,7 @@ import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile
 
 public class MyProfileActivity extends AppCompatActivity {
 
-    private GenericLearnerProfile myProfile;
+    private GenericLearnerProfileParcelable myProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

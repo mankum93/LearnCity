@@ -18,8 +18,8 @@ import com.learncity.backend.persistence.tutorProfileApi.model.EducationalQualif
 import com.learncity.backend.persistence.tutorProfileApi.model.Occupation;
 import com.learncity.backend.persistence.tutorProfileApi.model.TutorProfile;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable;
-import com.learncity.tutor.account.create.model.qualification.educational.EducationalQualificationParcelable;
-import com.learncity.tutor.account.profile.model.TutorProfileParcelable;
+import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualificationParcelable;
+import com.learncity.tutor.account.profile.TutorProfileParcelable;
 
 import java.io.IOException;
 import java.util.Arrays;

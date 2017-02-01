@@ -22,15 +22,6 @@ public class QualificationSearchFragment extends Fragment {
     private String mEnteredQualificationSearchQuery;
     private QualificationSearchFragment.QualificationSearchQueryCallback mCallback;
 
-    //Dummy data source for the adapter
-    String[] qualifications = new String[] {
-            "College/University Professor", "College/University student",
-            "IIT student", "IIT Professor",
-            "Freelancer", "High School Teacher",
-            "Senior Secondary Teacher", "Corporate Professional",
-            "Classmate", "Coaching Institute Teacher"
-    };
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 
@@ -40,7 +31,9 @@ public class QualificationSearchFragment extends Fragment {
         AppCompatMultiAutoCompleteTextView customMultiAutoCompleteTextView = (QualificationMultiAutoCompleteTextView)root.findViewById(R.id.qualification_multi_auto_complete_view);
 
         //Initialize the adapter with dummy data and set it up
-        customMultiAutoCompleteTextView.setAdapter(new QualificationSearchAdapter(getActivity(), R.layout.search_by_qualification_list_item_1, qualifications));
+        customMultiAutoCompleteTextView.setAdapter(new QualificationSearchAdapter(getActivity(),
+                R.layout.search_by_qualification_list_item_1,
+                getResources().getStringArray(R.array.type_of_tutor)));
 
         /*Thought: After a subject is clicked/selected, it should be stored somewhere until the user presses the Search Button.
         * This "somewhere" has to be account for combination of search parameters from various search interfaces in the same

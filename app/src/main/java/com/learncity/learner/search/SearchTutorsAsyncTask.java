@@ -49,6 +49,7 @@ class SearchTutorsAsyncTask extends AsyncTask<SearchQuery, Void, Void> {
         SearchQuery query = params[0];
 
         //Now push the query to the server
+
         try{
             myApiService.searchTutors(query).execute();
         }

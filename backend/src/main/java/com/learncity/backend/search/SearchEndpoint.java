@@ -3,10 +3,15 @@ package com.learncity.backend.search;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.ObjectifyService;
-import com.learncity.backend.persistence.Profile;
-import com.learncity.backend.persistence.ProfileEndpoint;
+import com.googlecode.objectify.cmd.Query;
+import com.learncity.backend.persistence.TutorProfile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -32,20 +37,33 @@ public class SearchEndpoint {
 
     static {
         // Typically you would register this inside an OfyServive wrapper. See: https://code.google.com/p/objectify-appengine/wiki/BestPractices
-        ObjectifyService.register(Profile.class);
+        ObjectifyService.register(TutorProfile.class);
     }
 
+    /**
+     * List all entities.
+     * @return a response that encapsulates the result list and the next page token/cursor
+     */
     @ApiMethod(name = "searchTutors")
-    public SearchResponse searchTutors(SearchQuery query) {
+    public CollectionResponse<TutorProfile> searchTutors(SearchQuery searchQuery) {
 
-        //TODO: Implement the search logic here
+        Integer limit = searchQuery.getLimit();
+        String cursor = searchQuery.getCursor();
+
         //Query the database for the profiles with matching subjects/qualifications
-        List<Profile> profiles = ofy().load().type(Profile.class).filter("year >", 1999).list();
+        List<TutorProfile> profiles = ofy().load().type(TutorProfile.class).filter("year >", 1999).list();
 
-        SearchResponse response = new SearchResponse();
-        //TODO: Set the response i.e the profiles of tutors
-
-        return response;
+        limit = limit == null ? SearchQuery.DEFAULT_LIST_LIMIT : limit;
+        Query<TutorProfile> query = ofy().load().type(TutorProfile.class).filter("XXXXX", 1234).limit(limit);
+        if (cursor != null) {
+            query = query.startAt(Cursor.fromWebSafeString(cursor));
+        }
+        QueryResultIterator<TutorProfile> queryIterator = query.iterator();
+        List<TutorProfile> tutorProfileList = new ArrayList<TutorProfile>(limit);
+        while (queryIterator.hasNext()) {
+            tutorProfileList.add(queryIterator.next());
+        }
+        return CollectionResponse.<TutorProfile>builder().setItems(tutorProfileList).setNextPageToken(queryIterator.getCursor().toWebSafeString()).build();
     }
 
 }

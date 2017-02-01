@@ -1,6 +1,6 @@
 package com.learncity.backend.search;
 
-import com.learncity.backend.persistence.Profile;
+import com.learncity.backend.persistence.TutorProfile;
 
 import java.util.List;
 
@@ -10,5 +10,5 @@ import java.util.List;
 
 public class SearchResponse {
 
-    private List<Profile> profilesFound;
+    private List<TutorProfile> profilesFound;
 }

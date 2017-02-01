@@ -32,7 +32,7 @@ import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile
 import com.learncity.learncity.R;
 import com.learncity.generic.learner.account.profile.database.ProfileDbHelper;
 import com.learncity.learner.main.LearnerHomeActivity;
-import com.learncity.tutor.account.profile.model.TutorProfileParcelable;
+import com.learncity.tutor.account.profile.TutorProfileParcelable;
 import com.learncity.tutor.main.TutorHomeActivity;
 
 import java.io.IOException;
