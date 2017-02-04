@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--Type of Tutor-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/type_of_tutor_label"/>
+    <com.learncity.util.MultiSpinner
+        android:id="@+id/type_of_tutor_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!--Subjects/Disciplines-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/disciplines_label"/>
+    <com.learncity.util.MultiSpinner
+        android:id="@+id/subjects_taught_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

@@ -37,6 +37,7 @@
         android:scaleType="centerCrop"
         android:layout_toRightOf="@id/name_number_container"
         android:layout_marginLeft="80dp"
-        android:src="@drawable/ngc2997"/>
+        android:src="@drawable/ngc2997"
+        android:contentDescription="@string/profile_pic_img_desc"/>
 
 </RelativeLayout>

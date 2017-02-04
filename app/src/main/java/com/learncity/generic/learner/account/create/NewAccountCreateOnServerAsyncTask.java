@@ -1,5 +1,4 @@
-package com.learncity.learner.account.create;
-
+package com.learncity.generic.learner.account.create;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -13,25 +12,33 @@ import com.google.api.client.json.GenericJson;
 import com.learncity.backend.persistence.genericLearnerProfileApi.GenericLearnerProfileApi;
 import com.learncity.backend.persistence.genericLearnerProfileApi.model.GenericLearnerProfile;
 import com.learncity.backend.persistence.tutorProfileApi.TutorProfileApi;
-import com.learncity.backend.persistence.tutorProfileApi.model.Duration;
-import com.learncity.backend.persistence.tutorProfileApi.model.EducationalQualification;
-import com.learncity.backend.persistence.tutorProfileApi.model.Occupation;
 import com.learncity.backend.persistence.tutorProfileApi.model.TutorProfile;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable;
-import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualificationParcelable;
 import com.learncity.tutor.account.profile.model.TutorProfileParcelable;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Created by DJ on 10/30/2016.
  */
 
-public class NewLearnerAccountCreateAsyncTask extends AsyncTask<GenericLearnerProfileParcelable, Void, Void> {
+public class NewAccountCreateOnServerAsyncTask extends AsyncTask<GenericLearnerProfileParcelable, Void, Void> {
     private static final String TAG = "NewAccountAsyncTask";
 
     private static AbstractGoogleJsonClient myApiService = null;
+
+    private boolean isAccountCreationComplete = false;
+    private boolean shouldAccountCreationBeRetried = false;
+
+    public boolean shouldAccountCreationBeRetried() {
+        return shouldAccountCreationBeRetried;
+    }
+
+    public boolean isAccountCreationComplete() {
+        return isAccountCreationComplete;
+    }
+
+    private AccountCreationOnServerListener mAccountCreationOnServerListener;
 
     public static void setApiService(GenericLearnerProfileParcelable profile) {
         AbstractGoogleJsonClient.Builder builder = selectBuilder(profile)
@@ -73,19 +80,33 @@ public class NewLearnerAccountCreateAsyncTask extends AsyncTask<GenericLearnerPr
         //Populate the entity object with the profile info.
         GenericJson profileEntity = populateProfileEntity(profile);
 
+        if(isCancelled()){
+            shouldAccountCreationBeRetried = true;
+            mAccountCreationOnServerListener.onAccountCreationRetry();
+            return null;
+        }
         //Now push the info. to the database through the right service
         try{
             if(myApiService instanceof GenericLearnerProfileApi){
                 ((GenericLearnerProfileApi)myApiService).insert((GenericLearnerProfile) profileEntity).execute();
+                //The execute method returns an instance of inserted object so I am assuming that implies successful
+                //transaction to the database
+                isAccountCreationComplete = true;
             }
             else if(myApiService instanceof TutorProfileApi){
-                ((TutorProfileApi)myApiService).insert((com.learncity.backend.persistence.tutorProfileApi.model.TutorProfile) profileEntity).execute();
+                ((TutorProfileApi)myApiService).insert((TutorProfile) profileEntity).execute();
+                //The execute method returns an instance of inserted object so I am assuming that implies successful
+                //transaction to the database
+                isAccountCreationComplete = true;
             }
 
         }
         catch(IOException e){
-            Log.e(TAG, "IO Exception while performing the datastore transaction");
+            Log.e(TAG, "Account couldn't be created : IO Exception while performing the data-store transaction");
             e.printStackTrace();
+            //The Account couldn't be created.
+
+            //TODO: Show a Retry Dialog to retry  the account creation process
         }
         return null;
 
@@ -93,18 +114,36 @@ public class NewLearnerAccountCreateAsyncTask extends AsyncTask<GenericLearnerPr
 
     @Override
     protected void onPostExecute(Void result) {
-        //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+        if(!isAccountCreationComplete){
+            //1. Must have gotten an exception while performing transaction in the database.
+            // OR,
+            //2. This AsyncTask got cancelled and doInBackground() returned null
+            // RETRY PLEASE!!!
+            shouldAccountCreationBeRetried = true;
+            mAccountCreationOnServerListener.onAccountCreationRetry();
+        }
+        else{
+            //Account creation complete. Call the account creation callback
+            if(mAccountCreationOnServerListener == null){
+                throw new RuntimeException("Account Creation listener has not been set for account creation on the server even though the account creation has been successful");
+            }
+            mAccountCreationOnServerListener.onAccountCreated();
+        }
     }
 
     private GenericJson populateProfileEntity(GenericLearnerProfileParcelable profile){
         //Populate the entity object with the profile info.
 
+        //GenericJson is the base type for the entities generated by the client lib-generator. This means that
+        //I can't have inheritance between the 2 different entities event though it makes sense to have it. In other words
+        //the entity classes generated by the lib-generator will be always be separate GenericJson types which is why there
+        //is redundant code here
         GenericJson profileEntity = null;
 
         if(profile instanceof TutorProfileParcelable){
             TutorProfileParcelable tutorProfile = (TutorProfileParcelable)profile;
 
-            profileEntity = new com.learncity.backend.persistence.tutorProfileApi.model.TutorProfile();
+            profileEntity = new TutorProfile();
             TutorProfile profileEntityTutor = (TutorProfile) profileEntity;
 
             profileEntityTutor.setName(tutorProfile.getName());
@@ -112,35 +151,6 @@ public class NewLearnerAccountCreateAsyncTask extends AsyncTask<GenericLearnerPr
             profileEntityTutor.setPhoneNo(tutorProfile.getPhoneNo());
             profileEntityTutor.setPassword(tutorProfile.getPassword());
             profileEntityTutor.setCurrentStatus(tutorProfile.getCurrentStatus());
-
-            EducationalQualification educationalQualificationEntities[] = new EducationalQualification[tutorProfile.getEducationalQualifications().length];
-            int i=0;
-
-            for(EducationalQualificationParcelable educationalQualification : tutorProfile.getEducationalQualifications()){
-                EducationalQualification educationalQualificationEntity = new EducationalQualification();
-                educationalQualificationEntity.setInstitution(educationalQualification.getInstitution());
-                educationalQualificationEntity.setQualificationName(educationalQualification.getmQualificationName());
-                educationalQualificationEntity.setYearOfPassing(educationalQualification.getYearOfPassing());
-                Duration qualificationDuration = new Duration();
-                qualificationDuration.setNoOfDays(educationalQualification.getDuration().getNoOfDays());
-                qualificationDuration.setNoOfMonths(educationalQualification.getDuration().getNoOfMonths());
-                qualificationDuration.setNoOfYears(educationalQualification.getDuration().getNoOfYears());
-                educationalQualificationEntity.setDuration(qualificationDuration);
-
-                educationalQualificationEntities[i++] = educationalQualificationEntity;
-
-            }
-            profileEntityTutor.setEducationalQualifications(Arrays.asList(educationalQualificationEntities));
-
-            Occupation occupation = new Occupation();
-            occupation.setCurrentDesignation(tutorProfile.getOccupation().getCurrentDesignation());
-            occupation.setCurrentOrganization(tutorProfile.getOccupation().getCurrentOrganization());
-            Duration occupationDuration = new Duration();
-            occupationDuration.setNoOfDays(tutorProfile.getOccupation().getCurrentExperience().getNoOfDays());
-            occupationDuration.setNoOfMonths(tutorProfile.getOccupation().getCurrentExperience().getNoOfMonths());
-            occupationDuration.setNoOfYears(tutorProfile.getOccupation().getCurrentExperience().getNoOfYears());
-            occupation.setCurrentExperience(occupationDuration);
-
         }
         else{
             profileEntity = new GenericLearnerProfile();
@@ -154,6 +164,15 @@ public class NewLearnerAccountCreateAsyncTask extends AsyncTask<GenericLearnerPr
         }
 
         return profileEntity;
+    }
+
+    void setAccountCreationListener(AccountCreationOnServerListener accountCreationOnServerListener){
+        mAccountCreationOnServerListener = accountCreationOnServerListener;
+    }
+
+    interface AccountCreationOnServerListener {
+        void onAccountCreated();
+        void onAccountCreationRetry();
     }
 
 }

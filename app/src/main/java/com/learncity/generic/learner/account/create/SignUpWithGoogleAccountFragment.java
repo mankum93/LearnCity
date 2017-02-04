@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,8 +19,9 @@ import android.widget.Spinner;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable;
 import com.learncity.learncity.R;
 import com.learncity.learner.main.LearnerHomeActivity;
-import com.learncity.tutor.account.profile.TutorProfileParcelable;
+import com.learncity.tutor.account.profile.model.TutorProfileParcelable;
 import com.learncity.tutor.main.TutorHomeActivity;
+import com.learncity.util.MultiSpinner;
 
 /**
  * Created by DJ on 10/30/2016.
@@ -29,10 +31,10 @@ public class SignUpWithGoogleAccountFragment extends Fragment{
 
     public static String GENERIC_PROFILE = "com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable";
 
-    public static String TAG = "SignUpWithEmailFragment";
+    public static String TAG = "SignUpWithGoogleFrag";
 
     private NewAccountCreateOnServerAsyncTask newAccountCreateOnServerAsyncTask;
-    private NewAccountCreateLocalDbAsyncTask newAccountCreateLocalDbAsyncTask;
+    private NewAccountCreateOnLocalDbAsyncTask newAccountCreateOnLocalDbAsyncTask;
     FrameLayout mProgressbarHolder;
 
     AlphaAnimation inAnimation;
@@ -45,6 +47,28 @@ public class SignUpWithGoogleAccountFragment extends Fragment{
     private boolean isAccountCreationOnLocalDbCompleted = false;
 
     GenericLearnerProfileParcelable profileFromGoogleAccount;
+
+    private boolean isConditionalTutorUIVisible;
+
+    private EditText phoneNo;
+    private EditText password;
+    private EditText retypedPassword;
+    private Spinner spinner;
+    private Button createAccountButton;
+
+    private MultiSpinner<String> typeOfTutorMultiSpinner;
+    private MultiSpinner<String> subjectsICanTeachMultiSpinner;
+
+    private GenericLearnerProfileParcelable profile;
+
+    private ViewGroup rootView;
+
+    private LayoutInflater layoutInflater;
+    private ViewGroup profileFieldsContainer;
+    private View rootTutorConditionalLayout;
+
+    private String[] tutorTypes;
+    private String[] subjects;
 
     public static boolean shouldAccountCreationBeRetried() {
         return NewAccountCreationActivity.mShouldAccountCreationBeRetried;
@@ -74,15 +98,18 @@ public class SignUpWithGoogleAccountFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         super.onCreateView(inflater, container, savedInstanceState);
-        View root = inflater.inflate(R.layout.fragment_sign_up_with_google, container, false);
+
+        layoutInflater = inflater;
+
+        rootView = (ViewGroup)inflater.inflate(R.layout.fragment_sign_up_with_google, container, false);
 
         //TODO: Validate the Phone No field
-        final EditText phoneNo = (EditText) root.findViewById(R.id.person_phoneNo);
+        phoneNo = (EditText) rootView.findViewById(R.id.person_phoneNo);
         //TODO: Validate the Password/Retyped Password field
-        final EditText password = (EditText) root.findViewById(R.id.password);
-        final EditText retypedPassword = (EditText) root.findViewById(R.id.retype_password);
+        password = (EditText) rootView.findViewById(R.id.password);
+        retypedPassword = (EditText) rootView.findViewById(R.id.retype_password);
 
-        final Spinner spinner = (Spinner) root.findViewById(R.id.learner_tutor_status_spinner);
+        spinner = (Spinner) rootView.findViewById(R.id.learner_tutor_status_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.learner_tutor_status, android.R.layout.simple_spinner_item);
@@ -90,105 +117,178 @@ public class SignUpWithGoogleAccountFragment extends Fragment{
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedStatus = (String) parent.getSelectedItem();
+                if(selectedStatus.equals("Teach")){
+                    //Show the UI conditional to being a tutor IF not already visible
+                    if(!isConditionalTutorUIVisible()){
+                        showConditionalTutorUI();
+                    }
+                }
+                else if(selectedStatus.equals("Learn")){
+                    //If the UI conditional to being a tutor is visible, disable it
+                    if(isConditionalTutorUIVisible()){
+                        disableConditionalTutorUI();
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         //Retrieve the ProgressBar
-        mProgressbarHolder = (FrameLayout)root.findViewById(R.id.progressBarHolder);
+        mProgressbarHolder = (FrameLayout) rootView.findViewById(R.id.progressBarHolder);
 
-        Button createAccountButton = (Button) root.findViewById(R.id.create_account);
+        createAccountButton = (Button) rootView.findViewById(R.id.create_account);
         createAccountButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
 
+                //TODO: First and Foremost - Validate the input
+                validateSubmittedInput();
+                if(isConditionalTutorUIVisible){
+                    validateConditionalTutorInput();
+                }
+
                 Log.d(TAG, "Starting the Indeterminate Progress Bar to show A/C creation process");
-                //First and Foremost - Start the indeterminate progress bar till completion of A/C creation
+                //Now, start the indeterminate progress bar till completion of A/C creation
                 //on the server as well as the local Db
                 inAnimation = new AlphaAnimation(0f, 1f);
                 inAnimation.setDuration(200);
                 mProgressbarHolder.setAnimation(inAnimation);
                 mProgressbarHolder.setVisibility(View.VISIBLE);
 
-                //Revised plan: Through this activity, we are aiming to populate a generic profile interface which collects
-                //the necessary details for existence of an account. Then, next screen is gonna be "optionally" asking
-                //for necessary tutor details which can be filled later depending on what was chosen on the account creation
-                //activity. OR, it will lead directly lead to learner's profile otherwise
+                //First: We need to start an async newAccountCreateOnServerAsyncTask to push the profile info. to local DB
+                //Second: We need to again start an async newAccountCreateOnServerAsyncTask for creation of account on the server
+                //Third: We need to create an account on the server
 
                 //Important: Remember to validate the entity before stashing it
                 String selectedStatus = spinner.getSelectedItem().toString();
                 if(selectedStatus.equals("Learn")){
                     Log.i(TAG, "User is a Learner");
 
-                    //For now, our generic learner is THE learner so we need to do a few things here:
-                    //First: We need to start an async newAccountCreateOnServerAsyncTask to push the profile info. to local DB
-                    //Second: We need to again start an async newAccountCreateOnServerAsyncTask for creation of account on the server
-                    //Third: We need to create an account on the server
+                    //For now, our generic learner is THE learner.
 
-                    GenericLearnerProfileParcelable profile = new GenericLearnerProfileParcelable(profileFromGoogleAccount.getName(),
+                    profile = new GenericLearnerProfileParcelable(profileFromGoogleAccount.getName(),
                             profileFromGoogleAccount.getEmailID(),
                             phoneNo.getText().toString(),
                             GenericLearnerProfileParcelable.STATUS_LEARNER,
                             password.getText().toString());
-
-                    //------------------ACCOUNT CREATION AHEAD------------------------------------------------------------
-                    //This is the point where we are going to communicate with backend.
-
-                    //Following call creates an account on the server
-                    createAccountOnServer(profile);
-
-                    //Now that we have enough info. for an account/profile creation, lets populate it into a Profile object
-                    //and write it to the Google Datastore. Don't forget though to queue the "Store this info." in the local
-                    //SQL Lite DB. This would be used up for quick account validation instead of contacting server every frgiggin
-                    //single time for profile population in the UI.
-
-                    //Following call creates an account on the local Db
-                    createAccountOnLocalDb(profile);
                 }
                 else{
-
-                    /*
-                    Log.i(TAG, "User wants to Tutor/Learn");
-                    //Collect additional profile details from the user
-                    GenericLearnerProfileParcelable profile = new TutorProfileParcelable(name.getText().toString(),
-                            emailId.getText().toString(),
-                            phoneNo.getText().toString(),
-                            Integer.parseInt(selectedStatus),
-                            password.getText().toString());
-                    Intent i = new Intent(getActivity(), AdditionalAccountCreationInfoActivity.class);
-                    Bundle b = new Bundle();
-                    b.putParcelable(GENERIC_PROFILE, profile);
-                    startActivity(i.putExtras(b));
-                    */
                     Log.i(TAG, "User is a Tutor");
-                    //We need to do a few things here:
-                    //First: We need to start an async newAccountCreateOnServerAsyncTask to push the profile info. to local DB
-                    //Second: We need to again start an async newAccountCreateOnServerAsyncTask for creation of account on the server
-                    //Third: We need to create an account on the server
 
-                    GenericLearnerProfileParcelable profile = new TutorProfileParcelable(profileFromGoogleAccount.getName(),
+                    profile = new TutorProfileParcelable(profileFromGoogleAccount.getName(),
                             profileFromGoogleAccount.getEmailID(),
                             phoneNo.getText().toString(),
                             GenericLearnerProfileParcelable.STATUS_TUTOR,
                             password.getText().toString());
-
-                    //------------------ACCOUNT CREATION AHEAD------------------------------------------------------------
-                    //This is the point where we are going to communicate with backend.
-
-                    //Following call creates an account on the server
-                    createAccountOnServer(profile);
-
-                    //Now that we have enough info. for an account/profile creation, lets populate it into a Profile object
-                    //and write it to the Google Datastore. Don't forget though to queue the "Store this info." in the local
-                    //SQL Lite DB. This would be used up for quick account validation instead of contacting server every frgiggin
-                    //single time for profile population in the UI.
-
-                    //Following call creates an account on the local Db
-                    createAccountOnLocalDb(profile);
-
                 }
+                //------------------ACCOUNT CREATION AHEAD------------------------------------------------------------
+
+                createAccountOnServer(profile);
+                createAccountOnLocalDb(profile);
             }
         });
 
-        return root;
+        return rootView;
     }
+
+    private boolean isConditionalTutorUIVisible() {
+        return isConditionalTutorUIVisible;
+    }
+
+    private void showConditionalTutorUI() {
+        //Initialize the first time
+        if(typeOfTutorMultiSpinner == null && subjectsICanTeachMultiSpinner == null){
+            profileFieldsContainer = (ViewGroup)rootView.findViewById(R.id.profile_fields_container);
+            rootTutorConditionalLayout = layoutInflater.inflate(
+                    R.layout.layout_conditional_tutor_ui,
+                    profileFieldsContainer,
+                    false);
+            //Add the inflated layout to the second last of the container
+            profileFieldsContainer.addView(rootTutorConditionalLayout, profileFieldsContainer.getChildCount()-2);
+            typeOfTutorMultiSpinner = (MultiSpinner) rootTutorConditionalLayout.findViewById(R.id.type_of_tutor_spinner);
+            subjectsICanTeachMultiSpinner = (MultiSpinner) rootTutorConditionalLayout.findViewById(R.id.subjects_taught_spinner);
+
+            // create spinner list elements
+            ArrayAdapter adapterTypeOfTutor = new ArrayAdapter<String>(this.getActivity(),
+                    android.R.layout.simple_spinner_item,
+                    getResources().getStringArray(R.array.type_of_tutor));
+            ArrayAdapter adapterSubjects = new ArrayAdapter<String>(this.getActivity(),
+                    android.R.layout.simple_spinner_item,
+                    getResources().getStringArray(R.array.list_of_disciplines));
+
+            // Set adapter
+            typeOfTutorMultiSpinner.setAdapter(adapterTypeOfTutor, false, new com.thomashaertel.widget.MultiSpinner.MultiSpinnerListener() {
+                @Override
+                public void onItemsSelected(boolean[] selected) {
+                    //Stash the list of tutor-types somewhere
+                    tutorTypes = typeOfTutorMultiSpinner.getSelectedItemsArray();
+                }
+            });
+            subjectsICanTeachMultiSpinner.setAdapter(adapterSubjects, false, new com.thomashaertel.widget.MultiSpinner.MultiSpinnerListener() {
+                @Override
+                public void onItemsSelected(boolean[] selected) {
+                    //Stash the list of subjects somewhere
+                    subjects = subjectsICanTeachMultiSpinner.getSelectedItemsArray();
+                }
+            });
+            typeOfTutorMultiSpinner.setInitialDisplayText("Select status");
+            subjectsICanTeachMultiSpinner.setInitialDisplayText("Select subjects");
+        }
+        else{
+            //Initialized but not visible
+            rootTutorConditionalLayout.setVisibility(View.VISIBLE);
+        }
+        isConditionalTutorUIVisible = true;
+    }
+
+    private void disableConditionalTutorUI() {
+        rootTutorConditionalLayout.setVisibility(View.GONE);
+        isConditionalTutorUIVisible = false;
+    }
+
+    private void validateConditionalTutorInput(){
+        if(typeOfTutorMultiSpinner.getSelectedItemsCount() == 0){
+            //No item selected
+            Log.e(TAG, "No item selected; can't continue like this");
+            //TODO: Prompt the user in the UI about this
+        }
+        if(subjectsICanTeachMultiSpinner.getSelectedItemsCount() == 0){
+            //No item selected
+            Log.e(TAG, "No item selected; can't continue like this");
+            //TODO: Prompt the user in the UI about this
+        }
+    }
+
+    private void validateSubmittedInput() {
+        validatePhoneNo();
+        validatePassword();
+    }
+
+    private void validatePassword() {
+        //Retyped password didn't match the Password
+        if(!password.getText().toString().equals(retypedPassword.getText().toString())){
+            Log.e(TAG, "Retyped password didn't match the typed password");
+            //TODO: Prompt the user in the UI about this
+        }
+    }
+
+    private void validatePhoneNo() {
+        //Phone No should be 10 digits exactly(Indian mobile numbers)
+        if(phoneNo.length()!=10){
+            Log.e(TAG, "Phone No length is " + phoneNo.length() + "\n"
+            + "It should be 10 characters exactly");
+            //TODO: Prompt the user in the UI about this
+        }
+    }
+
     @Override
     public void onPause(){
         //Cancelling the newAccountCreateOnServerAsyncTask of "Account creation". User is gonna have to reenter the info. on opening the App next time
@@ -250,8 +350,8 @@ public class SignUpWithGoogleAccountFragment extends Fragment{
         //newAccountCreateOnServerAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, profile);
     }
     private void createAccountOnLocalDb(final GenericLearnerProfileParcelable profile){
-        newAccountCreateLocalDbAsyncTask = new NewAccountCreateLocalDbAsyncTask(getActivity());
-        newAccountCreateLocalDbAsyncTask.setAccountCreationonLocalDbListener(new NewAccountCreateLocalDbAsyncTask.AccountCreationOnLocalDbListener() {
+        newAccountCreateOnLocalDbAsyncTask = new NewAccountCreateOnLocalDbAsyncTask(getActivity());
+        newAccountCreateOnLocalDbAsyncTask.setAccountCreationonLocalDbListener(new NewAccountCreateOnLocalDbAsyncTask.AccountCreationOnLocalDbListener() {
             @Override
             public void onAccountCreated() {
                 Log.d(TAG, "A/C successfully created on the the local Db");
@@ -274,8 +374,8 @@ public class SignUpWithGoogleAccountFragment extends Fragment{
                 }
             }
         });
-        newAccountCreateLocalDbAsyncTask.execute(profile);
-        //newAccountCreateLocalDbAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, profile);
+        newAccountCreateOnLocalDbAsyncTask.execute(profile);
+        //newAccountCreateOnLocalDbAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, profile);
     }
 }
 

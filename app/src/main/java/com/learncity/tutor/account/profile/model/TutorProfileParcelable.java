@@ -1,10 +1,9 @@
-package com.learncity.tutor.account.profile;
+package com.learncity.tutor.account.profile.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable;
-import com.learncity.tutor.account.profile.model.CreditsParcelable;
 import com.learncity.tutor.account.profile.model.occupation.OccupationParcelable;
 import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualificationParcelable;
 

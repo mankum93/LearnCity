@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--ADDITIONAL INFO. FOR TUTOR ACCOUNT CREATION -->
+    <string name="educational_qualification_label">Educational Qualification</string>
+    <string name="high_school_qualification_label">10th Standard</string>
+    <string name="senior_secondary_qualification_label"> 12th Standard</string>
+    <string name="year_of_passing_label">Year of Passing</string>
+    <string name="institution_label">Institution</string>
+    <string name="duration_label">Duration</string>
+
+    <string name="occupation_label">Current Occupation</string>
+    <string name="organization_label"> Organization</string>
+    <string name="designation_label">Designation</string>
+    <string name="experience_label">Experience</string>
+
+
+    <!--TYPE OF TUTOR-->
+    <string-array name="type_of_tutor">
+        <item>College/University Professor</item>
+        <item>College/University Undergraduate</item>
+        <item>College/University Alumni/Graduate</item>
+        <item>IIT Undergraduate</item>
+        <item>IIT Alumni/Graduate</item>
+        <item>IIT Professor</item>
+        <item>IIM Undergraduate</item>
+        <item>IIM Alumni/Graduate</item>
+        <item>IIM Professor</item>
+        <item>NIT Undergraduate</item>
+        <item>NIT Alumni/Graduate</item>
+        <item>NIT Professor</item>
+        <item>Primary School Teacher</item>
+        <item>High School Teacher</item>
+        <item>Senior Secondary Teacher</item>
+        <item>Corporate Professional</item>
+        <item>Coaching Institute Teacher</item>
+        <item>Freelancer/Professional Tutor</item>
+    </string-array>
+
+    <!--LIST OF DISCIPLINES-->
+    <string-array name="list_of_disciplines">
+        <item>Physics</item>
+        <item>Chemistry</item>
+        <item>Mathematics</item>
+        <item>Computer Science</item>
+        <item>Biology</item>
+        <item>Sanskrit</item>
+        <item>Physical Education</item>
+        <item>Social Science</item>
+        <item>Economics</item>
+        <item>Humanities</item>
+        <item>Arts</item>
+        <item>English</item>
+        <item>History</item>
+        <item>Political Science</item>
+        <item>Hindi</item>
+        <item>French</item>
+        <item>German</item>
+        <item>Japanese</item>
+    </string-array>
+</resources>

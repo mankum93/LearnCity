@@ -23,10 +23,10 @@ public class TutorHomeActivity extends HomeActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             //TEST: Start the Search Activity for the right condition
-            if(LearnerDrawerLayoutListItems.TUTOR_DRAWER_LAYOUT_ITEMS[position].getSearchFeatureName() == "JOB VACANCIES"){
+            if(LearnerDrawerLayoutListItems.TUTOR_DRAWER_LAYOUT_ITEMS[position].getSearchFeatureName().equals("JOB VACANCIES")){
                 //TODO: Start an activity that shows the available job opportunities
             }
-            else if(LearnerDrawerLayoutListItems.TUTOR_DRAWER_LAYOUT_ITEMS[position].getSearchFeatureName() == "MY PROFILE"){
+            else if(LearnerDrawerLayoutListItems.TUTOR_DRAWER_LAYOUT_ITEMS[position].getSearchFeatureName().equals("MY PROFILE")){
                 startActivity(new Intent(TutorHomeActivity.this, MyProfileActivity.class));
             }
         }

@@ -156,6 +156,7 @@ class HomeDrawerViewAdapter extends ArrayAdapter<LearnerDrawerLayoutListItems.Le
             super(context, listLayoutId, learnerDrawerLayoutItems);
         }
 
+        @Override
         public View getView(int position, View recycleView, ViewGroup parent) {
             //Get the feature for this position
             LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem learnerDrawerLayoutItem = getItem(position);

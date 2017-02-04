@@ -26,7 +26,7 @@ public class QualificationSearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 
         super.onCreateView(inflater, container, savedInstanceState);
-        View root = inflater.inflate(R.layout.qualification_search_fragment_layout, container, false);
+        View root = inflater.inflate(R.layout.fragment_qualification_search, container, false);
 
         AppCompatMultiAutoCompleteTextView customMultiAutoCompleteTextView = (QualificationMultiAutoCompleteTextView)root.findViewById(R.id.qualification_multi_auto_complete_view);
 
@@ -59,7 +59,7 @@ public class QualificationSearchFragment extends Fragment {
     }
 
     public interface QualificationSearchQueryCallback{
-        public abstract void onQualificationSearchQuery(String qualificationsSearchQuery);
+        void onQualificationSearchQuery(String qualificationsSearchQuery);
     }
     public void setQualificationSearchQueryCallback(QualificationSearchQueryCallback callback){
         mCallback = callback;

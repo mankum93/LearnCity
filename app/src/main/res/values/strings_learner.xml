@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_by_subject_label">Subject</string>
+    <string name="search_by_qualification_label">Type of Tutor</string>
+    <string name="search_by_location_label">Location</string>
+</resources>

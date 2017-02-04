@@ -27,7 +27,7 @@ public class SubjectSearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 
         super.onCreateView(inflater, container, savedInstanceState);
-        View root = inflater.inflate(R.layout.subject_search_fragment_layout, container, false);
+        View root = inflater.inflate(R.layout.fragment_subject_search, container, false);
 
         AppCompatMultiAutoCompleteTextView customMultiAutoCompleteTextView = (SubjectMultiAutoCompleteTextView)root.findViewById(R.id.subject_multi_auto_complete_view);
 

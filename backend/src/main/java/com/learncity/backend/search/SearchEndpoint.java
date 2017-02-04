@@ -41,10 +41,11 @@ public class SearchEndpoint {
     }
 
     /**
-     * List all entities.
+     * List all entities as per the query.
      * @return a response that encapsulates the result list and the next page token/cursor
      */
-    @ApiMethod(name = "searchTutors")
+    @ApiMethod(name = "searchTutors",
+            httpMethod = ApiMethod.HttpMethod.POST)
     public CollectionResponse<TutorProfile> searchTutors(SearchQuery searchQuery) {
 
         Integer limit = searchQuery.getLimit();

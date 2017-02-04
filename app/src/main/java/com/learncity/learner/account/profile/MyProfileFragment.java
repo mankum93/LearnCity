@@ -26,7 +26,7 @@ public class MyProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         super.onCreateView(inflater, container, savedInstanceState);
-        View root = inflater.inflate(R.layout.myprofile_fragment_layout, container, false);
+        View root = inflater.inflate(R.layout.fragment_myprofile, container, false);
 
         //Populate the view with profile data now.
 

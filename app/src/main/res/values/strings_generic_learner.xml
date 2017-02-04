@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--NEW ACCOUNT CREATION ACTIVITY LABELS-->
+    <string name="account_person_name_label">Name</string>
+    <string name="account_person_emailId_label">Email ID</string>
+    <string name="account_person_phoneNo_label">Phone No</string>
+    <string name="account_person_password_label">Password</string>
+    <string name="account_person_retypePassword_label">Retype Password</string>
+    <string name="learner_tutor_status_label">I am here to...</string>
+    <string-array name="learner_tutor_status">
+        <item>Learn</item>
+        <item>Teach</item>
+    </string-array>
+
+    <string name="type_of_tutor_label">I am a...</string>
+    <string name="disciplines_label">I can teach...</string>
+
+    <string name="profile_pic_img_desc">Profile Pic</string>
+
+</resources>

@@ -18,6 +18,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets{
+        main{
+            res.srcDirs = [
+                    'src/main/res/layouts/common/layout',
+                    'src/main/res/layouts/learner/layout',
+                    'src/main/res/layouts/tutor/layout',
+                    'src/main/res/layouts/obsolete/layout',
+                    'src/main/res/layouts/common',
+                    'src/main/res/layouts/learner',
+                    'src/main/res/layouts/tutor',
+                    'src/main/res/layouts/obsolete',
+                    'src/main/res/layouts',
+                    'src/main/res'
+            ]
+        }
+    }
 }
 
 dependencies {
@@ -29,4 +46,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.0.0'
     compile 'com.google.android.gms:play-services-auth:9.0.0'
     compile 'com.google.android.gms:play-services-location:9.0.0'
+    compile 'com.thomashaertel:multispinner:0.1.1'
 }

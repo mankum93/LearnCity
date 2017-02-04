@@ -12,7 +12,7 @@ import com.learncity.tutor.account.profile.model.occupation.OccupationParcelable
 import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualificationParcelable;
 import com.learncity.tutor.account.profile.model.qualification.educational.SecondaryEducationalQualificationParcelable;
 import com.learncity.tutor.account.profile.model.qualification.educational.SeniorSecondaryEducationalQualificationParcelable;
-import com.learncity.tutor.account.profile.TutorProfileParcelable;
+import com.learncity.tutor.account.profile.model.TutorProfileParcelable;
 
 /**
  * Created by DJ on 10/23/2016.

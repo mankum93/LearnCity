@@ -53,20 +53,7 @@ public class NewAccountCreationFragment extends Fragment {
         signUpWithGoogleButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestEmail()
-                        .requestProfile()
-                        .requestId()
-                        .build();
-                mGoogleApiClient = new GoogleApiClient.Builder(NewAccountCreationFragment.this.getActivity())
-                        .enableAutoManage(NewAccountCreationFragment.this.getActivity(), new GoogleApiClient.OnConnectionFailedListener() {
-                            @Override
-                            public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                                Log.e(TAG, "Connection failed" + connectionResult);
-                            }
-                        })
-                        .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                        .build();
+                initializeGoogleApiClient();
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
@@ -84,6 +71,29 @@ public class NewAccountCreationFragment extends Fragment {
 
         return root;
     }
+
+    private void initializeGoogleApiClient() {
+        //If client is already initialized then no need for it again
+        if(mGoogleApiClient != null){
+            Log.d(TAG, "GoogleApiClient already initialized");
+            return;
+        }
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestProfile()
+                .requestId()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(NewAccountCreationFragment.this.getActivity())
+                .enableAutoManage(NewAccountCreationFragment.this.getActivity(), new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                        Log.e(TAG, "Connection failed" + connectionResult);
+                    }
+                })
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -108,7 +118,7 @@ public class NewAccountCreationFragment extends Fragment {
             String personId = acct.getId();
             Uri personPhoto = acct.getPhotoUrl();
 
-            GenericLearnerProfileParcelable profile = new GenericLearnerProfileParcelable(personName, personEmail, null, GenericLearnerProfileParcelable.STATUS_UNDEFINED, null);
+            GenericLearnerProfileParcelable profile = new GenericLearnerProfileParcelable(personName, personEmail, null, GenericLearnerProfileParcelable.STATUS_UNDEFINED, null, , );
             Intent createACWithGoogle = new Intent(this.getActivity(), SignUpWithGoogleAccountActivity.class);
             createACWithGoogle.putExtra(SignUpWithGoogleAccountActivity.EXTRA_GENERIC_PROFILE_WITH_UNDEFINED_STATUS, profile);
 
