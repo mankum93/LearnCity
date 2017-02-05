@@ -13,10 +13,11 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>
-                com.learncity.backend.search.SearchEndpoint,
-                com.learncity.backend.persistence.endpoints.TutorProfilePersistenceEndpoint,
-                com.learncity.backend.persistence.endpoints.GenericLearnerProfilePersistenceEndpoint</param-value>
+            <param-value>com.learncity.backend.search.SearchEndpoint,
+                com.learncity.backend.persistence.endpoints.ver0.GenericLearnerProfilePersistenceEndpoint,
+                com.learncity.backend.persistence.endpoints.ver0.TutorProfilePersistenceEndpoint,
+                com.learncity.backend.persistence.endpoints.GenericLearnerProfileVer1PersistenceEndpoint,
+                com.learncity.backend.persistence.endpoints.TutorProfileVer1PersistenceEndpoint</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

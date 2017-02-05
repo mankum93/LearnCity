@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelable;
+import com.learncity.generic.learner.account.profile.model.ver0.GenericLearnerProfileParcelable;
 import com.learncity.learncity.R;
 
 /**

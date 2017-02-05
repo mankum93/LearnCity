@@ -6,6 +6,7 @@ import android.widget.SpinnerAdapter;
 
 import com.learncity.learncity.R;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class MultiSpinner<T> extends com.thomashaertel.widget.MultiSpinner {
     private int selectedItemsCount = 0;
     private List<T> selectedItemsList;
     private T[] selectedItemsArray;
+    private Class<T> type;
 
     public MultiSpinner(Context context) {
         super(context);
@@ -42,11 +44,12 @@ public class MultiSpinner<T> extends com.thomashaertel.widget.MultiSpinner {
         return selectedItemsCount;
     }
 
-    public List<T> getSelectedItemsList(){
-        return Arrays.asList(getSelectedItemsArray());
+    public List<T> getSelectedItemsList(Class<T> type){
+        return selectedItemsList = Arrays.asList(getSelectedItemsArray(type));
     }
 
-    public T[] getSelectedItemsArray(){
+    @SuppressWarnings({"unchecked"})
+    public T[] getSelectedItemsArray(Class<T> type){
 
         //Without Adapter, there would be no source of data available, would there?
         if(getAdapter() == null){
@@ -54,6 +57,9 @@ public class MultiSpinner<T> extends com.thomashaertel.widget.MultiSpinner {
         }
         SpinnerAdapter adapter = getAdapter();
         boolean selectedItems[] = getSelected();
+
+        this.type = type;
+        selectedItemsArray = (T[])Array.newInstance(type, selectedItems.length);
 
         for(int i=0; i<selectedItems.length; i++){
             if(selectedItems[i] == true){

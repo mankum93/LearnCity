@@ -329,5 +329,31 @@ public class TutorProfileParcelableVer1 extends GenericLearnerProfileParcelableV
             throw new IllegalStateException("Disciplines are null");
         }
     }
+    /**This method assigns the NULL object for Tutor Types in case it is null*/
+    public static String[] validateTutorTypes(String[] unvalidatedTutorType){
+        if(unvalidatedTutorType == null){
+            return TUTOR_TYPES_NULL;
+        }
+        return unvalidatedTutorType;
+    }
+    /**This method assigns the NULL object for Disciplines in case it is null*/
+    public static String[] validateDisciplines(String[] unvalidatedDisciplines){
+        if(unvalidatedDisciplines == null){
+            return DISCIPLINES_NULL;
+        }
+        return unvalidatedDisciplines;
+    }
+    /**This method validates the Tutor Profile object to check if the necessary fields are NOT the NULL objects*/
+    public static TutorProfileParcelableVer1 validateTutorProfile(TutorProfileParcelableVer1 tutorProfile){
+        //The base class fields shall be checked before the current one
+        tutorProfile = (TutorProfileParcelableVer1) GenericLearnerProfileParcelableVer1.validateGenericLearnerProfile(tutorProfile);
 
+        if(tutorProfile.getTutorTypes() == TUTOR_TYPES_NULL){
+            throw new IllegalStateException("A Tutor can not NOT have even a single TYPE");
+        }
+        if(tutorProfile.getDisciplines() == DISCIPLINES_NULL){
+            throw new IllegalStateException("A Tutor can not NOT have even a single Subject that he or she is able to teach");
+        }
+        return tutorProfile;
+    }
 }

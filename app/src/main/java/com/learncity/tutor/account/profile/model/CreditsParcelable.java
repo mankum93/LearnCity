@@ -19,6 +19,22 @@ public class CreditsParcelable implements Parcelable {
     private long mAvailableCredits = 0L;     //Initial credits: 0
     private Date mDateOfExpiryOfCredits;
 
+    public long getAvailableCredits() {
+        return mAvailableCredits;
+    }
+
+    public void setAvailableCredits(long mAvailableCredits) {
+        this.mAvailableCredits = mAvailableCredits;
+    }
+
+    public Date getDateOfExpiryOfCredits() {
+        return mDateOfExpiryOfCredits;
+    }
+
+    public void setDateOfExpiryOfCredits(Date mDateOfExpiryOfCredits) {
+        this.mDateOfExpiryOfCredits = mDateOfExpiryOfCredits;
+    }
+
     protected CreditsParcelable(Parcel in) {
         mAvailableCredits = in.readLong();
         mDateOfExpiryOfCredits = new Date(in.readLong());

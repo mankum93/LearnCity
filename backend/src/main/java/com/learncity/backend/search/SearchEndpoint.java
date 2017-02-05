@@ -3,13 +3,12 @@ package com.learncity.backend.search;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
-import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cmd.Query;
-import com.learncity.backend.persistence.TutorProfile;
+import com.learncity.backend.persistence.ver0.TutorProfile;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.learncity.backend.search;
 
-import com.learncity.backend.persistence.TutorProfile;
+import com.learncity.backend.persistence.ver0.TutorProfile;
 
 import java.util.List;
 

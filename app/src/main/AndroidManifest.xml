@@ -32,14 +32,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithGoogleAccountActivity"/>
-        <activity android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivity"/>
-        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithEmailActivity"/>
+        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithGoogleAccountActivityVer1"/>
+        <activity android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivityVer1"/>
+        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithEmailActivityVer1"/>
         <activity android:name="com.learncity.learner.main.LearnerHomeActivity" />
         <activity android:name="com.learncity.tutor.main.TutorHomeActivity" />
         <activity android:name="com.learncity.learner.search.SearchActivity" />
         <activity android:name="com.learncity.learner.account.profile.MyProfileActivity" />
-        <activity android:name="com.learncity.tutor.account.create.AdditionalAccountCreationInfoActivity" />
     </application>
 
 </manifest>

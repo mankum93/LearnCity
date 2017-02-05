@@ -40,7 +40,7 @@ public class GenericLearnerProfileParcelableVer1 implements Parcelable {
     /**Phone No of the Learner */
     private String mPhoneNo;
     //TODO: Incorporate the display picture onto the server and other places like local Db
-    /**For reference to the profile picture locally */
+    /**For reference to the profile picture on the server */
     private String mDisplayPicturePath;
     /**Status of the person/App user - Must be out of {STATUS_LEARNER, STATUS_TUTOR, STATUS_UNDEFINED}*/
     private int mCurrentStatus;
@@ -356,5 +356,74 @@ public class GenericLearnerProfileParcelableVer1 implements Parcelable {
                 throw new IllegalStateException("Tutor's status is "+ currentStatus + "(invalid); Must be out of the following:" +
                         "{STATUS_LEARNER, STATUS_TUTOR, STATUS_UNDEFINED}");
         }
+    }
+    /**This method assigns the NULL object for name in case it is null*/
+    public static String validateName(String unvalidateName){
+        if(unvalidateName == null){
+            return NAME_NULL;
+        }
+        return unvalidateName;
+    }
+    /**This method assigns the NULL object for Email Id in case it is null*/
+    public static String validateEmailId(String unvalidatedEmailId){
+        if(unvalidatedEmailId == null){
+            return EMAIL_NULL;
+        }
+        return unvalidatedEmailId;
+    }
+    /**This method assigns the NULL object for Phone No in case it is null*/
+    public static String validatePhoneNo(String unvalidatedPhoneNo){
+        if(unvalidatedPhoneNo == null){
+            return PHONE_NO_NULL;
+        }
+        return unvalidatedPhoneNo;
+    }
+    /**This method assigns the NULL object for Password in case it is null*/
+    public static String validatePassword(String unvalidatedPassword){
+        if(unvalidatedPassword == null){
+            return PHONE_NO_NULL;
+        }
+        return unvalidatedPassword;
+    }
+    /**This method assigns the NULL object for Status in case it is null*/
+    public static int validateStatus(int unvalidatedStatus){
+        switch(unvalidatedStatus){
+            case STATUS_LEARNER:
+                //Check next
+                break;
+            case STATUS_TUTOR:
+                //Check next
+                break;
+            case STATUS_UNDEFINED:
+                //Check next
+                break;
+            default:
+                return STATUS_UNDEFINED;
+        }
+        return unvalidatedStatus;
+    }
+    /**This method validates the Learner Profile object to check if the necessary fields are NOT the NULL objects*/
+    public static GenericLearnerProfileParcelableVer1 validateGenericLearnerProfile(GenericLearnerProfileParcelableVer1 learnerProfile){
+        //Validating the Name
+        if(learnerProfile.getName().equals(NAME_NULL)){
+            throw new IllegalStateException("The Name of a person can not be a NULL object");
+        }
+        //Validating the Email Id
+        if(learnerProfile.getEmailID().equals(EMAIL_NULL)){
+            throw new IllegalStateException("The Email of a person can not be a NULL object");
+        }
+        //Validating the Password
+        if(learnerProfile.getPassword().equals(PASSWORD_NULL)){
+            throw new IllegalStateException("The Password of a person can not be a NULL object");
+        }
+        //Validating the Phone No
+        if(learnerProfile.getPhoneNo().equals(PHONE_NO_NULL)){
+            throw new IllegalStateException("The Phone No of a person can not be a NULL object");
+        }
+        //Validating the Status
+        if(learnerProfile.getCurrentStatus() == STATUS_UNDEFINED){
+            throw new IllegalStateException("The Status of a person can not be a undefined");
+        }
+        return learnerProfile;
     }
 }
