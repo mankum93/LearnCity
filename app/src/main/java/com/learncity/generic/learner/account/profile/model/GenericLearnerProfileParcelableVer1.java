@@ -54,6 +54,23 @@ public class GenericLearnerProfileParcelableVer1 implements Parcelable {
 
     private Builder builder;
 
+    @Override
+    public String toString(){
+        return new StringBuilder("Name: ")
+                .append(mName)
+                .append("Email ID: ")
+                .append(mEmailID).append("\n")
+                .append("Phone No ")
+                .append(mPhoneNo).append("\n")
+                .append("Password ")
+                .append(mPassword).append("\n")
+                .append("Current status ")
+                .append(mCurrentStatus).append("\n")
+                .append("Display pic path ")
+                .append(mDisplayPicturePath)
+                .toString();
+    }
+
     public Builder getLearnerProfileBuilder(){
         //Object was initially constructed from Parcel or the single public constructor
         if(builder == null){

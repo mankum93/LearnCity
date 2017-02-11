@@ -6,6 +6,7 @@ package com.learncity.backend.persistence;
 
 public class LatLng {
 
+    Long id;
     private double latitude;
     private double longitude;
 

@@ -20,21 +20,22 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name="com.learncity.LearnCityApplication">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAREL6F44Hgwt4G1DqivXBLG2uiJIm0hrs" />
 
-        <activity android:name="com.learncity.generic.learner.main.SplashScreen1Activity">
+        <activity android:name="com.learncity.generic.learner.main.SplashScreen1ActivityVer1">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithGoogleAccountActivityVer1"/>
-        <activity android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivityVer1"/>
-        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithEmailActivityVer1"/>
+        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithGoogleAccountActivityVer2"/>
+        <activity android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivityVer2"/>
+        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithEmailActivityVer2"/>
         <activity android:name="com.learncity.learner.main.LearnerHomeActivity" />
         <activity android:name="com.learncity.tutor.main.TutorHomeActivity" />
         <activity android:name="com.learncity.learner.search.SearchActivity" />

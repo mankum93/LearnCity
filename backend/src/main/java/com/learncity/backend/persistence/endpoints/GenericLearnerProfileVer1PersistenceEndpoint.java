@@ -13,6 +13,7 @@ import com.learncity.backend.persistence.GenericLearnerProfileVer1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
@@ -81,6 +82,7 @@ public class GenericLearnerProfileVer1PersistenceEndpoint {
         // Objectify ID generator, e.g. long or String, then you should generate the unique ID yourself prior to saving.
         //
         // If your client provides the ID then you should probably use PUT instead.
+        logger.log(Level.INFO, genericLearnerProfileVer1 + "");
         ofy().save().entity(genericLearnerProfileVer1).now();
         logger.info("Created GenericLearnerProfileVer1.");
 

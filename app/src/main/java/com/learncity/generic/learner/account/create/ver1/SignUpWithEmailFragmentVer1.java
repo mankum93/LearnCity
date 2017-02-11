@@ -1,4 +1,4 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.generic.learner.account.create.ver1;
 
 import android.content.DialogInterface;
 import android.content.Intent;

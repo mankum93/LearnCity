@@ -1,4 +1,4 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.generic.learner.account.create.ver1;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -107,7 +107,6 @@ public class NewAccountCreateOnServerAsyncTaskVer1 extends AsyncTask<GenericLear
             e.printStackTrace();
             //The Account couldn't be created.
             isAccountCreationComplete = false;
-            //TODO: Show a Retry Dialog to retry  the account creation process
         }
         return null;
 

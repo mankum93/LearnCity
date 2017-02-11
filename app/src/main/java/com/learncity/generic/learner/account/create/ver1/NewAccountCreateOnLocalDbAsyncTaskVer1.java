@@ -1,4 +1,4 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.generic.learner.account.create.ver1;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

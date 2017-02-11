@@ -1,56 +1,40 @@
 package com.learncity.generic.learner.account.create;
 
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.Spinner;
 
+import com.learncity.generic.learner.account.create.ver1.SignUpWithGoogleAccountActivityVer1;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
 import com.learncity.learncity.R;
 import com.learncity.learner.main.LearnerHomeActivity;
-
 import com.learncity.tutor.account.profile.model.TutorProfileParcelableVer1;
 import com.learncity.tutor.main.TutorHomeActivity;
 import com.learncity.util.MultiSpinner;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created by DJ on 10/30/2016.
  */
 
-public class SignUpWithGoogleAccountFragmentVer1 extends Fragment{
+public class SignUpWithGoogleAccountFragmentVer2 extends Fragment{
 
     public static String GENERIC_PROFILE = "GenericLearnerProfileParcelable";
 
     public static String TAG = "SignUpWithGoogleFrag";
-
-    private NewAccountCreateOnServerAsyncTaskVer1 newAccountCreateOnServerAsyncTask;
-    private NewAccountCreateOnLocalDbAsyncTaskVer1 newAccountCreateOnLocalDbAsyncTask;
-
-    NewAccountCreateOnServerAsyncTaskVer1.AccountCreationOnServerListener mAccountCreationOnServerListener;
-
-    private FrameLayout mProgressbarHolder;
-
-    private AlphaAnimation inAnimation;
-    private AlphaAnimation outAnimation;
-
-    //Reserved to be used inside any callback method to post some UI updation task on the the main thread's looper
-    private Handler mHandler;
-
-    private boolean isAccountCreationOnServerCompleted = false;
-    private boolean isAccountCreationOnLocalDbCompleted = false;
 
     private GenericLearnerProfileParcelableVer1 profileFromGoogleAccount;
 
@@ -65,9 +49,6 @@ public class SignUpWithGoogleAccountFragmentVer1 extends Fragment{
     private MultiSpinner<String> typeOfTutorMultiSpinner;
     private MultiSpinner<String> subjectsICanTeachMultiSpinner;
 
-    //Alert Dialog for A/C creation retry prompt
-    private AlertDialog alertDialogACCreationRetry;
-
     private GenericLearnerProfileParcelableVer1 profile;
 
     private ViewGroup rootView;
@@ -79,30 +60,15 @@ public class SignUpWithGoogleAccountFragmentVer1 extends Fragment{
     private String[] tutorTypes;
     private String[] subjects;
 
-    private boolean mLastACCreationRetrySuccessful = false;
-
-    public static boolean shouldAccountCreationBeRetried() {
-        return NewAccountCreationActivityVer1.mShouldAccountCreationBeRetried;
-    }
-
-    public static SignUpWithGoogleAccountFragmentVer1 newInstance(){
-        return new SignUpWithGoogleAccountFragmentVer1();
+    public static SignUpWithGoogleAccountFragmentVer2 newInstance(){
+        return new SignUpWithGoogleAccountFragmentVer2();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState){
-        //RESET: A/C creation retry is a flag set up to prevent the creation of A/C on local Db if it hasn't
-        //been created on the server. Even if the A/C creation goes successful for n number of times,
-        //for the (n+1)th time, it should be reset so that A/C creation can proceed normally
-        NewAccountCreationActivityVer1.mShouldAccountCreationBeRetried = false;
 
         super.onCreate(savedInstanceState);
-
         profileFromGoogleAccount = getActivity().getIntent().getParcelableExtra(SignUpWithGoogleAccountActivityVer1.EXTRAS_GENERIC_PROFILE_INCOMPLETE);
-
-        //Reserved to be used inside any callback method to post some UI updation task on the the main thread's looper
-        mHandler = new Handler();
-
     }
 
     @Override
@@ -112,7 +78,7 @@ public class SignUpWithGoogleAccountFragmentVer1 extends Fragment{
 
         layoutInflater = inflater;
 
-        rootView = (ViewGroup)inflater.inflate(R.layout.fragment_sign_up_with_google_ver1, container, false);
+        rootView = (ViewGroup)inflater.inflate(R.layout.fragment_sign_up_with_google_ver2, container, false);
 
         //TODO: Validate the Phone No field
         phoneNo = (EditText) rootView.findViewById(R.id.person_phoneNo);
@@ -152,9 +118,6 @@ public class SignUpWithGoogleAccountFragmentVer1 extends Fragment{
             }
         });
 
-        //Retrieve the ProgressBar
-        mProgressbarHolder = (FrameLayout) rootView.findViewById(R.id.progressBarHolder);
-
         createAccountButton = (Button) rootView.findViewById(R.id.create_account);
         createAccountButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -165,11 +128,6 @@ public class SignUpWithGoogleAccountFragmentVer1 extends Fragment{
                 if(isConditionalTutorUIVisible){
                     validateConditionalTutorInput();
                 }
-
-                Log.d(TAG, "Starting the Indeterminate Progress Bar to show A/C creation process");
-                //Now, start the indeterminate progress bar till completion of A/C creation
-                //on the server as well as the local Db
-                startACCreationProgressAnimation();
 
                 //First: We need to start an async newAccountCreateOnServerAsyncTask to push the profile info. to local DB
                 //Second: We need to again start an async newAccountCreateOnServerAsyncTask for creation of account on the server
@@ -209,18 +167,39 @@ public class SignUpWithGoogleAccountFragmentVer1 extends Fragment{
 
                 //------------------ACCOUNT CREATION AHEAD------------------------------------------------------------
 
-                createAccountOnServer(profile);
-                createAccountOnLocalDb(profile);
+                AccountCreationManager manager = AccountCreationManager.getAccountCreationManager(getActivity());
+                manager.setAccountCreationListener(new AccountCreationManager.AccountCreationListener() {
+                    @Override
+                    public void onAccountCreated() {
+                        if(profile.getCurrentStatus() == GenericLearnerProfileParcelableVer1.STATUS_LEARNER){
+                            startActivity(new Intent(SignUpWithGoogleAccountFragmentVer2.this.getActivity(), LearnerHomeActivity.class));
+                        }
+                        else{
+                            startActivity(new Intent(SignUpWithGoogleAccountFragmentVer2.this.getActivity(), TutorHomeActivity.class));
+                        }
+                        AccountCreationManager.getAccountCreationManager(getActivity()).performCleanup();
+                    }
+
+                    @Override
+                    public void onAccountCreationFailed() {
+
+                    }
+
+                    @Override
+                    public void onPreAccountCreation() {
+
+                    }
+
+                    @Override
+                    public void onPostAccountCreation() {
+
+                    }
+                }, AccountCreationManager.NOTIFY_UI_AUTO);
+                manager.startAccountCreation(profile);
             }
         });
 
         return rootView;
-    }
-    private void startACCreationProgressAnimation() {
-        inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        mProgressbarHolder.setAnimation(inAnimation);
-        mProgressbarHolder.setVisibility(View.VISIBLE);
     }
 
     private boolean isConditionalTutorUIVisible() {
@@ -315,129 +294,18 @@ public class SignUpWithGoogleAccountFragmentVer1 extends Fragment{
 
     @Override
     public void onPause(){
-        //Cancelling the newAccountCreateOnServerAsyncTask of "Account creation". User is gonna have to reenter the info. on opening the App next time
-        if(newAccountCreateOnServerAsyncTask != null){
-            if(!newAccountCreateOnServerAsyncTask.isCancelled()){
-                newAccountCreateOnServerAsyncTask.cancel(true);
-                //TODO: Ensure that if this is an untimely cancellation then it will have to be recorded and also other implications must be taken care of
-                //For consistency purposes, I propose the following:
-                //Assumption: The server transaction takes considerably more than the transaction on the local Db
-                //Therefore, if after cancelling the AsyncTask, it is past the point of detecting the cancellation
-                //(through the cancellation check condition put in doInBackground()) then the transaction on the server
-                //will end up getting completed. If the transaction on the server gets completed then the transaction on
-                //the local Db has to be completed.
-            }
-        }
+        //TODO: Cancelling the newAccountCreateOnServerAsyncTask of "Account creation". User is gonna have to reenter the info. on opening the App next time
+
         super.onPause();
     }
     @Override
     public void onResume(){
         super.onResume();
-        //Pressing back button from the home page for the first time will bring back to the
-        //A/C creation page if we don't take care of it
-        if(isAccountCreationOnLocalDbCompleted && isAccountCreationOnServerCompleted){
-            getActivity().finish();
-        }
-    }
-    private void createAccountOnServer(final GenericLearnerProfileParcelableVer1 profile){
-        newAccountCreateOnServerAsyncTask = new NewAccountCreateOnServerAsyncTaskVer1();
-        newAccountCreateOnServerAsyncTask.setAccountCreationListener(mAccountCreationOnServerListener = new NewAccountCreateOnServerAsyncTaskVer1.AccountCreationOnServerListener() {
-            @Override
-            public void onAccountCreated() {
-                Log.d(TAG, "A/C successfully created on the server");
-                //Stop the indeterminate progress bar
-                isAccountCreationOnServerCompleted = true;
-                //We don't want to prevent garbage collection of the AsyncTask because of this
-                mAccountCreationOnServerListener = null;
-                if(isAccountCreationOnServerCompleted && isAccountCreationOnLocalDbCompleted){
-                    Log.d(TAG, "Stopping the Indeterminate progress bar that was started to demonstrate the A/C creation process started");
-                    stopACCreationProgressAnimation();
-
-                    //Indication that the Account creation has been unsuccessful and should be retried
-                    //Set a flag inside the Activity to store this indication - this flag shall be referenced
-                    //by the A/C creation task for local Db to cancel the A/C creation on local Db
-                    NewAccountCreationActivityVer1.mShouldAccountCreationBeRetried = true;
-
-                    //Show the user the Account Home interface
-                    if(profile.getCurrentStatus()== GenericLearnerProfileParcelableVer1.STATUS_LEARNER){
-                        startActivity(new Intent(SignUpWithGoogleAccountFragmentVer1.this.getActivity(), LearnerHomeActivity.class));
-                    }
-                    else{
-                        startActivity(new Intent(SignUpWithGoogleAccountFragmentVer1.this.getActivity(), TutorHomeActivity.class));
-                    }
-                }
-            }
-            @Override
-            public void onAccountCreationRetry(){
-                //Before showing any Retry dialog, stop the AC creation progress animation
-                Log.e(TAG, "Stopping the Indeterminate progress bar that was started to demonstrate the A/C creation process");
-                stopACCreationProgressAnimation();
-                //Before setting the below retry flag, lets ask for another chance of A/C creation on server
-                //Show a Dialog prompting for a retry
-                alertDialogACCreationRetry = new AlertDialog.Builder(SignUpWithGoogleAccountFragmentVer1.this.getActivity())
-                        .setTitle("Account creation failed")
-                        .setMessage("There was a problem connecting to the Network. Check your connection.")
-                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                alertDialogACCreationRetry.dismiss();
-                                //Start the AC Creation animation again
-                                startACCreationProgressAnimation();
-                                //Retry the A/C creation on the server
-                                newAccountCreateOnServerAsyncTask.setAccountCreationListener(null);
-                                newAccountCreateOnServerAsyncTask= new NewAccountCreateOnServerAsyncTaskVer1();
-                                newAccountCreateOnServerAsyncTask.setAccountCreationListener(mAccountCreationOnServerListener);
-                                newAccountCreateOnServerAsyncTask.execute(profile);
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Indication that the Account creation has been unsuccessful and should be retried
-                                //Set a flag inside the Activity to store this indication - this flag shall be referenced
-                                //by the A/C creation task for local Db to cancel the A/C creation on local Db
-                                NewAccountCreationActivityVer1.mShouldAccountCreationBeRetried = false;
-                            }
-                        }).create();
-                alertDialogACCreationRetry.show();
-
-            }
-        });
-        newAccountCreateOnServerAsyncTask.execute(profile);
-        //newAccountCreateOnServerAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, profile);
     }
 
-    private void stopACCreationProgressAnimation() {
-        outAnimation = new AlphaAnimation(1f, 0f);
-        outAnimation.setDuration(200);
-        mProgressbarHolder.setAnimation(outAnimation);
-        mProgressbarHolder.setVisibility(View.GONE);
-    }
-
-    private void createAccountOnLocalDb(final GenericLearnerProfileParcelableVer1 profile){
-        newAccountCreateOnLocalDbAsyncTask = new NewAccountCreateOnLocalDbAsyncTaskVer1(getActivity());
-        newAccountCreateOnLocalDbAsyncTask.setAccountCreationonLocalDbListener(new NewAccountCreateOnLocalDbAsyncTaskVer1.AccountCreationOnLocalDbListener() {
-            @Override
-            public void onAccountCreated() {
-                Log.d(TAG, "A/C successfully created on the the local Db");
-                //Stop the indeterminate progress bar
-                isAccountCreationOnLocalDbCompleted = true;
-                if(isAccountCreationOnServerCompleted && isAccountCreationOnLocalDbCompleted){
-                    Log.d(TAG, "Stopping the Indeterminate progress bar that was started to demonstrate the A/C creation process started");
-                    stopACCreationProgressAnimation();
-
-                    //Show the user the Account Home interface
-                    if(profile.getCurrentStatus()== GenericLearnerProfileParcelableVer1.STATUS_LEARNER){
-                        startActivity(new Intent(SignUpWithGoogleAccountFragmentVer1.this.getActivity(), LearnerHomeActivity.class));
-                    }
-                    else{
-                        startActivity(new Intent(SignUpWithGoogleAccountFragmentVer1.this.getActivity(), TutorHomeActivity.class));
-                    }
-                }
-            }
-        });
-        newAccountCreateOnLocalDbAsyncTask.execute(profile);
-        //newAccountCreateOnLocalDbAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, profile);
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
     }
 }
 
