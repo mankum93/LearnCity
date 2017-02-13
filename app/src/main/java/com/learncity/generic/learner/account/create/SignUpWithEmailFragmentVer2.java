@@ -178,11 +178,12 @@ public class SignUpWithEmailFragmentVer2 extends Fragment{
                         else{
                             startActivity(new Intent(SignUpWithEmailFragmentVer2.this.getActivity(), TutorHomeActivity.class));
                         }
+                        AccountCreationManager.getAccountCreationManager(getActivity()).performCleanup();
                     }
 
                     @Override
                     public void onAccountCreationFailed() {
-
+                        AccountCreationManager.getAccountCreationManager(getActivity()).performCleanup();
                     }
 
                     @Override
@@ -196,8 +197,6 @@ public class SignUpWithEmailFragmentVer2 extends Fragment{
                     }
                 }, AccountCreationManager.NOTIFY_UI_AUTO);
                 manager.startAccountCreation(profile);
-                AccountCreationManager.getAccountCreationManager(getActivity()).performCleanup();
-
             }
         });
 

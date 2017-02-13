@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.learncity.generic.learner.account.create.AccountCreationManager;
 import com.learncity.generic.learner.account.create.NewAccountCreationActivityVer2;
@@ -21,6 +22,7 @@ public class SplashScreen1ActivityVer1 extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState){
 
         super.onCreate(savedInstanceState);
+
 
         //TODO: Delete the below statement; it is just for testing purposes
         startActivity(new Intent(this, NewAccountCreationActivityVer2.class));

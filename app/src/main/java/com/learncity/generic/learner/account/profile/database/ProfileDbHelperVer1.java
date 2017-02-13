@@ -292,7 +292,7 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
             }
 
             //Now, its time to insert the profile in the Db
-            database.insert(ProfileDbSchemaVer1.TutorProfileTable.NAME, null, profileValues);
+            database.insertOrThrow(ProfileDbSchemaVer1.TutorProfileTable.NAME, null, profileValues);
 
             /*
             NOTE: The Educational Qualification and Occupation values at the start will be null because
@@ -309,18 +309,18 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
             //The teaching credits for the Tutor
             if(tutorProfile.getTeachingCredits() != null){
                 ContentValues teachingCredits = getContentValues(tutorProfile.getTeachingCredits(), tutorProfile.getEmailID());
-                database.insert(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.NAME, null, teachingCredits);
+                database.insertOrThrow(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.NAME, null, teachingCredits);
             }
 
         }
         else{
             profileValues = getContentValues(profile);
-            database.insert(ProfileDbSchemaVer1.LearnerProfileTable.NAME, null, profileValues);
+            database.insertOrThrow(ProfileDbSchemaVer1.LearnerProfileTable.NAME, null, profileValues);
         }
         //Location has to be added in either case
         if(profile.getLastKnownGeoCoordinates() != null){
             ContentValues locationValues = getContentValues(profile.getLastKnownGeoCoordinates(), profile.getEmailID());
-            database.insert(ProfileDbSchemaVer1.LearnerProfileTable.LocationTable.NAME, null, locationValues);
+            database.insertOrThrow(ProfileDbSchemaVer1.LearnerProfileTable.LocationTable.NAME, null, locationValues);
         }
 
     }

@@ -108,6 +108,10 @@ public class AccountCreationManager {
     private final Object lockForRetryLocalExternal = new Object();
     private boolean informedAboutRetryLocalExternal = false;
 
+    private final Object lockForFinalCleanup = new Object();
+    private boolean informedAboutFinalCleanup = false;
+    private boolean isReadyForFinalCleanup = false;
+
     private Handler mUIHandler;
 
     private boolean shouldAccountCreationBeRetried;
@@ -149,7 +153,9 @@ public class AccountCreationManager {
         }
         else{
             //Refresh the context
-            accountCreationManager.context = context;
+            if(accountCreationManager.context != context){
+                accountCreationManager.context = context;
+            }
         }
         return accountCreationManager;
     }
@@ -160,7 +166,9 @@ public class AccountCreationManager {
         }
         else{
             //Refresh the context
-            accountCreationManager.context = context;
+            if(accountCreationManager.context != context){
+                accountCreationManager.context = context;
+            }
             //Refresh the flag
             accountCreationManager.accountCreationFlag = accountCreationFlag;
         }
@@ -275,7 +283,7 @@ public class AccountCreationManager {
                 break;
             default:
                 //Invalid flag
-                throw new RuntimeException("Invalid Account UI flag. Check the list of valid flags.");
+                throw new InvalidFlagException("Invalid Account UI flag. Check the list of valid flags.");
         }
     }
 
@@ -291,7 +299,7 @@ public class AccountCreationManager {
                 break;
             default:
                 //Invalid flag
-                throw new RuntimeException("Invalid Account UI flag. Check the list of valid flags.");
+                throw new InvalidFlagException("Invalid Account UI flag. Check the list of valid flags.");
         }
     }
 
@@ -307,7 +315,7 @@ public class AccountCreationManager {
                 break;
             default:
                 //Invalid flag
-                throw new RuntimeException("Invalid Account UI flag. Check the list of valid flags.");
+                throw new InvalidFlagException("Invalid Account UI flag. Check the list of valid flags.");
         }
     }
 
@@ -368,21 +376,43 @@ public class AccountCreationManager {
 
     //NOTE: This method would be called from the main thread
     public void performCleanup(){
-        Log.d(TAG, "AccountCreationManager.performCleanup(): " + "\n" + "MESSAGE: Cleaning up globally..." +
-                "\n" +"Thread ID: " + Thread.currentThread().getId());
-        mUIHandler.postDelayed(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                context = null;
-
-                alertDialogACCreationRetry = null;
-                accountCreationProgressDialog = null;
-
-                accountCreationManager = null;
-
-                mUIHandler = null;
+                if(isReadyForFinalCleanup){
+                    performFinalCleanup();
+                }
+                else{
+                    while(!informedAboutFinalCleanup){
+                        synchronized(lockForFinalCleanup){
+                            try{
+                                lockForFinalCleanup.wait();
+                            }
+                            catch(InterruptedException ie){
+                                ie.printStackTrace();
+                            }
+                        }
+                    }
+                    performFinalCleanup();
+                }
             }
-        }, 100);
+        }).start();
+    }
+
+    private void performFinalCleanup(){
+        Log.d(TAG, "AccountCreationManager.performCleanup(): " + "\n" + "MESSAGE: Cleaning up globally..." +
+                "\n" +"Thread ID: " + Thread.currentThread().getId());
+        context = null;
+
+        alertDialogACCreationRetry = null;
+        accountCreationProgressDialog = null;
+
+        accountCreationManager = null;
+
+        mUIHandler = null;
+
+        isReadyForFinalCleanup = false;
+        informedAboutFinalCleanup = false;
     }
 
     public void resetAccountCreationFlag() {
@@ -437,6 +467,13 @@ public class AccountCreationManager {
                     Log.d(TAG, "AccountCreationTaskListener.onAccountCreated(): " + "\n" + "MESSAGE: Calling performDefaultPostServerAccountCreationTasks()..." +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
                     performDefaultPostServerAccountCreationTasks();
+
+                    //The user will try to initiate final cleanup at some point. If they have already, lets complete it.
+                    informedAboutFinalCleanup = true;
+                    isReadyForFinalCleanup = true;
+                    synchronized(lockForFinalCleanup){
+                        lockForFinalCleanup.notify();
+                    }
                 }
 
                 @Override
@@ -536,12 +573,28 @@ public class AccountCreationManager {
                         serverAccountCreationTask.performAccountCreation();
                     }
                     else{
+                        if(accountCreationListener != null){
+                            t = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.d(TAG, "AccountCreationListener.onAccountCreationFailed(): " + "\n" + "MESSAGE: Calling AccountCreationListener.onAccountCreationFailed()..." +
+                                            "\n" +"Thread ID: " + Thread.currentThread().getId());
+                                    accountCreationListener.onAccountCreationFailed();
+                                }
+                            });
+                            t.start();
+                        }
                         Log.d(TAG, "AccountCreationTaskListener.onAccountCreationFailed(): " + "\n" + "MESSAGE: AC creation retry aborted intentionally. Calling performDefaultPostServerAccountCreationTasks()..." +
                                 "\n" +"Thread ID: " + Thread.currentThread().getId());
                         //Too bad! We return
                         performDefaultPostServerAccountCreationTasks();
 
-                        return;
+                        //The user will try to initiate final cleanup at some point. If they have already, lets complete it.
+                        informedAboutFinalCleanup = true;
+                        isReadyForFinalCleanup = true;
+                        synchronized(lockForFinalCleanup){
+                            lockForFinalCleanup.notify();
+                        }
                     }
                 }
             });
@@ -611,6 +664,12 @@ public class AccountCreationManager {
                     Log.d(TAG, "AccountCreationTaskListener.onAccountCreated(): " + "\n" + "MESSAGE: Calling performDefaultPostLocalAccountCreationTasks()..." +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
                     performDefaultPostLocalAccountCreationTasks();
+                    //The user will try to initiate final cleanup at some point. If they have already, lets complete it.
+                    informedAboutFinalCleanup = true;
+                    isReadyForFinalCleanup = true;
+                    synchronized(lockForFinalCleanup){
+                        lockForFinalCleanup.notify();
+                    }
                 }
 
                 @Override
@@ -708,12 +767,27 @@ public class AccountCreationManager {
                         localAccountCreationTask.performAccountCreation();
                     }
                     else{
+                        if(accountCreationListener != null){
+                            t = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.d(TAG, "AccountCreationListener.onAccountCreationFailed(): " + "\n" + "MESSAGE: Calling AccountCreationListener.onAccountCreationFailed()..." +
+                                            "\n" +"Thread ID: " + Thread.currentThread().getId());
+                                    accountCreationListener.onAccountCreationFailed();
+                                }
+                            });
+                            t.start();
+                        }
                         Log.d(TAG, "AccountCreationTaskListener.onAccountCreationFailed(): " + "\n" + "MESSAGE: AC creation retry aborted intentionally. Calling performDefaultPostLocalAccountCreationTasks()..." +
                                 "\n" +"Thread ID: " + Thread.currentThread().getId());
                         //Too bad! We return
                         performDefaultPostLocalAccountCreationTasks();
-
-                        return;
+                        //The user will try to initiate final cleanup at some point. If they have already, lets complete it.
+                        informedAboutFinalCleanup = true;
+                        isReadyForFinalCleanup = true;
+                        synchronized(lockForFinalCleanup){
+                            lockForFinalCleanup.notify();
+                        }
                     }
                 }
             });
@@ -887,6 +961,17 @@ public class AccountCreationManager {
                         serverAccountCreationTask.performAccountCreation();
                     }
                     else{
+                        if(accountCreationListener != null){
+                            t = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.d(TAG, "AccountCreationListener.onAccountCreationFailed(): " + "\n" + "MESSAGE: Calling AccountCreationListener.onAccountCreationFailed()..." +
+                                            "\n" +"Thread ID: " + Thread.currentThread().getId());
+                                    accountCreationListener.onAccountCreationFailed();
+                                }
+                            });
+                            t.start();
+                        }
                         //Too bad! We return
                         Log.d(TAG, "AccountCreationTaskListener.onAccountCreationFailed(): " + "\n" + "MESSAGE: AC creation retry aborted intentionally. Calling performDefaultPostLocalAccountCreationTasks()..." +
                                 "\n" +"Thread ID: " + Thread.currentThread().getId());
@@ -898,7 +983,12 @@ public class AccountCreationManager {
                                 "\n" +"Thread ID: " + Thread.currentThread().getId());
                         performDefaultPostLocalServerAccountCreationTasks();
 
-                        return;
+                        //The user will try to initiate final cleanup at some point. If they have already, lets complete it.
+                        informedAboutFinalCleanup = true;
+                        isReadyForFinalCleanup = true;
+                        synchronized(lockForFinalCleanup){
+                            lockForFinalCleanup.notify();
+                        }
                     }
                 }
             });
@@ -940,6 +1030,13 @@ public class AccountCreationManager {
                     Log.d(TAG, "AccountCreationTaskListener.onAccountCreated(): " + "\n" + "MESSAGE: Calling performDefaultPostLocalServerAccountCreationTasks()..." +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
                     performDefaultPostLocalServerAccountCreationTasks();
+
+                    //The user will try to initiate final cleanup at some point. If they have already, lets complete it.
+                    informedAboutFinalCleanup = true;
+                    isReadyForFinalCleanup = true;
+                    synchronized(lockForFinalCleanup){
+                        lockForFinalCleanup.notify();
+                    }
                 }
 
                 @Override
@@ -1042,6 +1139,17 @@ public class AccountCreationManager {
                         localAccountCreationTask.performAccountCreation();
                     }
                     else{
+                        if(accountCreationListener != null){
+                            t = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.d(TAG, "AccountCreationListener.onAccountCreationFailed(): " + "\n" + "MESSAGE: Calling AccountCreationListener.onAccountCreationFailed()..." +
+                                            "\n" +"Thread ID: " + Thread.currentThread().getId());
+                                    accountCreationListener.onAccountCreationFailed();
+                                }
+                            });
+                            t.start();
+                        }
                         //Too bad! We return
                         Log.d(TAG, "AccountCreationTaskListener.onAccountCreationFailed(): " + "\n" + "MESSAGE: AC creation retry aborted intentionally. Calling performDefaultPostLocalAccountCreationTasks()..." +
                                 "\n" +"Thread ID: " + Thread.currentThread().getId());
@@ -1053,7 +1161,12 @@ public class AccountCreationManager {
                                 "\n" +"Thread ID: " + Thread.currentThread().getId());
                         performDefaultPostLocalServerAccountCreationTasks();
 
-                        return;
+                        //The user will try to initiate final cleanup at some point. If they have already, lets complete it.
+                        informedAboutFinalCleanup = true;
+                        isReadyForFinalCleanup = true;
+                        synchronized(lockForFinalCleanup){
+                            lockForFinalCleanup.notify();
+                        }
                     }
                 }
             });
@@ -1199,6 +1312,7 @@ public class AccountCreationManager {
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void shouldAccountCreationBeRetried(Boolean shouldAccountCreationBeRetried){
+        //TODO: Remove the boolean argument in exchange of a specialized event. Secondly, the use of EventBus can be avoided or embraced in code like this
         informedAboutRetryInternal = true;
         synchronized(lockForRetryInternal){
             this.shouldAccountCreationBeRetried = shouldAccountCreationBeRetried;
@@ -1223,7 +1337,7 @@ public class AccountCreationManager {
 
         //If the local account creation has started, you can't set the flag/listener now
         if(localAccountCreationState == LOCAL_ACCOUNT_CREATION_STARTED || accountCreationState == ACCOUNT_CREATION_STARTED){
-            throw new RuntimeException("Account creation has started. You can't set the listener/flag in the middle");
+            throw new IllegalStateException("Account creation has started. You can't set the listener/flag in the middle");
         }
         checkUIFlagValidity(flagUI);
         if(localAccountCreationUIFlag == NOTIFY_UI_NO_STATE && serverAccountCreationUIFlag == NOTIFY_UI_NO_STATE){
@@ -1235,7 +1349,7 @@ public class AccountCreationManager {
             //Server's flag has already been set.
             if(flagUI != serverAccountCreationUIFlag){
                 //Server and local flags are not matching. BOOM!
-                throw new RuntimeException("The flags for both Local and Server should be matching. You have set" +
+                throw new UnmatchingFlagException("The flags for both Local and Server should be matching. You have set" +
                         "the server flag as " + serverAccountCreationUIFlag + " while the local flag you are trying to set is " +
                         flagUI);
             }
@@ -1253,7 +1367,7 @@ public class AccountCreationManager {
         else{
             //Both have been set. They are bound to be equal.
             if(flagUI != accountCreationUIFlag){
-                throw new RuntimeException("The flags for both Local and Server should be matching. You have set" +
+                throw new UnmatchingFlagException("The flags for both Local and Server should be matching. You have set" +
                         "both the flags as " + accountCreationUIFlag + " while the local flag you are trying to set is " +
                         flagUI);
             }
@@ -1268,7 +1382,7 @@ public class AccountCreationManager {
 
         //If the server account creation has started, you can't set the flag/listener now
         if(serverAccountCreationState == SERVER_ACCOUNT_CREATION_STARTED || accountCreationState == ACCOUNT_CREATION_STARTED){
-            throw new RuntimeException("Account creation has started. You can't set the listener/flag in the middle");
+            throw new IllegalStateException("Account creation has started. You can't set the listener/flag in the middle");
         }
 
         checkUIFlagValidity(flagUI);
@@ -1281,7 +1395,7 @@ public class AccountCreationManager {
             //Local's flag has already been set.
             if(flagUI != localAccountCreationUIFlag){
                 //Server and local flags are not matching. BOOM!
-                throw new RuntimeException("The flags for both Local and Server should be matching. You have set" +
+                throw new UnmatchingFlagException("The flags for both Local and Server should be matching. You have set" +
                         "the local flag as " + localAccountCreationUIFlag + " while the server flag you are trying to set is " +
                         flagUI);
             }
@@ -1299,7 +1413,7 @@ public class AccountCreationManager {
         else{
             //Both have been set. They are bound to be equal.
             if(flagUI != accountCreationUIFlag){
-                throw new RuntimeException("The flags for both Local and Server should be matching. You have set" +
+                throw new UnmatchingFlagException("The flags for both Local and Server should be matching. You have set" +
                         "both the flags as " + accountCreationUIFlag + " while the local flag you are trying to set is " +
                         flagUI);
             }
@@ -1315,7 +1429,7 @@ public class AccountCreationManager {
 
         //If the account creation has started, you can't set the flag/listener now
         if(accountCreationState == ACCOUNT_CREATION_STARTED){
-            throw new RuntimeException("Account creation has started. You can't set the listener/flag in the middle");
+            throw new IllegalStateException("Account creation has started. You can't set the listener/flag in the middle");
         }
         checkUIFlagValidity(flagUI);
         //Since AC creation hasn't begun yet, user can set the flag and listener as many times as they want
@@ -1334,18 +1448,31 @@ public class AccountCreationManager {
                 break;
             default:
                 //Fail
-                throw new RuntimeException("Invalid Account UI flag. Check the list of valid flags.");
+                throw new InvalidFlagException("Invalid Account UI flag. Check the list of valid flags.");
         }
     }
 
     /**
-     * Created by DJ on 2/5/2017.
+     * This interface shall be implemented by anyone wanting to get a window into the AC creation states
+     * and perform tasks deemed necessary by them at those points.
      */
-
     public interface AccountCreationListener {
         void onAccountCreated();
         void onAccountCreationFailed();
         void onPreAccountCreation();
         void onPostAccountCreation();
     }
+
+    class InvalidFlagException extends RuntimeException{
+        public InvalidFlagException(String msg){
+            super(msg);
+        }
+    }
+
+    class UnmatchingFlagException extends RuntimeException{
+        public UnmatchingFlagException(String msg){
+            super(msg);
+        }
+    }
+
 }

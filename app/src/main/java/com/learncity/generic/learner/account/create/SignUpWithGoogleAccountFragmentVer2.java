@@ -182,7 +182,7 @@ public class SignUpWithGoogleAccountFragmentVer2 extends Fragment{
 
                     @Override
                     public void onAccountCreationFailed() {
-
+                        AccountCreationManager.getAccountCreationManager(getActivity()).performCleanup();
                     }
 
                     @Override
