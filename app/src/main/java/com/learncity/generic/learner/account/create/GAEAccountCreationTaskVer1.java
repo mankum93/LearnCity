@@ -5,98 +5,80 @@ import android.util.Log;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
 import com.learncity.tutor.account.profile.model.TutorProfileParcelableVer1;
 
-import org.greenrobot.eventbus.EventBus;
-
 /**
- * Created by DJ on 2/6/2017.
+ * Created by DJ on 2/15/2017.
  */
 
-public class GAEAccountCreationTask implements AccountCreationTask {
+public class GAEAccountCreationTaskVer1 extends BaseAccountCreationTask {
 
-    private static final String TAG = "GAEACCreationTask";
+    private static final String TAG = "GAEACCreationTask1";
 
     private AccountCreationClient accountCreationClient;
 
-    private GAEAccountCreationHandlerThread handlerThread;
-
     private GenericLearnerProfileParcelableVer1 profile;
 
-    private AccountCreationTaskListener listener;
+    private boolean requestProcessingComplete = false;
+    private final Object requestLock = new Object();
 
-    public GAEAccountCreationTask(GenericLearnerProfileParcelableVer1 profile){
+    private long taskThreadId = Thread.currentThread().getId();
+
+    private int returnCode;
+
+    public GAEAccountCreationTaskVer1(GenericLearnerProfileParcelableVer1 profile){
         this.profile = profile;
     }
-    private void initializeTask() {
-        //HandlerThread instance can remain in memory for a while in case we want to reuse it
-        if(handlerThread == null){
-            handlerThread = new GAEAccountCreationHandlerThread("GAEAccountCreationTask");
-        }
-        Log.d(TAG, "GAEAccountCreationTask.initializeTask(): " + "\n" + "MESSAGE: GAEAccountCreationTask initialized" +
-                "\n" +"Thread ID: " + Thread.currentThread().getId());
-    }
 
     @Override
-    public void performAccountCreation() {
+    public int performAccountCreation() {
+
         Log.d(TAG, "GAEAccountCreationTask.performAccountCreation(): " + "\n" + "MESSAGE: Performing AC creation..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
-        initializeTask();
-        if(!handlerThread.isAlive()){
-            handlerThread.start();
+        if(accountCreationClient == null){
+            selectClient(profile);
         }
-        handlerThread.prepareHandler();
+        //Prepare the client
+        Log.d(TAG, "GAEAccountCreationTask.performAccountCreation(): " + "\n" + "MESSAGE: Preparing client..." +
+                "\n" +"Thread ID: " + Thread.currentThread().getId());
+        accountCreationClient.prepareClient();
 
-        //Initialize the client
-        handlerThread.execute(new Runnable() {
-            @Override
-            public void run() {
-                if(accountCreationClient == null){
-                    selectClient(profile);
+        //Send the Account creation request
+        Log.d(TAG, "GAEAccountCreationTask.performAccountCreation(): " + "\n" + "MESSAGE: Sending AC creation request..." +
+                "\n" +"Thread ID: " + Thread.currentThread().getId());
+        accountCreationClient.sendRequest();
+
+        //Now, it is quite possible that the client can do the work in some background thread
+        //We shall wait in that case for the task to finish up
+        if(requestProcessingComplete){
+            //Processing complete; no need to wait up
+            return returnCode;
+        }
+        else{
+            while(!requestProcessingComplete){
+                Log.e(TAG, "HEHE");
+                synchronized (requestLock){
+                    try{
+                        requestLock.wait();
+                    }
+                    catch(InterruptedException ie){
+                        //Think of something
+                    }
                 }
             }
-        });
-        //Prepare the client
-        handlerThread.execute(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "GAEAccountCreationTask.performAccountCreation(): " + "\n" + "MESSAGE: Preparing client..." +
-                        "\n" +"Thread ID: " + Thread.currentThread().getId());
-                accountCreationClient.prepareClient();
-            }
-        });
-        //Send the Account creation request
-        handlerThread.execute(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "GAEAccountCreationTask.performAccountCreation(): " + "\n" + "MESSAGE: Sending AC creation request..." +
-                        "\n" +"Thread ID: " + Thread.currentThread().getId());
-                accountCreationClient.sendRequest();
-            }
-        });
-    }
+        }
 
-    @Override
-    public void cancelAccountCreation() {
-
+        return returnCode;
     }
 
     @Override
     public void performCleanup() {
         Log.d(TAG, "GAEAccountCreationTask.performCleanup(): " + "\n" + "MESSAGE: Cleaning up GAEAccountCreationTask..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
-        //Remove the Sticky Handler posted before
-        if(handlerThread != null){
-            EventBus.getDefault().removeStickyEvent(handlerThread.getHandlerInstance());
-            handlerThread.quit();
-        }
+
         accountCreationClient.performCleanup();
 
         profile = null;
-        listener = null;
+        accountCreationTaskListener = null;
         accountCreationClient = null;
-    }
-
-    public void setAccountCreationListener(AccountCreationTaskListener listener) {
-        this.listener = listener;
     }
 
     private void selectClient(GenericLearnerProfileParcelableVer1 profile){
@@ -113,17 +95,20 @@ public class GAEAccountCreationTask implements AccountCreationTask {
                 public void onRequestSuccessful() {
                     Log.d(TAG, "GAETutorAccountCreationClient.onRequestSuccessful(): " + "\n" + "MESSAGE: Account creation request successfully sent!!!" +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
-                    //Request has been successful. Chances are that now we will go for some other task in series
-                    //Time to post the Handler for Thread continual use
-                    EventBus.getDefault().postSticky(handlerThread.getHandlerInstance());
-                    listener.onAccountCreated();
+
+                    //Request has been successful. Ser the return code
+                    returnCode = ACCOUNT_CREATION_COMPLETED;
+                    requestProcessingComplete = true;
+                    notifyTaskIfWaiting();
                 }
 
                 @Override
                 public void onRequestFailed() {
                     Log.e(TAG, "GAETutorAccountCreationClient.onRequestFailed(): " + "\n" + "MESSAGE: Account creation request failed!!!" +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
-                    listener.onAccountCreationFailed();
+                    returnCode = ACCOUNT_CREATION_FAILED;
+                    requestProcessingComplete = true;
+                    notifyTaskIfWaiting();
                 }
             });
             accountCreationClient = client;
@@ -141,21 +126,36 @@ public class GAEAccountCreationTask implements AccountCreationTask {
                 public void onRequestSuccessful() {
                     Log.d(TAG, "GAELearnerAccountCreationClient.onRequestSuccessful(): " + "\n" + "MESSAGE: Account creation request successfully sent!!!" +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
-                    //Request has been successful. Chances are that now we will go for some other task in series
-                    //Time to post the Handler for Thread continual use
-                    EventBus.getDefault().postSticky(handlerThread.getHandlerInstance());
-                    listener.onAccountCreated();
+                    //Request has been successful. Set the return code
+                    returnCode = ACCOUNT_CREATION_COMPLETED;
+                    requestProcessingComplete = true;
+                    notifyTaskIfWaiting();
                 }
 
                 @Override
                 public void onRequestFailed() {
                     Log.e(TAG, "GAELearnerAccountCreationClient.onRequestFailed(): " + "\n" + "MESSAGE: Account creation request failed!!!" +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
-                    listener.onAccountCreationFailed();
+                    returnCode = ACCOUNT_CREATION_FAILED;
+                    requestProcessingComplete = true;
+                    notifyTaskIfWaiting();
                 }
             });
             accountCreationClient = client;
         }
 
+    }
+
+    private void notifyTaskIfWaiting(){
+        //Wake the thread up
+        if(Thread.currentThread().getId() == taskThreadId){
+            //Same thread. No BS.
+            return;
+        }
+        else{
+            synchronized(requestLock){
+                requestLock.notify();
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.learncity.generic.learner.account.create.ver0.AccountCreationManager;
 import com.learncity.generic.learner.account.create.ver1.SignUpWithGoogleAccountActivityVer1;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
 import com.learncity.learncity.R;
@@ -21,10 +22,6 @@ import com.learncity.learner.main.LearnerHomeActivity;
 import com.learncity.tutor.account.profile.model.TutorProfileParcelableVer1;
 import com.learncity.tutor.main.TutorHomeActivity;
 import com.learncity.util.MultiSpinner;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created by DJ on 10/30/2016.
@@ -59,6 +56,9 @@ public class SignUpWithGoogleAccountFragmentVer2 extends Fragment{
 
     private String[] tutorTypes;
     private String[] subjects;
+
+    GAEAccountCreationTaskVer1 serverACCreationTask;
+    SQLiteAccountCreationTaskVer1 localACCreationTask;
 
     public static SignUpWithGoogleAccountFragmentVer2 newInstance(){
         return new SignUpWithGoogleAccountFragmentVer2();
@@ -167,8 +167,12 @@ public class SignUpWithGoogleAccountFragmentVer2 extends Fragment{
 
                 //------------------ACCOUNT CREATION AHEAD------------------------------------------------------------
 
-                AccountCreationManager manager = AccountCreationManager.getAccountCreationManager(getActivity());
-                manager.setAccountCreationListener(new AccountCreationManager.AccountCreationListener() {
+                //Configure the AC creation tasks
+                serverACCreationTask = new GAEAccountCreationTaskVer1(profile);
+                localACCreationTask = new SQLiteAccountCreationTaskVer1(getContext(), profile);
+
+                AccountCreationManagerVer1 manager = AccountCreationManagerVer1.getAccountCreationManager(getActivity());
+                manager.setAccountCreationListener(new AccountCreationManagerVer1.AccountCreationListener() {
                     @Override
                     public void onAccountCreated() {
                         if(profile.getCurrentStatus() == GenericLearnerProfileParcelableVer1.STATUS_LEARNER){
@@ -177,25 +181,19 @@ public class SignUpWithGoogleAccountFragmentVer2 extends Fragment{
                         else{
                             startActivity(new Intent(SignUpWithGoogleAccountFragmentVer2.this.getActivity(), TutorHomeActivity.class));
                         }
-                        AccountCreationManager.getAccountCreationManager(getActivity()).performCleanup();
                     }
 
                     @Override
                     public void onAccountCreationFailed() {
-                        AccountCreationManager.getAccountCreationManager(getActivity()).performCleanup();
                     }
 
                     @Override
                     public void onPreAccountCreation() {
 
                     }
-
-                    @Override
-                    public void onPostAccountCreation() {
-
-                    }
                 }, AccountCreationManager.NOTIFY_UI_AUTO);
-                manager.startAccountCreation(profile);
+                manager.startAccountCreation(serverACCreationTask, localACCreationTask);
+                manager.finishUp();
             }
         });
 

@@ -125,7 +125,7 @@ public class NewAccountCreateOnServerAsyncTaskVer1 extends AsyncTask<GenericLear
         else{
             //Account creation complete. Call the account creation callback
             if(mAccountCreationOnServerListener == null){
-                throw new RuntimeException("Account Creation listener has not been set for account creation on the server even though the account creation has been successful");
+                throw new RuntimeException("Account Creation accountCreationTaskListener has not been set for account creation on the server even though the account creation has been successful");
             }
             mAccountCreationOnServerListener.onAccountCreated();
         }

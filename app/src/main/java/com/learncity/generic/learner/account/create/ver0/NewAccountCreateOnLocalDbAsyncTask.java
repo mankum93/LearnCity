@@ -61,7 +61,7 @@ public class NewAccountCreateOnLocalDbAsyncTask extends AsyncTask<GenericLearner
     public void onPostExecute(Void v){
         if(isAccountCreationComplete){
             if(mAccountCreationOnLocalDbListener == null){
-                throw new RuntimeException("Account Creation listener has not been set for account creation on the local Db even though the account creation has been successful");
+                throw new RuntimeException("Account Creation accountCreationTaskListener has not been set for account creation on the local Db even though the account creation has been successful");
             }
             mAccountCreationOnLocalDbListener.onAccountCreated();
         }

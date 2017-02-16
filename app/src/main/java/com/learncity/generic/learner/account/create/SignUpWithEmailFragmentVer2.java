@@ -14,16 +14,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.learncity.generic.learner.account.create.ver0.AccountCreationManager;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
 import com.learncity.learncity.R;
 import com.learncity.learner.main.LearnerHomeActivity;
 import com.learncity.tutor.account.profile.model.TutorProfileParcelableVer1;
 import com.learncity.tutor.main.TutorHomeActivity;
 import com.learncity.util.MultiSpinner;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 
 /**

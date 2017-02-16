@@ -1,4 +1,4 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.generic.learner.account.create.ver0;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import com.learncity.generic.learner.account.create.AccountCreationWorkerThread;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
 
 import org.greenrobot.eventbus.EventBus;
@@ -483,7 +484,7 @@ public class AccountCreationManager {
                     //Update the AC creation state
                     serverAccountCreationState = SERVER_ACCOUNT_CREATION_FAILED;
                     Thread t;
-                    /*The listener callback must be called in a separate thread because
+                    /*The accountCreationTaskListener callback must be called in a separate thread because
                     * further up just after this we have to wait ASAP be it for the internal retry dialog
                     * or the external one(if the user provides one - in which case the user shall inform us about it
                     * and we shall resume then or if the user asks us to wrap it up here then be it)*/
@@ -680,7 +681,7 @@ public class AccountCreationManager {
                     localAccountCreationState = LOCAL_ACCOUNT_CREATION_FAILED;
 
                     Thread t;
-                    /*The listener callback must be called in a separate thread because
+                    /*The accountCreationTaskListener callback must be called in a separate thread because
                     * further up just after this we have to wait ASAP be it for the internal retry dialog
                     * or the external one(if the user provides one - in which case the user shall inform us about it
                     * and we shall resume then or if the user asks us to wrap it up here then be it)*/
@@ -872,7 +873,7 @@ public class AccountCreationManager {
                     //Update the AC creation state
                     serverAccountCreationState = SERVER_ACCOUNT_CREATION_FAILED;
                     Thread t;
-                    /*The listener callback must be called in a separate thread because
+                    /*The accountCreationTaskListener callback must be called in a separate thread because
                     * further up just after this we have to wait ASAP be it for the internal retry dialog
                     * or the external one(if the user provides one - in which case the user shall inform us about it
                     * and we shall resume then or if the user asks us to wrap it up here then be it)*/
@@ -1047,7 +1048,7 @@ public class AccountCreationManager {
                     localAccountCreationState = LOCAL_ACCOUNT_CREATION_FAILED;
                     accountCreationState = ACCOUNT_CREATION_FAILED;
                     Thread t;
-                    /*The listener callback must be called in a separate thread because
+                    /*The accountCreationTaskListener callback must be called in a separate thread because
                     * further up just after this we have to wait ASAP be it for the internal retry dialog
                     * or the external one(if the user provides one - in which case the user shall inform us about it
                     * and we shall resume then or if the user asks us to wrap it up here then be it)*/
@@ -1335,9 +1336,9 @@ public class AccountCreationManager {
 
     public void setLocalAccountCreationListener(AccountCreationListener localAccountCreationTaskListener, int flagUI) {
 
-        //If the local account creation has started, you can't set the flag/listener now
+        //If the local account creation has started, you can't set the flag/accountCreationTaskListener now
         if(localAccountCreationState == LOCAL_ACCOUNT_CREATION_STARTED || accountCreationState == ACCOUNT_CREATION_STARTED){
-            throw new IllegalStateException("Account creation has started. You can't set the listener/flag in the middle");
+            throw new IllegalStateException("Account creation has started. You can't set the accountCreationTaskListener/flag in the middle");
         }
         checkUIFlagValidity(flagUI);
         if(localAccountCreationUIFlag == NOTIFY_UI_NO_STATE && serverAccountCreationUIFlag == NOTIFY_UI_NO_STATE){
@@ -1380,9 +1381,9 @@ public class AccountCreationManager {
 
     public void setServerAccountCreationListener(AccountCreationListener serverAccountCreationTaskListener, int flagUI) {
 
-        //If the server account creation has started, you can't set the flag/listener now
+        //If the server account creation has started, you can't set the flag/accountCreationTaskListener now
         if(serverAccountCreationState == SERVER_ACCOUNT_CREATION_STARTED || accountCreationState == ACCOUNT_CREATION_STARTED){
-            throw new IllegalStateException("Account creation has started. You can't set the listener/flag in the middle");
+            throw new IllegalStateException("Account creation has started. You can't set the accountCreationTaskListener/flag in the middle");
         }
 
         checkUIFlagValidity(flagUI);
@@ -1427,12 +1428,12 @@ public class AccountCreationManager {
 
     public void setAccountCreationListener(AccountCreationListener accountCreationListener, int flagUI) {
 
-        //If the account creation has started, you can't set the flag/listener now
+        //If the account creation has started, you can't set the flag/accountCreationTaskListener now
         if(accountCreationState == ACCOUNT_CREATION_STARTED){
-            throw new IllegalStateException("Account creation has started. You can't set the listener/flag in the middle");
+            throw new IllegalStateException("Account creation has started. You can't set the accountCreationTaskListener/flag in the middle");
         }
         checkUIFlagValidity(flagUI);
-        //Since AC creation hasn't begun yet, user can set the flag and listener as many times as they want
+        //Since AC creation hasn't begun yet, user can set the flag and accountCreationTaskListener as many times as they want
         this.accountCreationUIFlag = flagUI;
         this.accountCreationListener = accountCreationListener;
     }
@@ -1449,6 +1450,18 @@ public class AccountCreationManager {
             default:
                 //Fail
                 throw new InvalidFlagException("Invalid Account UI flag. Check the list of valid flags.");
+        }
+    }
+
+    private static class BaseAccountCreationListenerImpl implements AccountCreationTask.AccountCreationTaskListener {
+        @Override
+        public void onAccountCreated() {
+
+        }
+
+        @Override
+        public void onAccountCreationFailed() {
+
         }
     }
 
