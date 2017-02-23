@@ -14,11 +14,10 @@ import com.learncity.backend.persistence.genericLearnerProfileApi.GenericLearner
 import com.learncity.backend.persistence.genericLearnerProfileApi.model.GenericLearnerProfile;
 import com.learncity.backend.persistence.tutorProfileApi.TutorProfileApi;
 import com.learncity.backend.persistence.tutorProfileApi.model.Duration;
-import com.learncity.backend.persistence.tutorProfileApi.model.EducationalQualification;
 import com.learncity.backend.persistence.tutorProfileApi.model.Occupation;
 import com.learncity.backend.persistence.tutorProfileApi.model.TutorProfile;
 import com.learncity.generic.learner.account.profile.model.ver0.GenericLearnerProfileParcelable;
-import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualificationParcelable;
+import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualification;
 import com.learncity.tutor.account.profile.model.qualification.educational.ver0.TutorProfileParcelable;
 
 import java.io.IOException;
@@ -113,11 +112,11 @@ public class NewLearnerAccountCreateAsyncTask extends AsyncTask<GenericLearnerPr
             profileEntityTutor.setPassword(tutorProfile.getPassword());
             profileEntityTutor.setCurrentStatus(tutorProfile.getCurrentStatus());
 
-            EducationalQualification educationalQualificationEntities[] = new EducationalQualification[tutorProfile.getEducationalQualifications().length];
+            com.learncity.backend.persistence.tutorProfileApi.model.EducationalQualification educationalQualificationEntities[] = new com.learncity.backend.persistence.tutorProfileApi.model.EducationalQualification[tutorProfile.getEducationalQualifications().length];
             int i=0;
 
-            for(EducationalQualificationParcelable educationalQualification : tutorProfile.getEducationalQualifications()){
-                EducationalQualification educationalQualificationEntity = new EducationalQualification();
+            for(EducationalQualification educationalQualification : tutorProfile.getEducationalQualifications()){
+                com.learncity.backend.persistence.tutorProfileApi.model.EducationalQualification educationalQualificationEntity = new com.learncity.backend.persistence.tutorProfileApi.model.EducationalQualification();
                 educationalQualificationEntity.setInstitution(educationalQualification.getInstitution());
                 educationalQualificationEntity.setQualificationName(educationalQualification.getmQualificationName());
                 educationalQualificationEntity.setYearOfPassing(educationalQualification.getYearOfPassing());

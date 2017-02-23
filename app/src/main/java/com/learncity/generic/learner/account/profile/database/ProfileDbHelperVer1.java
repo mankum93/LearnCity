@@ -7,15 +7,17 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
-import com.learncity.tutor.account.profile.model.CreditsParcelable;
-import com.learncity.tutor.account.profile.model.DurationParcelable;
-import com.learncity.tutor.account.profile.model.TutorProfileParcelableVer1;
-import com.learncity.tutor.account.profile.model.occupation.OccupationParcelable;
-import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualificationParcelable;
-import com.learncity.tutor.account.profile.model.qualification.educational.SecondaryEducationalQualificationParcelable;
-import com.learncity.tutor.account.profile.model.qualification.educational.SeniorSecondaryEducationalQualificationParcelable;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
+import com.learncity.tutor.account.profile.model.Credits;
+import com.learncity.tutor.account.profile.model.Duration;
+import com.learncity.tutor.account.profile.model.TutorProfile;
+import com.learncity.tutor.account.profile.model.occupation.Occupation;
+import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualification;
+import com.learncity.tutor.account.profile.model.qualification.educational.SecondaryEducationalQualification;
+import com.learncity.tutor.account.profile.model.qualification.educational.SeniorSecondaryEducationalQualification;
 import com.learncity.util.ArraysUtil;
+
+import java.io.File;
 
 /**
  * Created by DJ on 10/23/2016.
@@ -38,7 +40,7 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db){
 
         //Depending on the current status, create the Learner or Tutor A/C
-        if(currentAccountStatus == GenericLearnerProfileParcelableVer1.STATUS_LEARNER){
+        if(currentAccountStatus == GenericLearnerProfile.STATUS_LEARNER){
             //-------------------------- LEARNER PROFILE TABLES--------------------------------------------------------------
             db.execSQL("create table " + ProfileDbSchemaVer1.LearnerProfileTable.NAME + "(" +
                     ProfileDbSchemaVer1.LearnerProfileTable.cols.NAME + "," +
@@ -141,7 +143,7 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
     /**@param myProfile The learner profile
      * @return Returns a content value representing a Generic learner profile
      * */
-    private static ContentValues getContentValues(GenericLearnerProfileParcelableVer1 myProfile){
+    private static ContentValues getContentValues(GenericLearnerProfile myProfile){
 
         ContentValues values = new ContentValues();
         values.put(ProfileDbSchemaVer1.LearnerProfileTable.cols.NAME, myProfile.getName());
@@ -157,10 +159,10 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
     /**@param myProfile The tutor profile
      * @return Returns a content value representing a Tutor profile
      * */
-    private static ContentValues getContentValues(TutorProfileParcelableVer1 myProfile){
+    private static ContentValues getContentValues(TutorProfile myProfile){
 
         //Get the base values
-        ContentValues values = getContentValues((GenericLearnerProfileParcelableVer1) myProfile);
+        ContentValues values = getContentValues((GenericLearnerProfile) myProfile);
         //Add the TutorProfile specific values.
         values.put(ProfileDbSchemaVer1.TutorProfileTable.cols.RATING, myProfile.getRating());
         values.put(ProfileDbSchemaVer1.TutorProfileTable.cols.TUTOR_TYPES, ArraysUtil.convertArrayToString(myProfile.getTutorTypes()));
@@ -168,17 +170,17 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
         //Add the educational qualification and occupation separately
         return values;
     }
-    /**@param educationalQualificationParcelable The educational qualification of the Tutor
+    /**@param educationalQualification The educational qualification of the Tutor
      * @param KEY_emailId This is the foreign key
      * @return Returns a content value representing the educational qualification
      * */
-    private static ContentValues getContentValues(EducationalQualificationParcelable educationalQualificationParcelable, String KEY_emailId){
+    private static ContentValues getContentValues(EducationalQualification educationalQualification, String KEY_emailId){
 
         ContentValues values = new ContentValues();
         values.put(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.EMAIL_ID, KEY_emailId);
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.QUALIFICATION_NAME, educationalQualificationParcelable.getmQualificationName());
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.INSTITUTION_NAME, educationalQualificationParcelable.getInstitution());
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.YEAR_PASSING, educationalQualificationParcelable.getYearOfPassing());
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.QUALIFICATION_NAME, educationalQualification.getmQualificationName());
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.INSTITUTION_NAME, educationalQualification.getInstitution());
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.YEAR_PASSING, educationalQualification.getYearOfPassing());
         //Add duration table separately
 
         return values;
@@ -187,11 +189,11 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
      * @param KEY_emailId This is the foreign key
      * @return Returns a content value representing the educational qualification
      * */
-    private static ContentValues getContentValues(SecondaryEducationalQualificationParcelable secondaryEducationalQualificationParcelable, String KEY_emailId){
+    private static ContentValues getContentValues(SecondaryEducationalQualification secondaryEducationalQualificationParcelable, String KEY_emailId){
 
         ContentValues values;
 
-        values = getContentValues((EducationalQualificationParcelable)secondaryEducationalQualificationParcelable, KEY_emailId);
+        values = getContentValues((EducationalQualification)secondaryEducationalQualificationParcelable, KEY_emailId);
         values.put(ProfileDbSchemaVer1.TutorProfileTable.SecondaryEducationalQualificationTable.cols.BOARD_NAME, secondaryEducationalQualificationParcelable.getmBoard());
         //Add duration table separately
 
@@ -201,41 +203,41 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
      * @param KEY_emailId This is the foreign key
      * @return Returns a content value representing the educational qualification
      * */
-    private static ContentValues getContentValues(SeniorSecondaryEducationalQualificationParcelable seniorSecondaryEducationalQualificationParcelable, String KEY_emailId){
+    private static ContentValues getContentValues(SeniorSecondaryEducationalQualification seniorSecondaryEducationalQualificationParcelable, String KEY_emailId){
 
         ContentValues values;
 
-        values = getContentValues((EducationalQualificationParcelable)seniorSecondaryEducationalQualificationParcelable, KEY_emailId);
+        values = getContentValues((EducationalQualification)seniorSecondaryEducationalQualificationParcelable, KEY_emailId);
         values.put(ProfileDbSchemaVer1.TutorProfileTable.SeniorSecondaryEducationalQualificationTable.cols.BOARD_NAME, seniorSecondaryEducationalQualificationParcelable.getmBoard());
         //Add duration table separately
 
         return values;
     }
 
-    /**@param durationParcelable duration in Years/Months/Days
+    /**@param duration duration in Years/Months/Days
      * @param KEY_emailId This is the foreign key
      * @return Returns a content value representing this duration
      * */
-    private static ContentValues getContentValues(DurationParcelable durationParcelable, String KEY_emailId){
+    private static ContentValues getContentValues(Duration duration, String KEY_emailId){
 
         ContentValues values = new ContentValues();
         values.put(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.EMAIL_ID, KEY_emailId);
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_YEARS, durationParcelable.getNoOfYears());
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_MONTHS, durationParcelable.getNoOfMonths());
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_DAYS, durationParcelable.getNoOfDays());
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_YEARS, duration.getNoOfYears());
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_MONTHS, duration.getNoOfMonths());
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_DAYS, duration.getNoOfDays());
 
         return values;
     }
-    /**@param occupationParcelable The occupation of the tutor
+    /**@param occupation The occupation of the tutor
      * @param KEY_emailId This is the foreign key
      * @return Returns a content value representing this occupation
      * */
-    private static ContentValues getContentValues(OccupationParcelable occupationParcelable, String KEY_emailId){
+    private static ContentValues getContentValues(Occupation occupation, String KEY_emailId){
 
         ContentValues values = new ContentValues();
         values.put(ProfileDbSchemaVer1.TutorProfileTable.OccupationTable.cols.EMAIL_ID, KEY_emailId);
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.OccupationTable.cols.ORGANIZATION_NAME, occupationParcelable.getCurrentOrganization());
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.OccupationTable.cols.DESIGNATION_NAME, occupationParcelable.getCurrentDesignation());
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.OccupationTable.cols.ORGANIZATION_NAME, occupation.getCurrentOrganization());
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.OccupationTable.cols.DESIGNATION_NAME, occupation.getCurrentDesignation());
         //Add duration table separately
 
         return values;
@@ -244,7 +246,7 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
      * @param KEY_emailId This is the foreign key
      * @return Returns a content value representing the teaching credits
      * */
-    private static ContentValues getContentValues(CreditsParcelable teachingCredits, String KEY_emailId){
+    private static ContentValues getContentValues(Credits teachingCredits, String KEY_emailId){
 
         ContentValues values = new ContentValues();
         values.put(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.EMAIL_ID, KEY_emailId);
@@ -265,13 +267,13 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
         return values;
     }
 
-    public static void addProfileToDatabase(SQLiteDatabase database, GenericLearnerProfileParcelableVer1 profile){
+    public static void addProfileToDatabase(SQLiteDatabase database, GenericLearnerProfile profile){
 
         ContentValues profileValues = null;
 
-        if(profile instanceof TutorProfileParcelableVer1){
+        if(profile instanceof TutorProfile){
 
-            TutorProfileParcelableVer1 tutorProfile = (TutorProfileParcelableVer1) profile;
+            TutorProfile tutorProfile = (TutorProfile) profile;
             profileValues = getContentValues(tutorProfile);
 
             ContentValues secondaryEducationQualificationValues = null;
@@ -325,12 +327,25 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
 
     }
 
-    public static void updateProfileInDatabase(SQLiteDatabase database, GenericLearnerProfileParcelableVer1 profile){
+    public static void updateProfileInDatabase(SQLiteDatabase database, GenericLearnerProfile profile){
 
         //Assumption is that the Email ID will be unique for the accounts.
         String emailId = profile.getEmailID();
         ContentValues values = getContentValues(profile);
         database.update(ProfileDbSchemaVer1.LearnerProfileTable.NAME, values,
                 ProfileDbSchemaVer1.LearnerProfileTable.cols.EMAIL_ID + "=?", new String[]{emailId});
+    }
+
+    private static boolean isExistingDatabase(Context context, String databaseName) {
+
+        File dbPath = context.getDatabasePath(databaseName);
+        if(dbPath != null){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isExistingUserAccount(Context context){
+        return isExistingDatabase(context, ProfileDbHelperVer1.DATABASE_NAME);
     }
 }

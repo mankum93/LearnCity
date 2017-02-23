@@ -6,10 +6,9 @@ import android.database.sqlite.SQLiteException;
 import android.os.Handler;
 import android.util.Log;
 
-import com.learncity.generic.learner.account.create.ver0.AccountCreationTask;
-import com.learncity.generic.learner.account.create.ver0.SQLiteAccountCreationHandlerThread;
 import com.learncity.generic.learner.account.profile.database.ProfileDbHelperVer1;
-import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
+import com.learncity.util.ver0.AccountCreationTask;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -27,7 +26,7 @@ public class SQLiteAccountCreationTask implements AccountCreationTask {
 
     private SQLiteAccountCreationHandlerThread handlerThread;
 
-    private GenericLearnerProfileParcelableVer1 profile;
+    private GenericLearnerProfile profile;
 
     private Context context;
 
@@ -35,7 +34,7 @@ public class SQLiteAccountCreationTask implements AccountCreationTask {
 
     private Handler leftOverHandler;
 
-    public SQLiteAccountCreationTask(Context context, GenericLearnerProfileParcelableVer1 profile){
+    public SQLiteAccountCreationTask(Context context, GenericLearnerProfile profile){
         this.context = context;
         this.profile = profile;
     }

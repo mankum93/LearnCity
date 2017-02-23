@@ -14,8 +14,8 @@ import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
 import java.io.IOException;
 
-import com.learncity.search.searchApi.SearchApi;
-import com.learncity.search.searchApi.model.SearchQuery;
+import com.learncity.searchApi.SearchApi;
+import com.learncity.searchApi.model.SearchQuery;
 
 class SearchTutorsAsyncTask extends AsyncTask<SearchQuery, Void, Void> {
     private static final String TAG = "SearchTutorsAsyncTask";

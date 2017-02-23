@@ -9,6 +9,6 @@
         android:id="@+id/new_account_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.learncity.generic.learner.account.create.SignUpWithEmailFragmentVer2"/>
+        android:name="com.learncity.generic.learner.account.create.ver2.SignUpWithEmailFragmentVer2"/>
 
 </LinearLayout>

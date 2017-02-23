@@ -6,12 +6,12 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.learncity.generic.learner.account.profile.database.ProfileDbHelperVer1;
-import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 
 /**
  * Created by DJ on 2/2/2017.
  */
-public class NewAccountCreateOnLocalDbAsyncTaskVer1 extends AsyncTask<GenericLearnerProfileParcelableVer1, Void, Void> {
+public class NewAccountCreateOnLocalDbAsyncTaskVer1 extends AsyncTask<GenericLearnerProfile, Void, Void> {
 
     private static String TAG = "NewAccountOnLocalDb";
     private Context context;
@@ -35,7 +35,7 @@ public class NewAccountCreateOnLocalDbAsyncTaskVer1 extends AsyncTask<GenericLea
     }
 
     @Override
-    public Void doInBackground(GenericLearnerProfileParcelableVer1... params){
+    public Void doInBackground(GenericLearnerProfile... params){
         if(context == null){
             throw new RuntimeException("Context to be passed during Db creation is null");
         }
@@ -46,7 +46,7 @@ public class NewAccountCreateOnLocalDbAsyncTaskVer1 extends AsyncTask<GenericLea
             return null;
         }
         //Get the data to be inserted
-        GenericLearnerProfileParcelableVer1 profile = params[0];
+        GenericLearnerProfile profile = params[0];
         //Get the writable database
         SQLiteDatabase db = new ProfileDbHelperVer1(context, profile.getCurrentStatus()).getWritableDatabase();
         //Insert into the database

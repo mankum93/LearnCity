@@ -8,7 +8,7 @@ import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.learncity.backend.persistence.tutorProfileVer1Api.TutorProfileVer1Api;
 import com.learncity.backend.persistence.tutorProfileVer1Api.model.TutorProfileVer1;
-import com.learncity.tutor.account.profile.model.TutorProfileParcelableVer1;
+import com.learncity.tutor.account.profile.model.TutorProfile;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,13 +23,13 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
 
     private static TutorProfileVer1Api myApiService;
 
-    private TutorProfileParcelableVer1 profile;
+    private TutorProfile profile;
 
     private TutorProfileVer1 profileEntity;
 
     private AccountCreationClientListener clientListener;
 
-    public GAETutorAccountCreationClient(TutorProfileParcelableVer1 profile){
+    public GAETutorAccountCreationClient(TutorProfile profile){
         this.profile = profile;
     }
 
@@ -41,6 +41,7 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
             setApiService();
         }
         populateProfileEntity(profile);
+
         clientListener.onClientPrepared();
     }
 
@@ -92,7 +93,7 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
                 }).build();
     }
 
-    private void populateProfileEntity(TutorProfileParcelableVer1 tutorProfile){
+    private void populateProfileEntity(TutorProfile tutorProfile){
         //Populate the entity object with the profile info.
 
         profileEntity = new TutorProfileVer1();

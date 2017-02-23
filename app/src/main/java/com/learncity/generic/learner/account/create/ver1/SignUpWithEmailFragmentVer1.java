@@ -18,10 +18,11 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 
-import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
+import com.learncity.learner.account.profile.model.LearnerProfile;
 import com.learncity.learner.main.LearnerHomeActivity;
-import com.learncity.tutor.account.profile.model.TutorProfileParcelableVer1;
+import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.tutor.main.TutorHomeActivity;
 import com.learncity.util.MultiSpinner;
 
@@ -68,7 +69,7 @@ public class SignUpWithEmailFragmentVer1 extends Fragment{
     private MultiSpinner<String> typeOfTutorMultiSpinner;
     private MultiSpinner<String> subjectsICanTeachMultiSpinner;
 
-    private GenericLearnerProfileParcelableVer1 profile;
+    private GenericLearnerProfile profile;
 
     private ViewGroup rootView;
     private LayoutInflater layoutInflater;
@@ -180,30 +181,30 @@ public class SignUpWithEmailFragmentVer1 extends Fragment{
 
                     //For now, our generic learner is THE learner.
 
-                    profile = new GenericLearnerProfileParcelableVer1.Builder(
+                    profile = new LearnerProfile.Builder(
                             name.getText().toString(),
                             emailId.getText().toString(),
                             phoneNo.getText().toString(),
-                            GenericLearnerProfileParcelableVer1.STATUS_LEARNER,
+                            GenericLearnerProfile.STATUS_LEARNER,
                             password.getText().toString()
                     ).build();
                     //Now, before getting onto finalizing the profile, make a final validation
-                    profile = GenericLearnerProfileParcelableVer1.validateGenericLearnerProfile(profile);
+                    profile = GenericLearnerProfile.validateGenericLearnerProfile(profile);
                 }
                 else{
                     Log.i(TAG, "User is a Tutor");
 
-                    profile = new TutorProfileParcelableVer1.Builder(
+                    profile = new TutorProfile.Builder(
                             name.getText().toString(),
                             emailId.getText().toString(),
                             phoneNo.getText().toString(),
-                            GenericLearnerProfileParcelableVer1.STATUS_TUTOR,
+                            GenericLearnerProfile.STATUS_TUTOR,
                             password.getText().toString())
                             .withTutorTypes(tutorTypes)
                             .withDisciplines(subjects)
                             .build();
 
-                    profile = TutorProfileParcelableVer1.validateTutorProfile((TutorProfileParcelableVer1) profile);
+                    profile = TutorProfile.validateTutorProfile((TutorProfile) profile);
                 }
                 //------------------ACCOUNT CREATION AHEAD------------------------------------------------------------
 
@@ -338,7 +339,7 @@ public class SignUpWithEmailFragmentVer1 extends Fragment{
             getActivity().finish();
         }
     }
-    private void createAccountOnServer(final GenericLearnerProfileParcelableVer1 profile){
+    private void createAccountOnServer(final GenericLearnerProfile profile){
         newAccountCreateOnServerAsyncTask = new NewAccountCreateOnServerAsyncTaskVer1();
         newAccountCreateOnServerAsyncTask.setAccountCreationListener(mAccountCreationOnServerListener = new NewAccountCreateOnServerAsyncTaskVer1.AccountCreationOnServerListener() {
             @Override
@@ -358,7 +359,7 @@ public class SignUpWithEmailFragmentVer1 extends Fragment{
                     NewAccountCreationActivityVer1.mShouldAccountCreationBeRetried = true;
 
                     //Show the user the Account Home interface
-                    if(profile.getCurrentStatus()== GenericLearnerProfileParcelableVer1.STATUS_LEARNER){
+                    if(profile.getCurrentStatus()== GenericLearnerProfile.STATUS_LEARNER){
                         startActivity(new Intent(SignUpWithEmailFragmentVer1.this.getActivity(), LearnerHomeActivity.class));
                     }
                     else{
@@ -413,7 +414,7 @@ public class SignUpWithEmailFragmentVer1 extends Fragment{
         mProgressbarHolder.setVisibility(View.GONE);
     }
 
-    private void createAccountOnLocalDb(final GenericLearnerProfileParcelableVer1 profile){
+    private void createAccountOnLocalDb(final GenericLearnerProfile profile){
         newAccountCreateOnLocalDbAsyncTask = new NewAccountCreateOnLocalDbAsyncTaskVer1(getActivity());
         newAccountCreateOnLocalDbAsyncTask.setAccountCreationonLocalDbListener(new NewAccountCreateOnLocalDbAsyncTaskVer1.AccountCreationOnLocalDbListener() {
             @Override
@@ -426,7 +427,7 @@ public class SignUpWithEmailFragmentVer1 extends Fragment{
                     stopACCreationProgressAnimation();
 
                     //Show the user the Account Home interface
-                    if(profile.getCurrentStatus()== GenericLearnerProfileParcelableVer1.STATUS_LEARNER){
+                    if(profile.getCurrentStatus()== GenericLearnerProfile.STATUS_LEARNER){
                         startActivity(new Intent(SignUpWithEmailFragmentVer1.this.getActivity(), LearnerHomeActivity.class));
                     }
                     else{

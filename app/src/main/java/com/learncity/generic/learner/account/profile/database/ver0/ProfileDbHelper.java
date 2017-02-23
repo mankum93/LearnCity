@@ -7,11 +7,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.learncity.generic.learner.account.profile.model.ver0.GenericLearnerProfileParcelable;
-import com.learncity.tutor.account.profile.model.DurationParcelable;
-import com.learncity.tutor.account.profile.model.occupation.OccupationParcelable;
-import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualificationParcelable;
-import com.learncity.tutor.account.profile.model.qualification.educational.SecondaryEducationalQualificationParcelable;
-import com.learncity.tutor.account.profile.model.qualification.educational.SeniorSecondaryEducationalQualificationParcelable;
+import com.learncity.tutor.account.profile.model.Duration;
+import com.learncity.tutor.account.profile.model.occupation.Occupation;
+import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualification;
+import com.learncity.tutor.account.profile.model.qualification.educational.SecondaryEducationalQualification;
+import com.learncity.tutor.account.profile.model.qualification.educational.SeniorSecondaryEducationalQualification;
 import com.learncity.tutor.account.profile.model.qualification.educational.ver0.TutorProfileParcelable;
 
 /**
@@ -133,54 +133,54 @@ public class ProfileDbHelper extends SQLiteOpenHelper {
         //Add the educational qualification and occupation separately
         return values;
     }
-    private static ContentValues getContentValues(EducationalQualificationParcelable educationalQualificationParcelable, String KEY_emailId){
+    private static ContentValues getContentValues(EducationalQualification educationalQualification, String KEY_emailId){
 
         ContentValues values = new ContentValues();
         values.put(ProfileDbSchema.TutorProfileTable.EducationalQualificationTable.cols.EMAIL_ID, KEY_emailId);
-        values.put(ProfileDbSchema.TutorProfileTable.EducationalQualificationTable.cols.QUALIFICATION_NAME, educationalQualificationParcelable.getmQualificationName());
-        values.put(ProfileDbSchema.TutorProfileTable.EducationalQualificationTable.cols.INSTITUTION_NAME, educationalQualificationParcelable.getInstitution());
-        values.put(ProfileDbSchema.TutorProfileTable.EducationalQualificationTable.cols.YEAR_PASSING, educationalQualificationParcelable.getYearOfPassing());
+        values.put(ProfileDbSchema.TutorProfileTable.EducationalQualificationTable.cols.QUALIFICATION_NAME, educationalQualification.getmQualificationName());
+        values.put(ProfileDbSchema.TutorProfileTable.EducationalQualificationTable.cols.INSTITUTION_NAME, educationalQualification.getInstitution());
+        values.put(ProfileDbSchema.TutorProfileTable.EducationalQualificationTable.cols.YEAR_PASSING, educationalQualification.getYearOfPassing());
         //Add duration table separately
 
         return values;
     }
-    private static ContentValues getContentValues(SecondaryEducationalQualificationParcelable secondaryEducationalQualificationParcelable, String KEY_emailId){
+    private static ContentValues getContentValues(SecondaryEducationalQualification secondaryEducationalQualificationParcelable, String KEY_emailId){
 
         ContentValues values;
 
-        values = getContentValues((EducationalQualificationParcelable)secondaryEducationalQualificationParcelable, KEY_emailId);
+        values = getContentValues((EducationalQualification)secondaryEducationalQualificationParcelable, KEY_emailId);
         values.put(ProfileDbSchema.TutorProfileTable.SecondaryEducationalQualificationTable.cols.BOARD_NAME, secondaryEducationalQualificationParcelable.getmBoard());
         //Add duration table separately
 
         return values;
     }
-    private static ContentValues getContentValues(SeniorSecondaryEducationalQualificationParcelable seniorSecondaryEducationalQualificationParcelable, String KEY_emailId){
+    private static ContentValues getContentValues(SeniorSecondaryEducationalQualification seniorSecondaryEducationalQualificationParcelable, String KEY_emailId){
 
         ContentValues values;
 
-        values = getContentValues((EducationalQualificationParcelable)seniorSecondaryEducationalQualificationParcelable, KEY_emailId);
+        values = getContentValues((EducationalQualification)seniorSecondaryEducationalQualificationParcelable, KEY_emailId);
         values.put(ProfileDbSchema.TutorProfileTable.SeniorSecondaryEducationalQualificationTable.cols.BOARD_NAME, seniorSecondaryEducationalQualificationParcelable.getmBoard());
         //Add duration table separately
 
         return values;
     }
 
-    private static ContentValues getContentValues(DurationParcelable durationParcelable, String KEY_emailId){
+    private static ContentValues getContentValues(Duration duration, String KEY_emailId){
 
         ContentValues values = new ContentValues();
         values.put(ProfileDbSchema.TutorProfileTable.DurationTable.cols.EMAIL_ID, KEY_emailId);
-        values.put(ProfileDbSchema.TutorProfileTable.DurationTable.cols.NO_OF_YEARS, durationParcelable.getNoOfYears());
-        values.put(ProfileDbSchema.TutorProfileTable.DurationTable.cols.NO_OF_MONTHS, durationParcelable.getNoOfMonths());
-        values.put(ProfileDbSchema.TutorProfileTable.DurationTable.cols.NO_OF_DAYS, durationParcelable.getNoOfDays());
+        values.put(ProfileDbSchema.TutorProfileTable.DurationTable.cols.NO_OF_YEARS, duration.getNoOfYears());
+        values.put(ProfileDbSchema.TutorProfileTable.DurationTable.cols.NO_OF_MONTHS, duration.getNoOfMonths());
+        values.put(ProfileDbSchema.TutorProfileTable.DurationTable.cols.NO_OF_DAYS, duration.getNoOfDays());
 
         return values;
     }
-    private static ContentValues getContentValues(OccupationParcelable occupationParcelable, String KEY_emailId){
+    private static ContentValues getContentValues(Occupation occupation, String KEY_emailId){
 
         ContentValues values = new ContentValues();
         values.put(ProfileDbSchema.TutorProfileTable.OccupationTable.cols.EMAIL_ID, KEY_emailId);
-        values.put(ProfileDbSchema.TutorProfileTable.OccupationTable.cols.ORGANIZATION_NAME, occupationParcelable.getCurrentOrganization());
-        values.put(ProfileDbSchema.TutorProfileTable.OccupationTable.cols.DESIGNATION_NAME, occupationParcelable.getCurrentDesignation());
+        values.put(ProfileDbSchema.TutorProfileTable.OccupationTable.cols.ORGANIZATION_NAME, occupation.getCurrentOrganization());
+        values.put(ProfileDbSchema.TutorProfileTable.OccupationTable.cols.DESIGNATION_NAME, occupation.getCurrentDesignation());
         //Add duration table separately
 
         return values;

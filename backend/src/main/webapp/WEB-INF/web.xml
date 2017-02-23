@@ -14,10 +14,12 @@
         <init-param>
             <param-name>services</param-name>
             <param-value>com.learncity.backend.search.SearchEndpoint,
-                com.learncity.backend.persistence.endpoints.ver0.GenericLearnerProfilePersistenceEndpoint,
-                com.learncity.backend.persistence.endpoints.ver0.TutorProfilePersistenceEndpoint,
-                com.learncity.backend.persistence.endpoints.TutorProfileVer1PersistenceEndpoint,
-                com.learncity.backend.persistence.endpoints.GenericLearnerProfileVer1PersistenceEndpoint
+                com.learncity.backend.account.create.endpoints.ver0.GenericLearnerProfilePersistenceEndpoint,
+                com.learncity.backend.account.create.endpoints.ver0.TutorProfilePersistenceEndpoint,
+                com.learncity.backend.account.create.endpoints.TutorProfileVer1PersistenceEndpoint,
+                com.learncity.backend.account.create.endpoints.GenericLearnerProfileVer1PersistenceEndpoint,
+                com.learncity.backend.account.login.LoginEndpoint,
+                com.learncity.backend.account.create.endpoints.LearnerProfileVer1PersistenceEndpoint
             </param-value>
         </init-param>
     </servlet>

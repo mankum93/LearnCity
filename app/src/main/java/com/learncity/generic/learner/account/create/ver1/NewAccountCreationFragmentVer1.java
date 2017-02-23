@@ -17,8 +17,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
+import com.learncity.learner.account.profile.model.LearnerProfile;
 
 /**
  * Created by DJ on 1/21/2017.
@@ -119,12 +120,12 @@ public class NewAccountCreationFragmentVer1 extends Fragment {
             Uri personPhoto = acct.getPhotoUrl();
 
             //Profile creation is incomplete w.r.t the compulsory fields right now
-            GenericLearnerProfileParcelableVer1 profile = new GenericLearnerProfileParcelableVer1
-                    .Builder(GenericLearnerProfileParcelableVer1.validateName(personName),
-                    GenericLearnerProfileParcelableVer1.validateEmailId(personEmail),
-                    GenericLearnerProfileParcelableVer1.PHONE_NO_NULL,
-                    GenericLearnerProfileParcelableVer1.STATUS_UNDEFINED,
-                    GenericLearnerProfileParcelableVer1.PASSWORD_NULL)
+            GenericLearnerProfile profile = new LearnerProfile
+                    .Builder(GenericLearnerProfile.validateName(personName),
+                    GenericLearnerProfile.validateEmailId(personEmail),
+                    GenericLearnerProfile.PHONE_NO_NULL,
+                    GenericLearnerProfile.STATUS_UNDEFINED,
+                    GenericLearnerProfile.PASSWORD_NULL)
                     .build();
 
             Intent createACWithGoogle = new Intent(this.getActivity(), SignUpWithGoogleAccountActivityVer1.class);

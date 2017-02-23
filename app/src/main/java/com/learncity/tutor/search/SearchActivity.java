@@ -15,7 +15,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.learncity.learner.search.QualificationSearchFragment;
 import com.learncity.learner.search.SubjectSearchFragment;
 import com.learncity.learncity.R;
-import com.learncity.search.searchApi.model.SearchQuery;
+import com.learncity.searchApi.model.SearchQuery;
 
 /**
  * Created by DJ on 10/18/2016.

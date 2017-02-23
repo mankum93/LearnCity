@@ -5,10 +5,10 @@ import android.util.Log;
 import com.learncity.generic.learner.account.create.AccountCreationClient;
 import com.learncity.generic.learner.account.create.GAELearnerAccountCreationClient;
 import com.learncity.generic.learner.account.create.GAETutorAccountCreationClient;
-import com.learncity.generic.learner.account.create.ver0.AccountCreationTask;
-import com.learncity.generic.learner.account.create.ver0.GAEAccountCreationHandlerThread;
-import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
-import com.learncity.tutor.account.profile.model.TutorProfileParcelableVer1;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
+import com.learncity.learner.account.profile.model.LearnerProfile;
+import com.learncity.tutor.account.profile.model.TutorProfile;
+import com.learncity.util.ver0.AccountCreationTask;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -24,11 +24,11 @@ public class GAEAccountCreationTask implements AccountCreationTask {
 
     private GAEAccountCreationHandlerThread handlerThread;
 
-    private GenericLearnerProfileParcelableVer1 profile;
+    private GenericLearnerProfile profile;
 
     private AccountCreationTaskListener listener;
 
-    public GAEAccountCreationTask(GenericLearnerProfileParcelableVer1 profile){
+    public GAEAccountCreationTask(GenericLearnerProfile profile){
         this.profile = profile;
     }
     private void initializeTask() {
@@ -104,9 +104,9 @@ public class GAEAccountCreationTask implements AccountCreationTask {
         this.listener = listener;
     }
 
-    private void selectClient(GenericLearnerProfileParcelableVer1 profile){
-        if(profile instanceof TutorProfileParcelableVer1){
-            GAETutorAccountCreationClient client = new GAETutorAccountCreationClient((TutorProfileParcelableVer1)profile);
+    private void selectClient(GenericLearnerProfile profile){
+        if(profile instanceof TutorProfile){
+            GAETutorAccountCreationClient client = new GAETutorAccountCreationClient((TutorProfile)profile);
             client.setClientListener(new AccountCreationClient.AccountCreationClientListener() {
                 @Override
                 public void onClientPrepared() {
@@ -134,7 +134,7 @@ public class GAEAccountCreationTask implements AccountCreationTask {
             accountCreationClient = client;
         }
         else{
-            GAELearnerAccountCreationClient client = new GAELearnerAccountCreationClient(profile);
+            GAELearnerAccountCreationClient client = new GAELearnerAccountCreationClient((LearnerProfile)profile);
             client.setClientListener(new AccountCreationClient.AccountCreationClientListener() {
                 @Override
                 public void onClientPrepared() {

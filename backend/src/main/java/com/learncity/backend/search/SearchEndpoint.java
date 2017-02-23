@@ -8,7 +8,7 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cmd.Query;
-import com.learncity.backend.persistence.ver0.TutorProfile;
+import com.learncity.backend.account.create.ver0.TutorProfile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +25,8 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
         version = "v1",
         title = "Search API",
         namespace = @ApiNamespace(
-                ownerDomain = "search.learncity.com",
-                ownerName = "search.learncity.com",
+                ownerDomain = "learncity.com",
+                ownerName = "Learncity",
                 packagePath = ""
         )
 )

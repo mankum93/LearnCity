@@ -6,10 +6,10 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.google.api.client.json.GenericJson;
-import com.learncity.backend.persistence.genericLearnerProfileVer1Api.GenericLearnerProfileVer1Api;
-import com.learncity.backend.persistence.genericLearnerProfileVer1Api.model.GenericLearnerProfileVer1;
-import com.learncity.generic.learner.account.profile.model.GenericLearnerProfileParcelableVer1;
+import com.learncity.backend.account.create.learnerProfileVer1Api.LearnerProfileVer1Api;
+import com.learncity.backend.account.create.learnerProfileVer1Api.model.LearnerProfileVer1;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
+import com.learncity.learner.account.profile.model.LearnerProfile;
 
 import java.io.IOException;
 
@@ -21,15 +21,15 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
 
     private static final String TAG = "GAEACCreationClient";
 
-    private static GenericLearnerProfileVer1Api myApiService;
+    private static LearnerProfileVer1Api myApiService;
 
-    private GenericLearnerProfileParcelableVer1 profile;
+    private LearnerProfile profile;
 
-    private GenericLearnerProfileVer1 profileEntity;
+    private LearnerProfileVer1 profileEntity;
 
     private AccountCreationClientListener clientListener;
 
-    public GAELearnerAccountCreationClient(GenericLearnerProfileParcelableVer1 profile){
+    public GAELearnerAccountCreationClient(LearnerProfile profile){
         this.profile = profile;
     }
     @Override
@@ -41,6 +41,7 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
             setApiService();
         }
         populateProfileEntity(profile);
+
         clientListener.onClientPrepared();
     }
 
@@ -78,7 +79,7 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
     }
 
     private void setApiService(){
-        myApiService = new GenericLearnerProfileVer1Api.Builder(AndroidHttp.newCompatibleTransport(),
+        myApiService = new LearnerProfileVer1Api.Builder(AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(), null)
                 // options for running against local devappserver
                 // - 10.0.2.2 is localhost's IP address in Android emulator
@@ -93,10 +94,10 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
                 }).build();
     }
 
-    private void populateProfileEntity(GenericLearnerProfileParcelableVer1 profile){
+    private void populateProfileEntity(GenericLearnerProfile profile){
         //Populate the entity object with the profile info.
 
-        profileEntity = new GenericLearnerProfileVer1();
+        profileEntity = new LearnerProfileVer1();
 
         profileEntity.setName(profile.getName());
         profileEntity.setEmailID(profile.getEmailID());
