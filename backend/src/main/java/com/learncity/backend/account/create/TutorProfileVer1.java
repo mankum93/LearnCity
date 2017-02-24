@@ -76,7 +76,7 @@ public class TutorProfileVer1 extends GenericLearnerProfileVer1 {
     }
 
     public void setDisciplines(String[] disciplines) {
-        if(tutorTypes == null){
+        if(disciplines == null){
             throw new IllegalStateException("Disciplines are null");
         }
         this.disciplines = disciplines;

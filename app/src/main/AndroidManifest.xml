@@ -27,7 +27,7 @@
             android:value="AIzaSyAREL6F44Hgwt4G1DqivXBLG2uiJIm0hrs" />
 
         <activity
-            android:name="com.learncity.generic.learner.main.SplashScreen1ActivityVer2"
+            android:name="com.learncity.generic.learner.main.SplashScreen1ActivityVer3"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,14 +35,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4"/>
         <activity android:name="com.learncity.generic.learner.account.create.LoginActivity"/>
-        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithGoogleAccountActivityVer3"/>
-        <activity android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivityVer3"/>
-        <activity android:name="com.learncity.generic.learner.account.create.SignUpWithEmailActivityVer3"/>
+        <activity android:name="com.learncity.generic.learner.account.create.SignUpActivity"/>
         <activity android:name="com.learncity.learner.main.LearnerHomeActivity" />
         <activity android:name="com.learncity.tutor.main.TutorHomeActivity" />
         <activity android:name="com.learncity.learner.search.SearchActivity" />
         <activity android:name="com.learncity.learner.account.profile.MyProfileActivity" />
+        <activity android:name="com.learncity.tutor.account.profile.MyProfileActivity"/>
     </application>
 
 </manifest>

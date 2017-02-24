@@ -19,7 +19,9 @@ import static com.learncity.util.account_management.Task.TASK_FAILED;
  * Created by DJ on 2/5/2017.
  */
 
-/**A general purpose Task Processor which processes the tasks in a serial manner with mechanism
+/**@author Manish Kumar Sharma
+ *
+ * A general purpose Task Processor which processes the tasks in a serial manner with mechanism
  * to ask for a Retry in case a task fails and show a ProgressDialog for the task execution progress. The
  * AlertDialog for Retry and ProgressDialog for progress can be custom provided too.
  * It also facilitates a window into the Overall Task processing of the queues tasks as well caller can set listener
@@ -629,7 +631,11 @@ public class TaskProcessor {
         mUIHandler.post(new Runnable() {
             @Override
             public void run() {
-                taskProcessorListener.onCleanupComplete();
+                if(taskProcessorListener != null){
+                    Log.d(TAG, "TaskProcessor.performCleanup(): " + "\n" + "MESSAGE: Calling TaskProcessorListener.onCleanupComplete()..." +
+                            "\n" +"Thread ID: " + Thread.currentThread().getId());
+                    taskProcessorListener.onCleanupComplete();
+                }
                 if(shouldShutDown){
                     context = null;
                     taskProcessingProgressDialog = null;
@@ -702,22 +708,23 @@ public class TaskProcessor {
         if(overallTaskProcessingState == OVERALL_TASKS_PROCESSING_STARTED){
             throw new IllegalStateException("Task processing has started. You can't set the Alert Dialog in the middle");
         }
-        this.taskProcessingRetryAlertDialog = taskProcessingRetry;
+        taskProcessingRetryAlertDialog = taskProcessingRetry;
 
-        //Set the default conifg.
-        this.taskProcessingRetryAlertDialog.setCancelable(true);
+        //Set the default config.
+        taskProcessingRetryAlertDialog.setCancelable(false);
     }
 
-    public void setTaskProcessingProgressDialog(ProgressDialog taskProcessingProgressDialog) {
+    public void setTaskProcessingProgressDialog(ProgressDialog progressDialog) {
         //If the task processing has started, you can't set the flag/taskListener now
         if(overallTaskProcessingState == OVERALL_TASKS_PROCESSING_STARTED){
             throw new IllegalStateException("Task processing has started. You can't set the Progress Dialog in the middle");
         }
-        this.taskProcessingProgressDialog = taskProcessingProgressDialog;
+        taskProcessingProgressDialog = progressDialog;
 
-        //Set the default conifg.
-        this.taskProcessingProgressDialog.setIndeterminate(true);
-        this.taskProcessingProgressDialog.setCancelable(true);
+        //Set the default config.
+        taskProcessingProgressDialog.setIndeterminate(true);
+        taskProcessingProgressDialog.setCancelable(false);
+        taskProcessingProgressDialog.setCanceledOnTouchOutside(false);
     }
 
     /**Check if the UI flag belongs to the set of valid ones*/
@@ -779,7 +786,9 @@ public class TaskProcessor {
                                         lockForRetryInternal.notify();
                                     }
                                 }
-                            }).create();
+                            })
+                            .setCancelable(false)
+                            .create();
                 }
                 if(!taskProcessingRetryAlertDialog.isShowing()){
                     Log.d(TAG, "TaskProcessor.showRetryDialog(): " + "\n" + "MESSAGE: Showing the Retry dialog..." +
@@ -805,8 +814,9 @@ public class TaskProcessor {
                 if(taskProcessingProgressDialog == null){
                     taskProcessingProgressDialog = new ProgressDialog(context);
                     taskProcessingProgressDialog.setIndeterminate(true);
-                    taskProcessingProgressDialog.setTitle("Creating Account");
+                    taskProcessingProgressDialog.setTitle("Performing Task...");
                     taskProcessingProgressDialog.setCancelable(true);
+                    taskProcessingProgressDialog.setCanceledOnTouchOutside(false);
                 }
                 if(!taskProcessingProgressDialog.isShowing()){
                     Log.d(TAG, "TaskProcessor.showRetryDialog(): " + "\n" + "MESSAGE: Showing the progress dialog..." +

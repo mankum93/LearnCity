@@ -5,7 +5,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.learncity.loginApi.model.GenericLearnerProfileVer1;
 
 import org.greenrobot.eventbus.EventBus;
@@ -16,6 +18,8 @@ import org.greenrobot.eventbus.Subscribe;
  */
 
 public class LoginService {
+
+    private final String TAG = "LoginService";
 
     /**Account creation status indicators*/
     public static final int LOGIN_FAILED = Task.TASK_FAILED;
@@ -29,7 +33,7 @@ public class LoginService {
     private Context context;
     private LoginListener loginListener;
 
-    private GenericLearnerProfileVer1 profileFromServer;
+    private LoginEventResponse loginEventResponse;
 
     private boolean finishUpInitiated = false;
     private boolean hasFinishedUp = false;
@@ -205,10 +209,11 @@ public class LoginService {
                 }
                 //Unregister the instace with the EventBus
                 EventBus.getDefault().unregister(this);
+                taskProcessor.shutDown();
                 loginListener = null;
                 taskProcessor = null;
                 context = null;
-                profileFromServer = null;
+                loginEventResponse = null;
                 defaultTaskProcessorListener = null;
 
                 //loginService = null;
@@ -298,12 +303,12 @@ public class LoginService {
             taskListener = new TaskProcessor.TaskProcessorListener() {
                 @Override
                 public void onTaskProcessingComplete() {
-                    loginListener.onLogin();
+                    loginListener.onLogin(loginEventResponse);
                 }
 
                 @Override
                 public void onTaskProcessingFailed() {
-                    loginListener.onLoginFailed();
+                    loginListener.onLoginFailed(loginEventResponse);
                 }
 
                 @Override
@@ -390,8 +395,9 @@ public class LoginService {
 
     //---------------------------------------------------------------------------------------------------------------------
     @Subscribe
-    public void onLoginResponseFromServer(ProfileResponseOnLoginEvent event){
-        this.profileFromServer = event.getProfileResponse();
+    public void onLoginResponseFromServer(LoginEventResponse event){
+        Log.d(TAG, "Login event response received by LoginService");
+        this.loginEventResponse = event;
         //TODO: Perform task on receiving response from server
     }
 
@@ -402,8 +408,8 @@ public class LoginService {
      */
     public interface LoginListener {
 
-        void onLogin();
-        void onLoginFailed();
+        void onLogin(LoginEventResponse loginEventResponse);
+        void onLoginFailed(LoginEventResponse loginEventResponse);
         void onPreLogin();
         void onLoginServiceRefresh();
     }
@@ -494,11 +500,18 @@ public class LoginService {
 
     //---------------------------------------------------------------------------------------------------------------------
 
-    public static class ProfileResponseOnLoginEvent{
+    public static class LoginEventResponse {
+        //In case there is a successful login
         private GenericLearnerProfileVer1 profileFromServer;
+        //In case there is an unsuccessful attempt
+        private GoogleJsonResponseException exception;
 
-        public ProfileResponseOnLoginEvent(GenericLearnerProfileVer1 profileFromServer) {
+        public LoginEventResponse(GenericLearnerProfileVer1 profileFromServer) {
             this.profileFromServer = profileFromServer;
+        }
+
+        public LoginEventResponse(GoogleJsonResponseException exception) {
+            this.exception = exception;
         }
 
         public GenericLearnerProfileVer1 getProfileResponse() {
@@ -507,6 +520,14 @@ public class LoginService {
 
         public void setProfileResponse(GenericLearnerProfileVer1 profileFromServer) {
             this.profileFromServer = profileFromServer;
+        }
+
+        public GoogleJsonResponseException getException() {
+            return exception;
+        }
+
+        public void setException(GoogleJsonResponseException exception) {
+            this.exception = exception;
         }
     }
 }

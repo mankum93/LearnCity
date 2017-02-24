@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.learncity.loginApi.LoginApi;
@@ -29,9 +30,13 @@ public class GAELoginTask extends AbstractTask {
 
     private static LoginApi loginApiService;
 
-    private GenericLearnerProfileVer1 response;
+    private GenericLearnerProfileVer1 profileResponse;
 
     private LoginService.LoginDetails details;
+
+    private LoginService.LoginEventResponse loginEventResponse;
+
+    private int returnCode;
 
     public GAELoginTask(LoginService.LoginDetails details) {
         this.details = details;
@@ -52,20 +57,52 @@ public class GAELoginTask extends AbstractTask {
      */
     @Override
     public int performTask() {
+        Log.d(TAG, "GAELoginTask.performTask(): " + "\n" + "MESSAGE: Sending request for Login..." +
+                "\n" +"Thread ID: " + Thread.currentThread().getId());
         try{
             //Send the login request to the server
-            response = loginApiService.login(populateLoginDetailsEntity(details)).execute();
+            profileResponse = loginApiService.login(populateLoginDetailsEntity(details)).execute();
+        }
+        catch(GoogleJsonResponseException e){
+            Log.e(TAG, "There was was some problem logging in", e);
+            //Prepare a proper response
+            loginEventResponse = new LoginService.LoginEventResponse(e);
+            returnCode = LOGIN_FAILED;
+
+            //Post the result for interested parties
+            EventBus.getDefault().postSticky(loginEventResponse);
+
+            return returnCode;
         }
         catch(IOException ioe){
             Log.e(TAG, "There was was some problem logging in", ioe);
-        }
-        //Post the result for interested parties
-        EventBus.getDefault().postSticky(new LoginService.ProfileResponseOnLoginEvent(response));
+            returnCode = LOGIN_FAILED;
 
-        if(response == null){
-            return LOGIN_FAILED;
+            return returnCode;
+        }
+        finally {
+            Log.d(TAG, "Profile Response: " + profileResponse);
+        }
+
+
+        //Prepare a proper response
+        loginEventResponse = new LoginService.LoginEventResponse(profileResponse);
+        //Post the result for interested parties
+        EventBus.getDefault().postSticky(loginEventResponse);
+
+        if(profileResponse == null){
+            throw new RuntimeException("Profile response shouldn't be null. Check the logic for HTTP response in GAELoginTask");
+            //return LOGIN_FAILED;
         }
         return LOGIN_SUCCESSFUL;
+    }
+
+    @Override
+    public void performCleanup(){
+        loginApiService = null;
+        loginEventResponse = null;
+        profileResponse = null;
+        details = null;
     }
 
     private LoginDetails populateLoginDetailsEntity(LoginService.LoginDetails details){

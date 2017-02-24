@@ -48,7 +48,7 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
     @Override
     public void sendRequest() {
 
-        Log.d(TAG, "EMAIL: " + profileEntity.getEmailID() + "");
+        Log.d(TAG, "Profile: " + profileEntity);
         try{
             Log.d(TAG, "GAELearnerAccountCreationClient.sendRequest(): " + "\n" + "MESSAGE: Sending Request for persistence..." +
                     "\n" +"Thread ID: " + Thread.currentThread().getId());

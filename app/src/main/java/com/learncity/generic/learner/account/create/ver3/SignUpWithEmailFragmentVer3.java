@@ -1,4 +1,4 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.generic.learner.account.create.ver3;
 
 
 import android.content.Intent;
@@ -14,7 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.learncity.generic.learner.account.create.ver1.SignUpWithGoogleAccountActivityVer1;
+import com.learncity.generic.learner.account.create.GAEAccountCreationTaskVer2;
+import com.learncity.generic.learner.account.create.SQLiteAccountCreationTaskVer2;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
 import com.learncity.learner.account.profile.model.LearnerProfile;
@@ -25,18 +26,19 @@ import com.learncity.util.MultiSpinner;
 import com.learncity.util.account_management.AccountCreationService;
 import com.learncity.util.account_management.AccountManager;
 
+
 /**
  * Created by DJ on 10/30/2016.
  */
 
-public class SignUpWithGoogleAccountFragmentVer3 extends Fragment{
+public class SignUpWithEmailFragmentVer3 extends Fragment{
 
-    public static String TAG = "SignUpWithGoogleFrag";
-
-    private GenericLearnerProfile profileFromGoogleAccount;
+    public static String TAG = "SignUpWithEmailFragment";
 
     private boolean isConditionalTutorUIVisible;
 
+    private EditText name;
+    private EditText emailId;
     private EditText phoneNo;
     private EditText password;
     private EditText retypedPassword;
@@ -49,28 +51,25 @@ public class SignUpWithGoogleAccountFragmentVer3 extends Fragment{
     private GenericLearnerProfile profile;
 
     private ViewGroup rootView;
-
     private LayoutInflater layoutInflater;
     private ViewGroup profileFieldsContainer;
     private View rootTutorConditionalLayout;
-
     private String[] tutorTypes;
     private String[] subjects;
 
-    GAEAccountCreationTaskVer2 serverACCreationTask;
-    SQLiteAccountCreationTaskVer2 localACCreationTask;
+    private GAEAccountCreationTaskVer2 serverACCreationTask;
+    private SQLiteAccountCreationTaskVer2 localACCreationTask;
 
     private AccountCreationService accountCreationService;
 
-    public static SignUpWithGoogleAccountFragmentVer3 newInstance(){
-        return new SignUpWithGoogleAccountFragmentVer3();
+    public static SignUpWithEmailFragmentVer3 newInstance(){
+        return new SignUpWithEmailFragmentVer3();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState){
-
         super.onCreate(savedInstanceState);
-        profileFromGoogleAccount = getActivity().getIntent().getParcelableExtra(SignUpWithGoogleAccountActivityVer1.EXTRAS_GENERIC_PROFILE_INCOMPLETE);
+
         //Fetch the AC creation service
         accountCreationService = AccountManager.fetchService(getActivity(), AccountManager.ACCOUNT_CREATION_SERVICE);
         //Set the listener on it
@@ -84,8 +83,11 @@ public class SignUpWithGoogleAccountFragmentVer3 extends Fragment{
 
         layoutInflater = inflater;
 
-        rootView = (ViewGroup)inflater.inflate(R.layout.fragment_sign_up_with_google_ver2, container, false);
+        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_sign_up_with_email_ver2, container, false);
 
+        name = (EditText) rootView.findViewById(R.id.person_name);
+        //TODO: Validate the Email ID field
+        emailId = (EditText) rootView.findViewById(R.id.person_emailId);
         //TODO: Validate the Phone No field
         phoneNo = (EditText) rootView.findViewById(R.id.person_phoneNo);
         //TODO: Validate the Password/Retyped Password field
@@ -147,8 +149,8 @@ public class SignUpWithGoogleAccountFragmentVer3 extends Fragment{
                     //For now, our generic learner is THE learner.
 
                     profile = new LearnerProfile.Builder(
-                            profileFromGoogleAccount.getName(),
-                            profileFromGoogleAccount.getEmailID(),
+                            name.getText().toString(),
+                            emailId.getText().toString(),
                             phoneNo.getText().toString(),
                             GenericLearnerProfile.STATUS_LEARNER,
                             password.getText().toString()
@@ -160,17 +162,18 @@ public class SignUpWithGoogleAccountFragmentVer3 extends Fragment{
                     Log.i(TAG, "User is a Tutor");
 
                     profile = new TutorProfile.Builder(
-                            profileFromGoogleAccount.getName(),
-                            profileFromGoogleAccount.getEmailID(),
+                            name.getText().toString(),
+                            emailId.getText().toString(),
                             phoneNo.getText().toString(),
                             GenericLearnerProfile.STATUS_TUTOR,
                             password.getText().toString())
+
                             .withTutorTypes(tutorTypes)
                             .withDisciplines(subjects)
                             .build();
+
                     profile = TutorProfile.validateTutorProfile((TutorProfile) profile);
                 }
-
                 //------------------ACCOUNT CREATION AHEAD------------------------------------------------------------
 
                 //Configure the AC creation tasks
@@ -189,10 +192,10 @@ public class SignUpWithGoogleAccountFragmentVer3 extends Fragment{
             @Override
             public void onAccountCreated() {
                 if(profile.getCurrentStatus() == GenericLearnerProfile.STATUS_LEARNER){
-                    startActivity(new Intent(SignUpWithGoogleAccountFragmentVer3.this.getActivity(), LearnerHomeActivity.class));
+                    startActivity(new Intent(SignUpWithEmailFragmentVer3.this.getActivity(), LearnerHomeActivity.class));
                 }
                 else{
-                    startActivity(new Intent(SignUpWithGoogleAccountFragmentVer3.this.getActivity(), TutorHomeActivity.class));
+                    startActivity(new Intent(SignUpWithEmailFragmentVer3.this.getActivity(), TutorHomeActivity.class));
                 }
             }
 
@@ -230,7 +233,7 @@ public class SignUpWithGoogleAccountFragmentVer3 extends Fragment{
             subjectsICanTeachMultiSpinner = (MultiSpinner) rootTutorConditionalLayout.findViewById(R.id.subjects_taught_spinner);
 
             // create spinner list elements
-            ArrayAdapter adapterTypeOfTutor = new ArrayAdapter<String>(this.getActivity(),
+            final ArrayAdapter adapterTypeOfTutor = new ArrayAdapter<String>(this.getActivity(),
                     android.R.layout.simple_spinner_item,
                     getResources().getStringArray(R.array.type_of_tutor));
             ArrayAdapter adapterSubjects = new ArrayAdapter<String>(this.getActivity(),
@@ -297,7 +300,7 @@ public class SignUpWithGoogleAccountFragmentVer3 extends Fragment{
         //Phone No should be 10 digits exactly(Indian mobile numbers)
         if(phoneNo.length()!=10){
             Log.e(TAG, "Phone No length is " + phoneNo.length() + "\n"
-            + "It should be 10 characters exactly");
+                    + "It should be 10 characters exactly");
             //TODO: Prompt the user in the UI about this
         }
     }
@@ -317,6 +320,8 @@ public class SignUpWithGoogleAccountFragmentVer3 extends Fragment{
     @Override
     public void onResume(){
         super.onResume();
+        //Pressing back button from the home page for the first time will bring back to the
+        //A/C creation page if we don't take care of it
     }
 
     @Override

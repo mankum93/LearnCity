@@ -38,6 +38,9 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db){
+        //Currently, as onCreate() is called only once. What if the user somehow initiates the
+        // AC creation with a different status then chosen at first, see what's to be done in that case.
+        //TODO: Solve the problem in the above comment
 
         //Depending on the current status, create the Learner or Tutor A/C
         if(currentAccountStatus == GenericLearnerProfile.STATUS_LEARNER){

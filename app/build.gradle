@@ -26,6 +26,10 @@ android {
     sourceSets{
         main{
             res.srcDirs = [
+                    'src/main/res/layouts/common/layout/ver3/layout',
+                    'src/main/res/layouts/common/layout/ver3',
+                    'src/main/res/layouts/common/layout/ver2/layout',
+                    'src/main/res/layouts/common/layout/ver2',
                     'src/main/res/layouts/common/layout/ver1/layout',
                     'src/main/res/layouts/common/layout/ver1',
                     'src/main/res/layouts/common/layout/ver0/layout',

@@ -1,4 +1,4 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.generic.learner.account.create.ver3;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -17,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.learncity.generic.learner.account.create.LoginActivity;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
 import com.learncity.learner.account.profile.model.LearnerProfile;

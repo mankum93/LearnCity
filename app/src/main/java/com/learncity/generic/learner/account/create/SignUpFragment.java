@@ -1,9 +1,11 @@
 package com.learncity.generic.learner.account.create;
 
-
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,19 +26,16 @@ import com.learncity.util.MultiSpinner;
 import com.learncity.util.account_management.AccountCreationService;
 import com.learncity.util.account_management.AccountManager;
 
-
 /**
- * Created by DJ on 10/30/2016.
+ * Created by DJ on 2/23/2017.
  */
 
-public class SignUpWithEmailFragmentVer3 extends Fragment{
+public abstract class SignUpFragment extends Fragment {
 
-    public static String TAG = "SignUpWithEmailFragment";
+    private final String TAG = getTag();
 
     private boolean isConditionalTutorUIVisible;
 
-    private EditText name;
-    private EditText emailId;
     private EditText phoneNo;
     private EditText password;
     private EditText retypedPassword;
@@ -60,9 +59,6 @@ public class SignUpWithEmailFragmentVer3 extends Fragment{
 
     private AccountCreationService accountCreationService;
 
-    public static SignUpWithEmailFragmentVer3 newInstance(){
-        return new SignUpWithEmailFragmentVer3();
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -70,6 +66,50 @@ public class SignUpWithEmailFragmentVer3 extends Fragment{
 
         //Fetch the AC creation service
         accountCreationService = AccountManager.fetchService(getActivity(), AccountManager.ACCOUNT_CREATION_SERVICE);
+        //Set the listener on it
+        setACCreationServiceListener();
+        //Set the Alertdialog
+        setACCreationRetryDialog();
+        //Set the progress dialog
+        setACCreationProgressDialog();
+    }
+
+    private void setACCreationRetryDialog() {
+        accountCreationService.setACCreationRetryAlertDialog(new AlertDialog.Builder(getActivity())
+                .setTitle("Account Creation Failed")
+                .setMessage("There was a problem creating the Account")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "TaskProcessor.showRetryDialog(): " + "\n" + "MESSAGE: RETRY button clicked..." +
+                                "\n" +"Thread ID: " + Thread.currentThread().getId());
+
+                        dialog.cancel();
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "TaskProcessor.showRetryDialog(): " + "\n" + "MESSAGE: CANCEL button clicked..." +
+                                "\n" +"Thread ID: " + Thread.currentThread().getId());
+                        dialog.cancel();
+
+                    }
+                })
+                .setCancelable(false)
+                .create());
+    }
+
+    private void setACCreationProgressDialog() {
+
+        ProgressDialog taskProcessingProgressDialog = new ProgressDialog(getActivity());
+        taskProcessingProgressDialog.setIndeterminate(true);
+        taskProcessingProgressDialog.setTitle("Creating Account...");
+        taskProcessingProgressDialog.setCancelable(true);
+        taskProcessingProgressDialog.setCanceledOnTouchOutside(false);
+
+        accountCreationService.setAccountCreationProgressDialog(taskProcessingProgressDialog);
     }
 
     @Override
@@ -79,12 +119,8 @@ public class SignUpWithEmailFragmentVer3 extends Fragment{
 
         layoutInflater = inflater;
 
-        rootView = (ViewGroup) inflater.inflate(R.layout.fragment_sign_up_with_email_ver2, container, false);
+        rootView = (ViewGroup) inflateLayout(inflater, container, savedInstanceState);
 
-        name = (EditText) rootView.findViewById(R.id.person_name);
-        //TODO: Validate the Email ID field
-        emailId = (EditText) rootView.findViewById(R.id.person_emailId);
-        //TODO: Validate the Phone No field
         phoneNo = (EditText) rootView.findViewById(R.id.person_phoneNo);
         //TODO: Validate the Password/Retyped Password field
         password = (EditText) rootView.findViewById(R.id.password);
@@ -139,34 +175,16 @@ public class SignUpWithEmailFragmentVer3 extends Fragment{
 
                 //Important: Remember to validate the entity before stashing it
                 String selectedStatus = spinner.getSelectedItem().toString();
+                profile = buildProfile(selectedStatus);
+
                 if(selectedStatus.equals("Learn")){
                     Log.i(TAG, "User is a Learner");
 
-                    //For now, our generic learner is THE learner.
-
-                    profile = new LearnerProfile.Builder(
-                            name.getText().toString(),
-                            emailId.getText().toString(),
-                            phoneNo.getText().toString(),
-                            GenericLearnerProfile.STATUS_LEARNER,
-                            password.getText().toString()
-                    ).build();
                     //Now, before getting onto finalizing the profile, make a final validation
                     profile = GenericLearnerProfile.validateGenericLearnerProfile(profile);
                 }
                 else{
                     Log.i(TAG, "User is a Tutor");
-
-                    profile = new TutorProfile.Builder(
-                            name.getText().toString(),
-                            emailId.getText().toString(),
-                            phoneNo.getText().toString(),
-                            GenericLearnerProfile.STATUS_TUTOR,
-                            password.getText().toString())
-
-                            .withTutorTypes(tutorTypes)
-                            .withDisciplines(subjects)
-                            .build();
 
                     profile = TutorProfile.validateTutorProfile((TutorProfile) profile);
                 }
@@ -176,44 +194,74 @@ public class SignUpWithEmailFragmentVer3 extends Fragment{
                 serverACCreationTask = new GAEAccountCreationTaskVer2(profile);
                 localACCreationTask = new SQLiteAccountCreationTaskVer2(getContext(), profile);
 
-                accountCreationService.setAccountCreationListener(new AccountCreationService.AccountCreationListener() {
-                    @Override
-                    public void onAccountCreated() {
-                        if(profile.getCurrentStatus() == GenericLearnerProfile.STATUS_LEARNER){
-                            startActivity(new Intent(SignUpWithEmailFragmentVer3.this.getActivity(), LearnerHomeActivity.class));
-                        }
-                        else{
-                            startActivity(new Intent(SignUpWithEmailFragmentVer3.this.getActivity(), TutorHomeActivity.class));
-                        }
-                    }
-
-                    @Override
-                    public void onAccountCreationFailed() {
-                    }
-
-                    @Override
-                    public void onPreAccountCreation() {
-
-                    }
-
-                    @Override
-                    public void onAccountCreationServiceRefresh() {
-
-                    }
-                }, AccountCreationService.NOTIFY_UI_AUTO);
                 accountCreationService.startAccountCreation(serverACCreationTask, localACCreationTask);
-                accountCreationService.shutDown();
+                accountCreationService.finishUp();
             }
         });
 
         return rootView;
     }
 
-    private boolean isConditionalTutorUIVisible() {
+    protected abstract Fragment newInstance();
+
+    protected abstract View inflateLayout(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
+
+    protected GenericLearnerProfile buildProfile(String status){
+        if(status.equals("Learn")){
+            return new LearnerProfile.Builder(
+                    GenericLearnerProfile.NAME_NULL,
+                    GenericLearnerProfile.EMAIL_NULL,
+                    phoneNo.getText().toString(),
+                    GenericLearnerProfile.STATUS_LEARNER,
+                    password.getText().toString()
+            ).build();
+        }
+        else{
+            return new TutorProfile.Builder(
+                    GenericLearnerProfile.NAME_NULL,
+                    GenericLearnerProfile.EMAIL_NULL,
+                    phoneNo.getText().toString(),
+                    GenericLearnerProfile.STATUS_TUTOR,
+                    password.getText().toString())
+                    .withTutorTypes(tutorTypes)
+                    .withDisciplines(subjects)
+                    .build();
+        }
+    }
+
+    void setACCreationServiceListener(){
+        accountCreationService.setAccountCreationListener(new AccountCreationService.AccountCreationListener() {
+            @Override
+            public void onAccountCreated() {
+                if(profile.getCurrentStatus() == GenericLearnerProfile.STATUS_LEARNER){
+                    startActivity(new Intent(getActivity(), LearnerHomeActivity.class));
+                }
+                else{
+                    startActivity(new Intent(getActivity(), TutorHomeActivity.class));
+                }
+            }
+
+            @Override
+            public void onAccountCreationFailed() {
+            }
+
+            @Override
+            public void onPreAccountCreation() {
+
+            }
+
+            @Override
+            public void onAccountCreationServiceRefresh() {
+
+            }
+        }, AccountCreationService.NOTIFY_UI_AUTO);
+    }
+
+    boolean isConditionalTutorUIVisible() {
         return isConditionalTutorUIVisible;
     }
 
-    private void showConditionalTutorUI() {
+    void showConditionalTutorUI() {
         //Initialize the first time
         if(typeOfTutorMultiSpinner == null && subjectsICanTeachMultiSpinner == null){
             profileFieldsContainer = (ViewGroup)rootView.findViewById(R.id.profile_fields_container);
@@ -259,12 +307,12 @@ public class SignUpWithEmailFragmentVer3 extends Fragment{
         isConditionalTutorUIVisible = true;
     }
 
-    private void disableConditionalTutorUI() {
+    void disableConditionalTutorUI() {
         rootTutorConditionalLayout.setVisibility(View.GONE);
         isConditionalTutorUIVisible = false;
     }
 
-    private void validateConditionalTutorInput(){
+    void validateConditionalTutorInput(){
         if(typeOfTutorMultiSpinner.getSelectedItemsCount() == 0){
             //No item selected
             Log.e(TAG, "No item selected; can't continue like this");
@@ -277,7 +325,7 @@ public class SignUpWithEmailFragmentVer3 extends Fragment{
         }
     }
 
-    private void validateSubmittedInput() {
+    void validateSubmittedInput() {
         validatePhoneNo();
         validatePassword();
     }
@@ -306,6 +354,12 @@ public class SignUpWithEmailFragmentVer3 extends Fragment{
         super.onPause();
     }
     @Override
+    public void onStop(){
+        //Stop the AC creation service
+        accountCreationService.shutDown();
+        super.onStop();
+    }
+    @Override
     public void onResume(){
         super.onResume();
         //Pressing back button from the home page for the first time will bring back to the
@@ -317,5 +371,3 @@ public class SignUpWithEmailFragmentVer3 extends Fragment{
         super.onDestroy();
     }
 }
-
-

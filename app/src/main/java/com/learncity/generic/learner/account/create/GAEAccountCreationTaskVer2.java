@@ -42,16 +42,16 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask {
     @Override
     public int performTask() {
 
-        Log.d(TAG, "GAEAccountCreationTask.performAccountCreation(): " + "\n" + "MESSAGE: Performing AC creation..." +
+        Log.d(TAG, "GAEAccountCreationTask.performTask(): " + "\n" + "MESSAGE: Performing AC creation..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
         selectClient(profile);
         //Prepare the client
-        Log.d(TAG, "GAEAccountCreationTask.performAccountCreation(): " + "\n" + "MESSAGE: Preparing client..." +
+        Log.d(TAG, "GAEAccountCreationTask.performTask(): " + "\n" + "MESSAGE: Preparing client..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
         accountCreationClient.prepareClient();
 
         //Send the Account creation request
-        Log.d(TAG, "GAEAccountCreationTask.performAccountCreation(): " + "\n" + "MESSAGE: Sending AC creation request..." +
+        Log.d(TAG, "GAEAccountCreationTask.performTask(): " + "\n" + "MESSAGE: Sending AC creation request..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
         accountCreationClient.sendRequest();
 

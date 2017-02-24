@@ -45,6 +45,25 @@ public class TutorProfile extends GenericLearnerProfile {
 
     private Builder builder;
 
+
+    @Override
+    public String toString(){
+        return new StringBuilder(super.toString())
+                .append("Educational Qualifications: ")
+                .append(educationalQualifications).append("\n")
+                .append("Occupation: ")
+                .append(occupation).append("\n")
+                .append("Tutor types: ")
+                .append(tutorTypes).append("\n")
+                .append("Disciplines taught: ")
+                .append(disciplines).append("\n")
+                .append("Rating: ")
+                .append(rating).append("\n")
+                .append("Teaching credits")
+                .append(teachingCredits).append("\n")
+                .toString();
+    }
+
     //Getters and Setters-----------------------------------------------------------------------------------------
 
     public EducationalQualification[] getEducationalQualifications() {
@@ -79,7 +98,7 @@ public class TutorProfile extends GenericLearnerProfile {
     }
 
     public void setDisciplines(String[] disciplines) {
-        if(tutorTypes == null){
+        if(disciplines == null){
             throw new IllegalStateException("Disciplines are null");
         }
         this.disciplines = disciplines;
