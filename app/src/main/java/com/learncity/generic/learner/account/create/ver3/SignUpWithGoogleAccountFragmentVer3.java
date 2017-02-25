@@ -211,7 +211,7 @@ public class SignUpWithGoogleAccountFragmentVer3 extends Fragment{
             public void onAccountCreationServiceRefresh() {
 
             }
-        }, AccountCreationService.NOTIFY_UI_AUTO);
+        });
     }
 
     private boolean isConditionalTutorUIVisible() {

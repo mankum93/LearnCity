@@ -4,7 +4,7 @@ package com.learncity.util.account_management;
  * Created by DJ on 2/6/2017.
  */
 
-public interface Task {
+public interface Task<T> {
 
     /**Task completion status indicators*/
     int TASK_FAILED = 0x0022;
@@ -16,14 +16,15 @@ public interface Task {
     /**Override this method to carry out the task.
      * @return Returns the task completion status out of the following codes:
      * {TASK_FAILED, TASK_COMPLETED}*/
-    int performTask();
+    Result<T> performTask();
 
     /**Override this method to perform any cleanup activities with the task execution*/
     void performCleanup();
 
 
-    interface TaskListener {
-        void onTaskCompleted();
-        void onTaskFailed();
+    interface TaskListener<T> {
+        void onPreTaskExecute();
+        void onTaskCompleted(Result<T> resultCompletion);
+        void onTaskFailed(Result<T> resultFailure);
     }
 }

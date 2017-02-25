@@ -5,12 +5,12 @@ package com.learncity.util.account_management;
  * Created by DJ on 2/19/2017.
  */
 
-public abstract class AbstractTask implements Task {
+public abstract class AbstractTask<T> implements Task<T> {
 
     //Public access because of the involvement of implementor in defining the Task as well as the
     //associated accountCreationTaskListener; Getters and Setters provided as additional convenience methods
     /**Listener to provide a window to the Task execution states. */
-    public TaskListener taskListener;
+    public TaskListener<T> taskListener;
 
     //Package-private access intentionally chosen for the requirement of AccountManager ONLY
     /**States indicating the execution of the current AC creation task */
@@ -39,11 +39,11 @@ public abstract class AbstractTask implements Task {
         //Default impl.
     }
 
-    public final TaskListener getTaskListener() {
+    public final TaskListener<T> getTaskListener() {
         return taskListener;
     }
 
-    public final void setTaskListener(TaskListener taskListener) {
+    public final void setTaskListener(TaskListener<T> taskListener) {
         this.taskListener = taskListener;
     }
 }

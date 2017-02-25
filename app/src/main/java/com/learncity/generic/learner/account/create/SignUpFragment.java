@@ -254,7 +254,7 @@ public abstract class SignUpFragment extends Fragment {
             public void onAccountCreationServiceRefresh() {
 
             }
-        }, AccountCreationService.NOTIFY_UI_AUTO);
+        });
     }
 
     boolean isConditionalTutorUIVisible() {

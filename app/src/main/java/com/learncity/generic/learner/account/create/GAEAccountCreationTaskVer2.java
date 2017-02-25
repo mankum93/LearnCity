@@ -6,6 +6,7 @@ import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile
 import com.learncity.learner.account.profile.model.LearnerProfile;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.util.account_management.AbstractTask;
+import com.learncity.util.account_management.Result;
 
 import static com.learncity.util.account_management.AccountCreationService.ACCOUNT_CREATION_COMPLETED;
 import static com.learncity.util.account_management.AccountCreationService.ACCOUNT_CREATION_FAILED;
@@ -14,7 +15,7 @@ import static com.learncity.util.account_management.AccountCreationService.ACCOU
  * Created by DJ on 2/15/2017.
  */
 
-public class GAEAccountCreationTaskVer2 extends AbstractTask {
+public class GAEAccountCreationTaskVer2 extends AbstractTask<Void> {
 
     private static final String TAG = "GAEACCreationTask2";
 
@@ -27,7 +28,7 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask {
 
     private long taskThreadId = Thread.currentThread().getId();
 
-    private int returnCode;
+    private Result<Void> result;
 
     public GAEAccountCreationTaskVer2(GenericLearnerProfile profile){
         this.profile = profile;
@@ -40,7 +41,7 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask {
      * LoginService.{ACCOUNT_CREATION_FAILED, ACCOUNT_CREATION_COMPLETED}
      */
     @Override
-    public int performTask() {
+    public Result<Void> performTask() {
 
         Log.d(TAG, "GAEAccountCreationTask.performTask(): " + "\n" + "MESSAGE: Performing AC creation..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
@@ -59,7 +60,7 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask {
         //We shall wait in that case for the task to finish up
         if(requestProcessingComplete){
             //Processing complete; no need to wait up
-            return returnCode;
+            return result;
         }
         else{
             while(!requestProcessingComplete){
@@ -74,7 +75,7 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask {
             }
         }
 
-        return returnCode;
+        return result;
     }
 
     @Override
@@ -87,6 +88,7 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask {
         profile = null;
         taskListener = null;
         accountCreationClient = null;
+        result = null;
     }
 
     private void selectClient(GenericLearnerProfile profile){
@@ -104,8 +106,8 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask {
                     Log.d(TAG, "GAETutorAccountCreationClient.onRequestSuccessful(): " + "\n" + "MESSAGE: Account creation request successfully sent!!!" +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
 
-                    //Request has been successful. Ser the return code
-                    returnCode = ACCOUNT_CREATION_COMPLETED;
+                    //Request has been successful. Set the result
+                    result = Result.RESULT_SUCCESS;
                     requestProcessingComplete = true;
                     notifyTaskIfWaiting();
                 }
@@ -114,7 +116,8 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask {
                 public void onRequestFailed() {
                     Log.e(TAG, "GAETutorAccountCreationClient.onRequestFailed(): " + "\n" + "MESSAGE: Account creation request failed!!!" +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
-                    returnCode = ACCOUNT_CREATION_FAILED;
+
+                    result = Result.RESULT_FAILURE;
                     requestProcessingComplete = true;
                     notifyTaskIfWaiting();
                 }
@@ -134,8 +137,8 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask {
                 public void onRequestSuccessful() {
                     Log.d(TAG, "GAELearnerAccountCreationClient.onRequestSuccessful(): " + "\n" + "MESSAGE: Account creation request successfully sent!!!" +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
-                    //Request has been successful. Set the return code
-                    returnCode = ACCOUNT_CREATION_COMPLETED;
+                    //Request has been successful. Set the result
+                    result = Result.RESULT_SUCCESS;
                     requestProcessingComplete = true;
                     notifyTaskIfWaiting();
                 }
@@ -144,7 +147,7 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask {
                 public void onRequestFailed() {
                     Log.e(TAG, "GAELearnerAccountCreationClient.onRequestFailed(): " + "\n" + "MESSAGE: Account creation request failed!!!" +
                             "\n" +"Thread ID: " + Thread.currentThread().getId());
-                    returnCode = ACCOUNT_CREATION_FAILED;
+                    result = Result.RESULT_FAILURE;
                     requestProcessingComplete = true;
                     notifyTaskIfWaiting();
                 }

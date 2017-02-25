@@ -105,6 +105,7 @@ public class TaskProcessor {
     /**Tells the user of TaskProcessor if the task processor is still valid for processing. This flag will be set
      * at the end - Ultimate failure and cancellation or ultimate success.*/
     private boolean isValid = true;
+    private Result result;
 
     private void prepareForReuse(){
         overallTaskProcessingState = BEFORE_OVERALL_TASKS_PROCESSING_START;
@@ -188,7 +189,12 @@ public class TaskProcessor {
         overallTaskProcessingState = OVERALL_TASKS_PROCESSING_STARTED;
 
         //Start the progress dialog here
-        showTaskProcessingProgressDialog();
+        if(notifyUIFlag == NOTIFY_UI_AUTO){
+            Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Requesting show of  Progress Dialog..." +
+                    "\n" +"Thread ID: " + Thread.currentThread().getId());
+            //Start the task processing animation again
+            showTaskProcessingProgressDialog();
+        }
 
         tasksProcessor = new Thread(new Runnable() {
             @Override
@@ -279,7 +285,14 @@ public class TaskProcessor {
                 //Any exception if it forms relevance is expected to be handled by the client in the corresponding task
                 //Basis this assumption, the returned AC creation code is being directly looked up for
                 do{
-                    taskExecutionStatusCode = task.performTask();
+                    //As soon as the task gets processed, make sure to execute client's code
+                    if(task.taskListener != null){
+                        Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Calling TaskListener.onPreTaskExecute()..." +
+                                "\n" +"Thread ID: " + Thread.currentThread().getId());
+                        task.taskListener.onPreTaskExecute();
+                    }
+                    result = task.performTask();
+                    taskExecutionStatusCode = result.getResultCode();
 
                     if(taskExecutionStatusCode == TASK_COMPLETED){
                         Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Task successfully executed!!!" +
@@ -291,7 +304,7 @@ public class TaskProcessor {
                         if(task.taskListener != null){
                             Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Calling TaskListener.onTaskProcessingComplete()..." +
                                     "\n" +"Thread ID: " + Thread.currentThread().getId());
-                            task.taskListener.onTaskCompleted();
+                            task.taskListener.onTaskCompleted(result);
                         }
                         Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Cleaning up the completed task; Calling AbstractTask.onPerformCleanup()" +
                                 "\n" +"Thread ID: " + Thread.currentThread().getId());
@@ -325,7 +338,7 @@ public class TaskProcessor {
                                 public void run() {
                                     Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Calling TaskProcessorListener.onTaskProcessingFailed()..." +
                                             "\n" +"Thread ID: " + Thread.currentThread().getId());
-                                    task.taskListener.onTaskFailed();
+                                    task.taskListener.onTaskFailed(result);
                                 }
                             });
                             t.start();
@@ -362,8 +375,6 @@ public class TaskProcessor {
                                 break;
                             case NOTIFY_UI_CUSTOM:
                                 //The caller is expected to implement their own dialog
-                            /*Since the task processing has been failed, I am gonna wait for 10 seconds
-                             * before we terminate here*/
                                 Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Trying to acquire the lockForRetryServerExternal lock..." +
                                         "\n" +"Thread ID: " + Thread.currentThread().getId());
                                 synchronized (lockForRetryTaskExternal){
@@ -373,7 +384,7 @@ public class TaskProcessor {
                                         try{
                                             Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Suspending this thread for MAX 10 sec. until notified by the user..." +
                                                     "\n" +"Thread ID: " + Thread.currentThread().getId());
-                                            lockForRetryTaskExternal.wait(10*1000);
+                                            lockForRetryTaskExternal.wait();
                                         }
                                         catch(InterruptedException ie){
                                             //Think of something
@@ -496,9 +507,9 @@ public class TaskProcessor {
         //get executed
         tasksQueue.add(new AbstractTask() {
             @Override
-            public int performTask() {
+            public Result<Void> performTask() {
                 finishUp = true;
-                return TASK_COMPLETED;
+                return Result.RESULT_SUCCESS;
             }
         });
         //Notify up the waiting thread
@@ -560,9 +571,6 @@ public class TaskProcessor {
                     "\n" +"Thread ID: " + Thread.currentThread().getId());
             shouldTaskProcessingBeRetried = true;
 
-            //Retry the Dialog interface for Positive button
-            taskProcessingRetryAlertDialog.cancel();
-
             synchronized (lockForRetryTaskExternal){
                 Log.d(TAG, "TaskProcessor.retryOnFailedTask(): " + "\n" + "MESSAGE: notifying the waiting thread with the lock <lockForRetryTaskExternal>..." +
                         "\n" +"Thread ID: " + Thread.currentThread().getId());
@@ -596,9 +604,6 @@ public class TaskProcessor {
             Log.d(TAG, "TaskProcessor.cancelOnFailedTask(): " + "\n" + "MESSAGE: CANCEL button clicked..." +
                     "\n" +"Thread ID: " + Thread.currentThread().getId());
             shouldTaskProcessingBeRetried = false;
-
-            //Cancel the Dialog interface for Negative button
-            taskProcessingRetryAlertDialog.cancel();
 
             synchronized (lockForRetryTaskExternal){
                 Log.d(TAG, "TaskProcessor.cancelOnFailedTask(): " + "\n" + "MESSAGE: notifying the waiting thread with the lock <lockForRetryTaskExternal>..." +
@@ -665,9 +670,9 @@ public class TaskProcessor {
             //get executed
             tasksQueue.add(new AbstractTask() {
                 @Override
-                public int performTask() {
+                public Result<Void> performTask() {
                     finishUp = true;
-                    return TASK_COMPLETED;
+                    return Result.RESULT_SUCCESS;
                 }
             });
             //Notify up the waiting thread
@@ -691,16 +696,22 @@ public class TaskProcessor {
      * tasks have finished successfully; a callback in case a task fails any is intentionally made to cancel by the caller
      * and a callback for performing any activity before the start of Task processing. NOTE: This activity shall be performed in
      * a background thread*/
-    public void setOverallTaskProcessorListener(TaskProcessorListener taskProcessorListener, int flagUI) {
+    public void setOverallTaskProcessorListener(TaskProcessorListener taskProcessorListener) {
 
         //If the task processing has started, you can't set the flag/taskListener now
         if(overallTaskProcessingState == OVERALL_TASKS_PROCESSING_STARTED){
-            throw new IllegalStateException("Task processing has started. You can't set the taskListener/flag in the middle");
+            throw new IllegalStateException("Task processing has started. You can't set the taskListener in the middle");
         }
-        checkUIFlagValidity(flagUI);
-        //Since task processing hasn't begun yet, user can set the flag and taskListener as many times as they want
-        this.notifyUIFlag = flagUI;
         this.taskProcessorListener = taskProcessorListener;
+    }
+
+    public void setUIFlag(int notifyUIFlag) {
+        //If the task processing has started, you can't set the flag/taskListener now
+        if(overallTaskProcessingState == OVERALL_TASKS_PROCESSING_STARTED){
+            throw new IllegalStateException("Task processing has started. You can't set the flag in the middle");
+        }
+        checkUIFlagValidity(notifyUIFlag);
+        this.notifyUIFlag = notifyUIFlag;
     }
 
     public void setTaskProcessingRetryDialog(AlertDialog taskProcessingRetry) {

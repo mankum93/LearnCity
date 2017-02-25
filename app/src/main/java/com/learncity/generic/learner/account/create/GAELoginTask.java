@@ -12,10 +12,12 @@ import com.learncity.loginApi.model.GenericLearnerProfileVer1;
 import com.learncity.loginApi.model.LoginDetails;
 import com.learncity.util.account_management.AbstractTask;
 import com.learncity.util.account_management.LoginService;
+import com.learncity.util.account_management.Result;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 import static com.learncity.util.account_management.LoginService.LOGIN_FAILED;
 import static com.learncity.util.account_management.LoginService.LOGIN_SUCCESSFUL;
@@ -24,7 +26,7 @@ import static com.learncity.util.account_management.LoginService.LOGIN_SUCCESSFU
  * Created by DJ on 2/19/2017.
  */
 
-public class GAELoginTask extends AbstractTask {
+public class GAELoginTask extends AbstractTask<LoginService.LoginEventResponse> {
 
     private static final String TAG = "LoginService";
 
@@ -36,7 +38,7 @@ public class GAELoginTask extends AbstractTask {
 
     private LoginService.LoginEventResponse loginEventResponse;
 
-    private int returnCode;
+    private Result<LoginService.LoginEventResponse> result;
 
     public GAELoginTask(LoginService.LoginDetails details) {
         this.details = details;
@@ -56,29 +58,23 @@ public class GAELoginTask extends AbstractTask {
      * LoginService.{LOGIN_FAILED, LOGIN_SUCCESSFUL}
      */
     @Override
-    public int performTask() {
+    public Result<LoginService.LoginEventResponse> performTask() {
         Log.d(TAG, "GAELoginTask.performTask(): " + "\n" + "MESSAGE: Sending request for Login..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
         try{
             //Send the login request to the server
             profileResponse = loginApiService.login(populateLoginDetailsEntity(details)).execute();
         }
-        catch(GoogleJsonResponseException e){
+        catch(IOException e){
             Log.e(TAG, "There was was some problem logging in", e);
             //Prepare a proper response
             loginEventResponse = new LoginService.LoginEventResponse(e);
-            returnCode = LOGIN_FAILED;
 
             //Post the result for interested parties
-            EventBus.getDefault().postSticky(loginEventResponse);
+            //EventBus.getDefault().postSticky(loginEventResponse);
 
-            return returnCode;
-        }
-        catch(IOException ioe){
-            Log.e(TAG, "There was was some problem logging in", ioe);
-            returnCode = LOGIN_FAILED;
-
-            return returnCode;
+            result = new Result<LoginService.LoginEventResponse>(LOGIN_FAILED, loginEventResponse);
+            return result;
         }
         finally {
             Log.d(TAG, "Profile Response: " + profileResponse);
@@ -88,13 +84,16 @@ public class GAELoginTask extends AbstractTask {
         //Prepare a proper response
         loginEventResponse = new LoginService.LoginEventResponse(profileResponse);
         //Post the result for interested parties
-        EventBus.getDefault().postSticky(loginEventResponse);
+        //TODO: Remove the below statement
+        //EventBus.getDefault().postSticky(loginEventResponse);
+
+        result = new Result<LoginService.LoginEventResponse>(LOGIN_SUCCESSFUL, loginEventResponse);
 
         if(profileResponse == null){
             throw new RuntimeException("Profile response shouldn't be null. Check the logic for HTTP response in GAELoginTask");
             //return LOGIN_FAILED;
         }
-        return LOGIN_SUCCESSFUL;
+        return result;
     }
 
     @Override

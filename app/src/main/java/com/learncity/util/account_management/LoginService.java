@@ -10,8 +10,8 @@ import android.util.Log;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.learncity.loginApi.model.GenericLearnerProfileVer1;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
+import java.io.IOException;
+
 
 /**
  * Created by DJ on 2/16/2017.
@@ -42,8 +42,6 @@ public class LoginService {
 
     private final Object refreshLock = new Object();
     private Thread refreshThread;
-
-    private int loginUIFlag = NOTIFY_UI_AUTO;
 
     int serviceState;
 
@@ -154,7 +152,7 @@ public class LoginService {
         //Initialize the TaskProcessor
         taskProcessor = new TaskProcessor(context);
         //Register with EventBus
-        EventBus.getDefault().register(this);
+        //EventBus.getDefault().register(this);
 
         //Update the Service state
         serviceState = Service.SERVICE_READY;
@@ -208,7 +206,7 @@ public class LoginService {
                     }
                 }
                 //Unregister the instace with the EventBus
-                EventBus.getDefault().unregister(this);
+                //EventBus.getDefault().unregister(this);
                 taskProcessor.shutDown();
                 loginListener = null;
                 taskProcessor = null;
@@ -284,9 +282,8 @@ public class LoginService {
      * tasks have finished successfully; a callback in case a task fails any is intentionally made to cancel by the caller
      * and a callback for performing any activity before the start of Login process. NOTE: This activity shall be performed in
      * a background thread
-     * @param flagUI This flag determines if you want to use the provided Retry/Progress dialogs UI or want to provide
-     * your own*/
-    public void setLoginListener(LoginListener listener, int flagUI) {
+     * */
+    public void setLoginListener(LoginListener listener) {
         //If a task is queued after finishup; task processor will throw and exception but we have
         // to ensure that after shutdown, no more calls to service are serviced
         if(serviceState == Service.SERVICE_SHUTDOWN_REQUESTED){
@@ -294,7 +291,6 @@ public class LoginService {
                     "To queue more request, load the service again");
         }
         loginListener = listener;
-        loginUIFlag = flagUI;
 
         TaskProcessor.TaskProcessorListener taskListener;
 
@@ -348,7 +344,11 @@ public class LoginService {
             taskListener = defaultTaskProcessorListener;
         }
 
-        taskProcessor.setOverallTaskProcessorListener(taskListener, flagUI);
+        taskProcessor.setOverallTaskProcessorListener(taskListener);
+    }
+
+    public void setUIFlag(int notifyUIFlag) {
+        taskProcessor.setUIFlag(notifyUIFlag);
     }
 
     /**Provide your own implementation of an Retry Alert Dialog.*/
@@ -379,7 +379,7 @@ public class LoginService {
         if(loginListener == null){
             if(defaultTaskProcessorListener != null){
                 defaultTaskProcessorListener = new TaskProcessorListenerImpl();
-                taskProcessor.setOverallTaskProcessorListener(defaultTaskProcessorListener, loginUIFlag);
+                taskProcessor.setOverallTaskProcessorListener(defaultTaskProcessorListener);
             }
         }
         taskProcessor.startTasksProcessing(tasks);
@@ -394,12 +394,14 @@ public class LoginService {
     }
 
     //---------------------------------------------------------------------------------------------------------------------
+    /*
     @Subscribe
     public void onLoginResponseFromServer(LoginEventResponse event){
         Log.d(TAG, "Login event response received by LoginService");
         this.loginEventResponse = event;
         //TODO: Perform task on receiving response from server
     }
+    */
 
     //---------------------------------------------------------------------------------------------------------------------
     /**
@@ -504,13 +506,13 @@ public class LoginService {
         //In case there is a successful login
         private GenericLearnerProfileVer1 profileFromServer;
         //In case there is an unsuccessful attempt
-        private GoogleJsonResponseException exception;
+        private IOException exception;
 
         public LoginEventResponse(GenericLearnerProfileVer1 profileFromServer) {
             this.profileFromServer = profileFromServer;
         }
 
-        public LoginEventResponse(GoogleJsonResponseException exception) {
+        public LoginEventResponse(IOException exception) {
             this.exception = exception;
         }
 
@@ -522,11 +524,11 @@ public class LoginService {
             this.profileFromServer = profileFromServer;
         }
 
-        public GoogleJsonResponseException getException() {
+        public IOException getException() {
             return exception;
         }
 
-        public void setException(GoogleJsonResponseException exception) {
+        public void setException(IOException exception) {
             this.exception = exception;
         }
     }

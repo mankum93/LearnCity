@@ -212,7 +212,7 @@ public class SignUpWithEmailFragmentVer3 extends Fragment{
             public void onAccountCreationServiceRefresh() {
 
             }
-        }, AccountCreationService.NOTIFY_UI_AUTO);
+        });
     }
 
     private boolean isConditionalTutorUIVisible() {

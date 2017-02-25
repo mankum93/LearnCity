@@ -31,8 +31,6 @@ public class AccountCreationService {
     private final Object refreshLock = new Object();
     private Thread refreshThread;
 
-    private int accountCreationUIFlag = NOTIFY_UI_AUTO;
-
     int serviceState;
 
     private Service.ServiceStateListener serviceStateListener;
@@ -237,6 +235,10 @@ public class AccountCreationService {
         }
     }
 
+    public void setUIFlag(int notifyUIFlag) {
+        taskProcessor.setUIFlag(notifyUIFlag);
+    }
+
     /**Call this method when you want to queue tasks for processing. Do not call this method if you have initiated
      * a shutDown() or a finishUp()*/
     public void queueTasks(AbstractTask... tasks) {
@@ -265,9 +267,8 @@ public class AccountCreationService {
      * tasks have finished successfully; a callback in case a task fails any is intentionally made to cancel by the caller
      * and a callback for performing any activity before the start of AC creation. NOTE: This activity shall be performed in
      * a background thread
-     * @param flagUI This flag determines if you want to use the provided Retry/Progress dialogs UI or want to provide
-     * your own*/
-    public void setAccountCreationListener(AccountCreationListener listener, int flagUI) {
+     * */
+    public void setAccountCreationListener(AccountCreationListener listener) {
         //If a task is queued after finishup; task processor will throw and exception but we have
         // to ensure that after shutdown, no more calls to service are serviced
         if(serviceState == Service.SERVICE_SHUTDOWN_REQUESTED){
@@ -275,7 +276,6 @@ public class AccountCreationService {
                     "To queue more request, load the service again");
         }
         accountCreationListener = listener;
-        accountCreationUIFlag = flagUI;
 
         TaskProcessor.TaskProcessorListener taskListener;
 
@@ -329,7 +329,7 @@ public class AccountCreationService {
             taskListener = defaultTaskProcessorListener;
         }
 
-        taskProcessor.setOverallTaskProcessorListener(taskListener, flagUI);
+        taskProcessor.setOverallTaskProcessorListener(taskListener);
     }
 
 
@@ -361,7 +361,7 @@ public class AccountCreationService {
         if(accountCreationListener == null){
             if(defaultTaskProcessorListener != null){
                 defaultTaskProcessorListener = new TaskProcessorListenerImpl();
-                taskProcessor.setOverallTaskProcessorListener(defaultTaskProcessorListener, accountCreationUIFlag);
+                taskProcessor.setOverallTaskProcessorListener(defaultTaskProcessorListener);
             }
         }
         taskProcessor.startTasksProcessing(tasks);
