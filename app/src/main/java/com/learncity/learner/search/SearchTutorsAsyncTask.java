@@ -11,21 +11,24 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.learncity.searchApi.SearchApi;
+import com.learncity.searchApi.model.CollectionResponseTutorProfileVer1;
+import com.learncity.searchApi.model.SearchTutorsQuery;
+import com.learncity.searchApi.model.TutorProfileVer1;
 
 import java.io.IOException;
+import java.util.List;
 
-import com.learncity.searchApi.SearchApi;
-import com.learncity.searchApi.model.SearchQuery;
-
-class SearchTutorsAsyncTask extends AsyncTask<SearchQuery, Void, Void> {
+class SearchTutorsAsyncTask extends AsyncTask<SearchTutorsQuery, Void, Void> {
     private static final String TAG = "SearchTutorsAsyncTask";
 
     //Client that is gonna talk to the endpoint
     private static SearchApi myApiService = null;
+    private CollectionResponseTutorProfileVer1 response;
 
 
     @Override
-    protected Void doInBackground(SearchQuery... params) {
+    protected Void doInBackground(SearchTutorsQuery... params) {
         if(myApiService == null) {  // Only do this once
             SearchApi.Builder builder = new SearchApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
@@ -46,18 +49,28 @@ class SearchTutorsAsyncTask extends AsyncTask<SearchQuery, Void, Void> {
         }
 
         //Now, get the search query object
-        SearchQuery query = params[0];
+        SearchTutorsQuery query = params[0];
 
+        Log.i(TAG, "Search Query: " + query);
         //Now push the query to the server
 
         try{
-            myApiService.searchTutors(query).execute();
+            response = myApiService.searchTutors(query).execute();
         }
         catch(IOException e){
             Log.e(TAG, "IO Exception while performing the datastore transaction");
+            e.printStackTrace();
+            return null;
         }
-        return null;
+        if(response == null){
+            throw new RuntimeException("Response can't be null. Any possible exception has already been handled");
+        }
+        List<TutorProfileVer1> profiles = response.getItems();
+        if(profiles != null){
+            Log.d(TAG, "No of profiles searched: " + profiles.size() + "\n" + profiles);
+        }
 
+        return null;
     }
 
     @Override

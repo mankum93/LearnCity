@@ -2,12 +2,16 @@ package com.learncity.generic.learner.account.profile.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseLockedException;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
+import com.learncity.learner.account.profile.model.LearnerProfile;
 import com.learncity.tutor.account.profile.model.Credits;
 import com.learncity.tutor.account.profile.model.Duration;
 import com.learncity.tutor.account.profile.model.TutorProfile;
@@ -18,6 +22,7 @@ import com.learncity.tutor.account.profile.model.qualification.educational.Senio
 import com.learncity.util.ArraysUtil;
 
 import java.io.File;
+import java.util.Date;
 
 /**
  * Created by DJ on 10/23/2016.
@@ -28,16 +33,25 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
     private static final String TAG = "ProfileDbHelper";
 
     private static final int VERSION  = 1;
-    public static final String DATABASE_NAME = "learnerProfileBase.db";
-    private final int currentAccountStatus;
+    public static final String DATABASE_NAME = "userProfile.db";
+    private int currentAccountStatus;
 
-    public ProfileDbHelperVer1(Context context, int currentAccountStatus){
+    public ProfileDbHelperVer1(Context context){
         super(context, DATABASE_NAME, null, VERSION);
-        this.currentAccountStatus = currentAccountStatus;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db){
+
+    }
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
+
+    }
+
+    public void createProfileTables(SQLiteDatabase db, int accountStatus){
+        this.currentAccountStatus = accountStatus;
+
         //Currently, as onCreate() is called only once. What if the user somehow initiates the
         // AC creation with a different status then chosen at first, see what's to be done in that case.
         //TODO: Solve the problem in the above comment
@@ -56,7 +70,7 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
             Log.d(TAG, "1. Learner table creation complete");
 
         }
-        else{
+        else if(currentAccountStatus == GenericLearnerProfile.STATUS_TUTOR){
             //--------------------------TUTOR PROFILE TABLES--------------------------------------------------------------
 
             db.execSQL("create table " + ProfileDbSchemaVer1.TutorProfileTable.NAME + "(" +
@@ -127,6 +141,9 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
             );
             Log.d(TAG, "8. Teaching Credits table creation complete");
         }
+        else{
+            throw new IllegalStateException("User status is undefined. Unable to create Profile tables");
+        }
 
         //Tables common to both Learner and Tutor
         //-------------------------- LOCATION TABLE--------------------------------------------------------------
@@ -136,11 +153,6 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
                 ProfileDbSchemaVer1.LearnerProfileTable.LocationTable.cols.LONGITUDE + ")"
         );
         Log.d(TAG, "User Location table creation complete");
-
-    }
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
-
     }
 
     /**@param myProfile The learner profile
@@ -339,16 +351,187 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
                 ProfileDbSchemaVer1.LearnerProfileTable.cols.EMAIL_ID + "=?", new String[]{emailId});
     }
 
-    private static boolean isExistingDatabase(Context context, String databaseName) {
+    public static File isExistingDatabase(Context context, String databaseName) {
 
         File dbPath = context.getDatabasePath(databaseName);
-        if(dbPath != null){
-            return true;
-        }
-        return false;
+        return dbPath;
     }
 
-    public static boolean isExistingUserAccount(Context context){
-        return isExistingDatabase(context, ProfileDbHelperVer1.DATABASE_NAME);
+    public GenericLearnerProfile isExistingUserAccount(){
+        SQLiteDatabase db = getWritableDatabase();
+        //Check for Learner's table
+        Cursor c = db.rawQuery("SELECT name FROM " + "sqlite_master" + " WHERE type = 'table' AND name = ?",
+                new String[]{ProfileDbSchemaVer1.LearnerProfileTable.NAME});
+        try{
+            if(c.getCount() == 0){
+                c.close();
+                c = db.rawQuery("SELECT name FROM " + "sqlite_master" + " WHERE type = 'table' AND name = ?",
+                        new String[]{ProfileDbSchemaVer1.TutorProfileTable.NAME});
+                try{
+                    if(c.getCount() == 0){
+                        return null;
+                    }
+                    else{
+                        return constructUserProfile(db, GenericLearnerProfile.STATUS_TUTOR);
+                    }
+                }
+                finally{
+                    c.close();
+                }
+            }
+            else{
+                c.close();
+                return constructUserProfile(db, GenericLearnerProfile.STATUS_LEARNER);
+            }
+        }
+        finally{
+            db.close();
+        }
+    }
+
+
+    public GenericLearnerProfile constructUserProfile(SQLiteDatabase db, int userStatus){
+        if(!db.isOpen()){
+            throw new SQLiteDatabaseLockedException("Database not open for reading");
+        }
+        Cursor c;
+        GenericLearnerProfile profile;
+
+        if(userStatus == GenericLearnerProfile.STATUS_LEARNER){
+            c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.LearnerProfileTable.NAME, null);
+            if(!c .moveToFirst()){
+                return null;
+            }
+            profile = new LearnerProfile.Builder(
+                    c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.NAME)),
+                    c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.EMAIL_ID)),
+                    c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.PHONE_NO)),
+                    Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.CURRENT_STATUS))),
+                    c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.PASSWORD)))
+                    .withImagePath(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.DISPLAY_PIC_URI)))
+                    .build();
+
+            c.close();
+        }
+        else if(userStatus == GenericLearnerProfile.STATUS_TUTOR){
+            c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.TutorProfileTable.NAME, null);
+            if(!c .moveToFirst()){
+                return null;
+            }
+
+            TutorProfile.Builder builder;
+            builder = new TutorProfile.Builder(
+                    c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.NAME)),
+                    c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.EMAIL_ID)),
+                    c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.PHONE_NO)),
+                    Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.CURRENT_STATUS))),
+                    c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.PASSWORD)))
+                    .withImagePath(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.DISPLAY_PIC_URI)))
+                    .withRating(Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.cols.RATING))))
+                    .withTutorTypes(ArraysUtil.convertStringToArray(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.cols.TUTOR_TYPES))))
+                    .withDisciplines(ArraysUtil.convertStringToArray(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.cols.SUBJECT_TYPES))));
+            c.close();
+
+            SecondaryEducationalQualification seq = null;
+            Duration d;
+            c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.TutorProfileTable.SecondaryEducationalQualificationTable.NAME, null);
+            if(c .moveToFirst()){
+                seq = new SecondaryEducationalQualification(
+                        c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.SecondaryEducationalQualificationTable.cols.BOARD_NAME)),
+                        c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.INSTITUTION_NAME)),
+                        Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.YEAR_PASSING))));
+            }
+            c.close();
+
+            c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.TutorProfileTable.DurationTable.NAME_SECONDARYEDUCATIONALQUALIFICATION, null);
+            if(c.moveToFirst()){
+                d = new Duration(
+                        Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_YEARS))),
+                        Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_MONTHS))),
+                        Long.parseLong(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_DAYS)))
+                );
+                if(seq != null){
+                    seq.setDuration(d);
+                }
+            }
+            c.close();
+
+            SeniorSecondaryEducationalQualification sseq = null;
+            c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.TutorProfileTable.SeniorSecondaryEducationalQualificationTable.NAME, null);
+            if(c .moveToFirst()){
+                sseq = new SeniorSecondaryEducationalQualification(
+                        c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.SeniorSecondaryEducationalQualificationTable.cols.BOARD_NAME)),
+                        c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.INSTITUTION_NAME)),
+                        Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.EducationalQualificationTable.cols.YEAR_PASSING))));
+            }
+            c.close();
+
+            c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.TutorProfileTable.DurationTable.NAME_SENIORSECONDARYEDUCATIONALQUALIFICATION, null);
+            if(c.moveToFirst()){
+                d = new Duration(
+                        Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_YEARS))),
+                        Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_MONTHS))),
+                        Long.parseLong(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_DAYS)))
+                );
+                if(sseq != null){
+                    sseq.setDuration(d);
+                }
+            }
+            c.close();
+
+            builder.withEducationalQualifications(new EducationalQualification[]{seq, sseq});
+
+            Occupation o = null;
+            c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.TutorProfileTable.OccupationTable.NAME, null);
+            if(c .moveToFirst()){
+                o = new Occupation(
+                        c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.OccupationTable.cols.ORGANIZATION_NAME)),
+                        c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.OccupationTable.cols.DESIGNATION_NAME)));
+            }
+            c.close();
+
+            c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.TutorProfileTable.DurationTable.NAME_OCCUPATION, null);
+            if(c.moveToFirst()){
+                d = new Duration(
+                        Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_YEARS))),
+                        Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_MONTHS))),
+                        Long.parseLong(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.DurationTable.cols.NO_OF_DAYS)))
+                );
+                if(o != null){
+                    o.setCurrentExperience(d);
+                }
+            }
+            c.close();
+
+            builder.withOccupation(o);
+
+            c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.NAME, null);
+            if(c .moveToFirst()){
+                builder.withTeachingCredits(new Credits(
+                        Long.parseLong(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.AVAILABLE_CREDITS))),
+                        new Date(Long.parseLong(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.DATE_OF_EXPIRY))))
+                ));
+            }
+            c.close();
+
+            profile = builder.build();
+
+        }
+        else{
+            throw new RuntimeException("Invalid status");
+        }
+
+        //Location at last
+        c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.LearnerProfileTable.LocationTable.NAME, null);
+        if(c.moveToFirst()) {
+            profile.setLastKnownGeoCoordinates(new LatLng(
+                    Double.parseDouble(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.LocationTable.cols.LATITUDE))),
+                    Double.parseDouble(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.LocationTable.cols.LONGITUDE)))
+            ));
+        }
+        c.close();
+
+
+        return profile;
     }
 }

@@ -53,4 +53,32 @@ public class SecondaryEducationalQualification extends EducationalQualification 
             return new SecondaryEducationalQualification[size];
         }
     };
+
+    //--------------------------------------------------------------------------------------------------------------------
+    public static class SecondaryEducationalQualificationResponseView extends EducationalQualificationResponseView{
+        private Integer _0;
+
+        private Integer g;
+
+        public Integer getGlobal() {
+            return g;
+        }
+
+        public void setGlobal(Integer global) {
+            this.g = global;
+        }
+
+        public SecondaryEducationalQualificationResponseView(Integer mQualificationName, Integer mYearOfPassing, Integer mInstitution, Duration.DurationResponseView mDuration, Integer mBoard) {
+            super(mQualificationName, mYearOfPassing, mInstitution, mDuration);
+            this._0 = mBoard;
+        }
+
+        public Integer getmBoard() {
+            return _0;
+        }
+
+        public void setmBoard(Integer mBoard) {
+            this._0 = mBoard;
+        }
+    }
 }

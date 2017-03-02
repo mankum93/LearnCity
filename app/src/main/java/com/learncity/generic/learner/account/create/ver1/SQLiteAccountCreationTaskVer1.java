@@ -33,7 +33,9 @@ public class SQLiteAccountCreationTaskVer1 extends BaseAccountCreationTaskVer1 {
         Log.d(TAG, "SQLiteAccountCreationTask.performAccountCreation(): " + "\n" + "MESSAGE: Performing AC creation..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
         //Get the writable database
-        SQLiteDatabase db = new ProfileDbHelperVer1(context, profile.getCurrentStatus()).getWritableDatabase();
+        ProfileDbHelperVer1 helper = new ProfileDbHelperVer1(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        helper.createProfileTables(db, profile.getCurrentStatus());
         try{
             //Insert into the database
             ProfileDbHelperVer1.addProfileToDatabase(db, profile);

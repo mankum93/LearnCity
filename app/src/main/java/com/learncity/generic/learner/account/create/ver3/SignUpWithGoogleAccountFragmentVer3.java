@@ -14,8 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.learncity.generic.learner.account.create.GAEAccountCreationTaskVer2;
-import com.learncity.generic.learner.account.create.SQLiteAccountCreationTaskVer2;
+import com.learncity.util.account_management.impl.GAEAccountCreationTaskVer2;
+import com.learncity.util.account_management.impl.SQLiteAccountCreationTaskVer2;
 import com.learncity.generic.learner.account.create.ver1.SignUpWithGoogleAccountActivityVer1;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
@@ -24,8 +24,8 @@ import com.learncity.learner.main.LearnerHomeActivity;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.tutor.main.TutorHomeActivity;
 import com.learncity.util.MultiSpinner;
-import com.learncity.util.account_management.AccountCreationService;
-import com.learncity.util.account_management.AccountManager;
+import com.learncity.util.account_management.impl.AccountCreationService;
+import com.learncity.util.account_management.impl.AccountManager;
 
 /**
  * Created by DJ on 10/30/2016.

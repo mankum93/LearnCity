@@ -82,4 +82,51 @@ public class Duration implements Parcelable {
             return new Duration[size];
         }
     };
+
+    //----------------------------------------------------------------------------------------------------------------------
+    public static class DurationResponseView{
+        private Integer _0;
+        private Integer _1;
+        private Integer _2;
+
+        private Integer g;
+
+        public Integer getGlobal() {
+            return g;
+        }
+
+        public void setGlobal(Integer global) {
+            this.g = global;
+        }
+
+        public DurationResponseView(Integer mNoOfYears, Integer mNoOfMonths, Integer mNoOfDays) {
+            this._0 = mNoOfYears;
+            this._1 = mNoOfMonths;
+            this._2 = mNoOfDays;
+        }
+
+        public Integer getmNoOfYears() {
+            return _0;
+        }
+
+        public void setmNoOfYears(Integer mNoOfYears) {
+            this._0 = mNoOfYears;
+        }
+
+        public Integer getmNoOfMonths() {
+            return _1;
+        }
+
+        public void setmNoOfMonths(Integer mNoOfMonths) {
+            this._1 = mNoOfMonths;
+        }
+
+        public Integer getmNoOfDays() {
+            return _2;
+        }
+
+        public void setmNoOfDays(Integer mNoOfDays) {
+            this._2 = mNoOfDays;
+        }
+    }
 }

@@ -25,7 +25,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.learncity.learncity.R;
-import com.learncity.searchApi.model.SearchQuery;
+import com.learncity.searchApi.model.SearchTutorsQuery;
+import com.learncity.searchApi.model.TutorProfileResponseView;
+import com.learncity.util.ArraysUtil;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by DJ on 10/18/2016.
@@ -37,7 +42,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0X00;
 
     private GoogleMap mMap;
-    private SearchQuery mSearchQuery;
+    private SearchTutorsQuery mSearchQuery;
     private GoogleApiClient mGoogleApiClient;
 
     private Location mLastLocation;
@@ -73,6 +78,7 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         setContentView(R.layout.activity_search_tutors);
 
         //FOLLOWING CODE HAS BEEN REPLACED WITH INSERTION OF FRAGMENTS IN THE ACTIVITY LAYOUT FILE
+
         //Add fragment transactions for the three search parameters
         /*
         FragmentManager fm = getSupportFragmentManager();
@@ -85,38 +91,36 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
         */
 
         //Initialize the query
-        mSearchQuery =  new SearchQuery();
+        mSearchQuery =  new SearchTutorsQuery();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map_search_fragment);
         mapFragment.getMapAsync(this);
 
-        SubjectSearchFragment subjectSearchFragment = (SubjectSearchFragment) getSupportFragmentManager().findFragmentById(R.id.subject_search_fragment);
-        subjectSearchFragment.setSubjectSearchQueryCallback(new SubjectSearchFragment.SubjectSearchQueryCallback() {
-            @Override
-            public void onSubjectSearchQuery(String subjectsSearchQuery) {
-                mSearchQuery.setSubject(subjectsSearchQuery);
-            }
-        });
-        QualificationSearchFragment qualificationSearchFragment = (QualificationSearchFragment) getSupportFragmentManager().findFragmentById(R.id.qualification_search_fragment);
-        qualificationSearchFragment.setQualificationSearchQueryCallback(new QualificationSearchFragment.QualificationSearchQueryCallback() {
-            @Override
-            public void onQualificationSearchQuery(String qualificationsSearchQuery) {
-                mSearchQuery.setQualification(qualificationsSearchQuery);
-            }
-        });
+        final SubjectSearchFragment subjectSearchFragment = (SubjectSearchFragment) getSupportFragmentManager().findFragmentById(R.id.subject_search_fragment);
 
-        //First get the reference to the root view
-        final ViewGroup viewGroup = (ViewGroup) ((ViewGroup) this
-                .findViewById(android.R.id.content)).getChildAt(0);
+        final QualificationSearchFragment qualificationSearchFragment = (QualificationSearchFragment) getSupportFragmentManager().findFragmentById(R.id.qualification_search_fragment);
+
+
         //Lets handle the click of the floating search button
-        Button searchButton = (Button) viewGroup.findViewById(R.id.search_button);
+        Button searchButton = (Button) findViewById(R.id.search_button);
 
         searchButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 //Search the Tutor profiles from the DB.
+                //Build and retrieve the search query
+                List<String> subjects = Arrays.asList(ArraysUtil.convertStringToArray(subjectSearchFragment.getCustomMultiAutoCompleteTextView().getText().toString(), ", "));
+                mSearchQuery.setSubjects(subjects);
+                Log.i(TAG, "Subjects: " + subjects);
+                List<String> tutorTypes = Arrays.asList(ArraysUtil.convertStringToArray(qualificationSearchFragment.getCustomMultiAutoCompleteTextView().getText().toString(), ", "));
+                Log.i(TAG, "Tutor types: " + tutorTypes);
+                mSearchQuery.setTutorTypes(tutorTypes);
+
+                TutorProfileResponseView spec = new TutorProfileResponseView();
+                spec.setGlobal(1);
+                mSearchQuery.setTutorProfileResponseView(spec);
                 new SearchTutorsAsyncTask().execute(mSearchQuery);
             }
         });
@@ -130,10 +134,6 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     @Override
     protected void onPause() {
         super.onPause();
-        if (mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            mGoogleApiClient.disconnect();
-        }
     }
 
     @Override
@@ -143,7 +143,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     }
     @Override
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
         super.onStop();
     }
     private boolean areGooglePlayServicesAvailable() {
@@ -166,7 +169,6 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
     @SuppressWarnings({"MissingPermission"})
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
 
         //Ask for explicit permission to access fine location for above Lollipop
         if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.LOLLIPOP){
@@ -197,7 +199,6 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                     mPermissionToAcessLocationGranted = false;
                     Log.d(TAG, "Permission to access fine location denied");
                 }
-                return;
             }
 
             // other 'case' lines to check for other

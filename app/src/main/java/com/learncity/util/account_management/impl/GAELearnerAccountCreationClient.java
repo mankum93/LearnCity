@@ -1,4 +1,4 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.util.account_management.impl;
 
 import android.util.Log;
 
@@ -6,37 +6,38 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.learncity.backend.persistence.tutorProfileVer1Api.TutorProfileVer1Api;
-import com.learncity.backend.persistence.tutorProfileVer1Api.model.TutorProfileVer1;
-import com.learncity.tutor.account.profile.model.TutorProfile;
+import com.learncity.backend.account.create.learnerProfileVer1Api.LearnerProfileVer1Api;
+import com.learncity.backend.account.create.learnerProfileVer1Api.model.LearnerProfileVer1;
+import com.learncity.util.account_management.AccountCreationClient;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
+import com.learncity.learner.account.profile.model.LearnerProfile;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
- * Created by DJ on 2/7/2017.
+ * Created by DJ on 2/5/2017.
  */
 
-public class GAETutorAccountCreationClient implements AccountCreationClient {
+public class GAELearnerAccountCreationClient implements AccountCreationClient {
 
     private static final String TAG = "GAEACCreationClient";
 
-    private static TutorProfileVer1Api myApiService;
+    private static LearnerProfileVer1Api myApiService;
 
-    private TutorProfile profile;
+    private LearnerProfile profile;
 
-    private TutorProfileVer1 profileEntity;
+    private LearnerProfileVer1 profileEntity;
 
     private AccountCreationClientListener clientListener;
 
-    public GAETutorAccountCreationClient(TutorProfile profile){
+    public GAELearnerAccountCreationClient(LearnerProfile profile){
         this.profile = profile;
     }
-
     @Override
     public void prepareClient() {
-        Log.d(TAG, "GAETutorAccountCreationClient.prepareClient(): " + "\n" + "Client: Preparing client TutorProfileVer1Api..." +
+        Log.d(TAG, "GAELearnerAccountCreationClient.prepareClient(): " + "\n" + "Client: Preparing client GenericLearnerProfileVer1Api..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
+
         if(myApiService == null){
             setApiService();
         }
@@ -50,7 +51,7 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
 
         Log.d(TAG, "Profile: " + profileEntity);
         try{
-            Log.d(TAG, "GAETutorAccountCreationClient.sendRequest(): " + "\n" + "MESSAGE: Sending Request for persistence..." +
+            Log.d(TAG, "GAELearnerAccountCreationClient.sendRequest(): " + "\n" + "MESSAGE: Sending Request for persistence..." +
                     "\n" +"Thread ID: " + Thread.currentThread().getId());
             myApiService.insert(profileEntity).execute();
         }
@@ -62,12 +63,11 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
             return;
         }
         clientListener.onRequestSuccessful();
-
     }
 
     @Override
     public void performCleanup() {
-        Log.d(TAG, "GAETutorAccountCreationClient.performCleanup(): " + "\n" + "MESSAGE: Cleaning up GAETutorAccountCreationClient..." +
+        Log.d(TAG, "GAELearnerAccountCreationClient.performCleanup(): " + "\n" + "MESSAGE: Cleaning up GAELearnerAccountCreationClient..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
         profile = null;
         profileEntity = null;
@@ -80,7 +80,7 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
     }
 
     private void setApiService(){
-        myApiService = new TutorProfileVer1Api.Builder(AndroidHttp.newCompatibleTransport(),
+        myApiService = new LearnerProfileVer1Api.Builder(AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(), null)
                 // options for running against local devappserver
                 // - 10.0.2.2 is localhost's IP address in Android emulator
@@ -95,17 +95,15 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
                 }).build();
     }
 
-    private void populateProfileEntity(TutorProfile tutorProfile){
+    private void populateProfileEntity(GenericLearnerProfile profile){
         //Populate the entity object with the profile info.
 
-        profileEntity = new TutorProfileVer1();
+        profileEntity = new LearnerProfileVer1();
 
-        profileEntity.setName(tutorProfile.getName());
-        profileEntity.setEmailID(tutorProfile.getEmailID());
-        profileEntity.setPhoneNo(tutorProfile.getPhoneNo());
-        profileEntity.setPassword(tutorProfile.getPassword());
-        profileEntity.setCurrentStatus(tutorProfile.getCurrentStatus());
-        profileEntity.setTutorTypes(Arrays.asList(tutorProfile.getTutorTypes()));
-        profileEntity.setDisciplines(Arrays.asList(tutorProfile.getDisciplines()));
+        profileEntity.setName(profile.getName());
+        profileEntity.setEmailID(profile.getEmailID());
+        profileEntity.setPhoneNo(profile.getPhoneNo());
+        profileEntity.setPassword(profile.getPassword());
+        profileEntity.setCurrentStatus(profile.getCurrentStatus());
     }
 }

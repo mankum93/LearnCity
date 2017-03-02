@@ -35,6 +35,11 @@ public class Credits implements Parcelable {
         this.mDateOfExpiryOfCredits = mDateOfExpiryOfCredits;
     }
 
+    public Credits(long mAvailableCredits, Date mDateOfExpiryOfCredits) {
+        this.mAvailableCredits = mAvailableCredits;
+        this.mDateOfExpiryOfCredits = mDateOfExpiryOfCredits;
+    }
+
     protected Credits(Parcel in) {
         mAvailableCredits = in.readLong();
         mDateOfExpiryOfCredits = new Date(in.readLong());
@@ -63,4 +68,41 @@ public class Credits implements Parcelable {
             return new Credits[size];
         }
     };
+    //--------------------------------------------------------------------------------------------------------------------
+
+    public static class CreditsResponseView{
+        private Integer _0;
+        private Date _1;
+
+        private Integer g;
+
+        public Integer getGlobal() {
+            return g;
+        }
+
+        public void setGlobal(Integer global) {
+            this.g = global;
+        }
+
+        public CreditsResponseView(Integer mAvailableCredits, Date mDateOfExpiryOfCredits) {
+            this._0 = mAvailableCredits;
+            this._1 = mDateOfExpiryOfCredits;
+        }
+
+        public Integer getmAvailableCredits() {
+            return _0;
+        }
+
+        public void setmAvailableCredits(Integer mAvailableCredits) {
+            this._0 = mAvailableCredits;
+        }
+
+        public Date getmDateOfExpiryOfCredits() {
+            return _1;
+        }
+
+        public void setmDateOfExpiryOfCredits(Date mDateOfExpiryOfCredits) {
+            this._1 = mDateOfExpiryOfCredits;
+        }
+    }
 }

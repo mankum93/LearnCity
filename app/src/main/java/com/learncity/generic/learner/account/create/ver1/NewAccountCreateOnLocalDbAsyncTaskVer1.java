@@ -48,7 +48,9 @@ public class NewAccountCreateOnLocalDbAsyncTaskVer1 extends AsyncTask<GenericLea
         //Get the data to be inserted
         GenericLearnerProfile profile = params[0];
         //Get the writable database
-        SQLiteDatabase db = new ProfileDbHelperVer1(context, profile.getCurrentStatus()).getWritableDatabase();
+        ProfileDbHelperVer1 helper = new ProfileDbHelperVer1(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        helper.createProfileTables(db, profile.getCurrentStatus());
         //Insert into the database
         ProfileDbHelperVer1.addProfileToDatabase(db, profile);
         //Close the connection

@@ -92,4 +92,51 @@ public class Occupation implements Parcelable {
             return new Occupation[size];
         }
     };
+
+    //----------------------------------------------------------------------------------------------------------------------
+    public static class OccupationResponseView{
+        private Integer _0;
+        private Integer _1;
+        private Duration.DurationResponseView _2;
+
+        private Integer g;
+
+        public Integer getGlobal() {
+            return g;
+        }
+
+        public void setGlobal(Integer global) {
+            this.g = global;
+        }
+
+        public OccupationResponseView(Integer mCurrentOrganization, Integer mCurrentDesignation, Duration.DurationResponseView mCurrentExperience) {
+            this._0 = mCurrentOrganization;
+            this._1 = mCurrentDesignation;
+            this._2 = mCurrentExperience;
+        }
+
+        public Integer getmCurrentOrganization() {
+            return _0;
+        }
+
+        public void setmCurrentOrganization(Integer mCurrentOrganization) {
+            this._0 = mCurrentOrganization;
+        }
+
+        public Integer getmCurrentDesignation() {
+            return _1;
+        }
+
+        public void setmCurrentDesignation(Integer mCurrentDesignation) {
+            this._1 = mCurrentDesignation;
+        }
+
+        public Duration.DurationResponseView getmCurrentExperience() {
+            return _2;
+        }
+
+        public void setmCurrentExperience(Duration.DurationResponseView mCurrentExperience) {
+            this._2 = mCurrentExperience;
+        }
+    }
 }

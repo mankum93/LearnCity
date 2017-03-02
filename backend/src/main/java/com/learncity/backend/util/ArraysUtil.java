@@ -1,7 +1,4 @@
-package com.learncity.util;
-
-import java.util.Arrays;
-import java.util.List;
+package com.learncity.backend.util;
 
 /**
  * Created by DJ on 2/4/2017.

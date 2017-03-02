@@ -1,26 +1,21 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.util.account_management.impl;
 
 import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.learncity.loginApi.LoginApi;
 import com.learncity.loginApi.model.GenericLearnerProfileVer1;
 import com.learncity.loginApi.model.LoginDetails;
 import com.learncity.util.account_management.AbstractTask;
-import com.learncity.util.account_management.LoginService;
 import com.learncity.util.account_management.Result;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 
-import static com.learncity.util.account_management.LoginService.LOGIN_FAILED;
-import static com.learncity.util.account_management.LoginService.LOGIN_SUCCESSFUL;
+import static com.learncity.util.account_management.impl.LoginService.LOGIN_FAILED;
+import static com.learncity.util.account_management.impl.LoginService.LOGIN_SUCCESSFUL;
 
 /**
  * Created by DJ on 2/19/2017.
@@ -102,6 +97,7 @@ public class GAELoginTask extends AbstractTask<LoginService.LoginEventResponse> 
         loginEventResponse = null;
         profileResponse = null;
         details = null;
+        super.performCleanup();
     }
 
     private LoginDetails populateLoginDetailsEntity(LoginService.LoginDetails details){

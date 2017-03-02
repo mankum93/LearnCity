@@ -102,9 +102,6 @@ public class TaskProcessor {
 
     private Thread tasksProcessor;
 
-    /**Tells the user of TaskProcessor if the task processor is still valid for processing. This flag will be set
-     * at the end - Ultimate failure and cancellation or ultimate success.*/
-    private boolean isValid = true;
     private Result result;
 
     private void prepareForReuse(){
@@ -629,8 +626,6 @@ public class TaskProcessor {
 
         tasksProcessor = null;
 
-        isValid = false;
-
         //NOTE: The cleanup of taskProcessingProgressDialog and taskProcessorInstance instances are being scheduled in the main thread
         // because dismissal of the progress dialog might have not yet finished
         mUIHandler.post(new Runnable() {
@@ -861,10 +856,6 @@ public class TaskProcessor {
                 throw new RuntimeException("Dialog already been dismissed - Check for redundant dismissal by the second caller");
             }
         }
-    }
-
-    public boolean isTaskProcessorValid() {
-        return isValid;
     }
 
     /**

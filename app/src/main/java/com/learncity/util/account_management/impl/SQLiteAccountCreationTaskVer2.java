@@ -1,4 +1,4 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.util.account_management.impl;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,8 +10,7 @@ import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile
 import com.learncity.util.account_management.AbstractTask;
 import com.learncity.util.account_management.Result;
 
-import static com.learncity.util.account_management.AccountCreationService.ACCOUNT_CREATION_COMPLETED;
-import static com.learncity.util.account_management.AccountCreationService.ACCOUNT_CREATION_FAILED;
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by DJ on 2/6/2017.
@@ -37,7 +36,10 @@ public class SQLiteAccountCreationTaskVer2 extends AbstractTask<Void> {
         Log.d(TAG, "SQLiteAccountCreationTask.performAccountCreation(): " + "\n" + "MESSAGE: Performing AC creation..." +
                 "\n" +"Thread ID: " + Thread.currentThread().getId());
         //Get the writable database
-        SQLiteDatabase db = new ProfileDbHelperVer1(context, profile.getCurrentStatus()).getWritableDatabase();
+        ProfileDbHelperVer1 helper = new ProfileDbHelperVer1(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        helper.createProfileTables(db, profile.getCurrentStatus());
+
         try{
             //Insert into the database
             ProfileDbHelperVer1.addProfileToDatabase(db, profile);
@@ -61,6 +63,9 @@ public class SQLiteAccountCreationTaskVer2 extends AbstractTask<Void> {
         //Account successfully created
         result = Result.RESULT_SUCCESS;
 
+        //Broadcast the result of the AC creation process in order to retrieve it later
+        EventBus.getDefault().postSticky(new AccountCreationService.ACCreationResult<GenericLearnerProfile>(TASK_COMPLETED, profile));
+
         return result;
     }
 
@@ -71,7 +76,7 @@ public class SQLiteAccountCreationTaskVer2 extends AbstractTask<Void> {
 
         profile = null;
         context = null;
-        taskListener = null;
         result = null;
+        super.performCleanup();
     }
 }

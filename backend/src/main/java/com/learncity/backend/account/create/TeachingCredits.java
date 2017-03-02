@@ -38,4 +38,65 @@ public class TeachingCredits {
         this.mDateOfExpiryOfCredits = mDateOfExpiryOfCredits;
     }
 
+    //--------------------------------------------------------------------------------------------------------------------
+
+    public static class CreditsResponseView{
+        private Integer _0;
+        private Date _1;
+
+        private Integer nil;
+
+        public Integer getNil() {
+            return nil;
+        }
+
+        public void setNil(Integer nil) {
+            this.nil = nil;
+        }
+
+        private Integer g;
+
+        public Integer getGlobal() {
+            return g;
+        }
+
+        public void setGlobal(Integer global) {
+            this.g = global;
+        }
+
+        public CreditsResponseView() {
+        }
+
+        public CreditsResponseView(Integer mAvailableCredits, Date mDateOfExpiryOfCredits) {
+            this._0 = mAvailableCredits;
+            this._1 = mDateOfExpiryOfCredits;
+        }
+
+        public Integer getmAvailableCredits() {
+            return _0;
+        }
+
+        public void setmAvailableCredits(Integer mAvailableCredits) {
+            this._0 = mAvailableCredits;
+        }
+
+        public Date getmDateOfExpiryOfCredits() {
+            return _1;
+        }
+
+        public void setmDateOfExpiryOfCredits(Date mDateOfExpiryOfCredits) {
+            this._1 = mDateOfExpiryOfCredits;
+        }
+
+        public static TeachingCredits normalize(CreditsResponseView spec, TeachingCredits credits){
+            Integer i = spec.getNil();
+            if(i != null){
+                if(i.intValue() == 1){
+                    return null;
+                }
+            }
+            return credits;
+        }
+    }
+
 }

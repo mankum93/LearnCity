@@ -351,4 +351,126 @@ public class GenericLearnerProfile implements Parcelable {
         }
         return learnerProfile;
     }
+    //--------------------------------------------------------------------------------------------------------------------
+
+    public static class GenericLearnerProfileResponseView {
+        private Integer _0;
+        private Integer _1;
+        private Integer _2;
+        private Integer _3;
+        private Integer _4;
+        private Integer _5;
+        private LatLngResponseView _6;
+
+        private Integer g;
+
+        public Integer getGlobal() {
+            return g;
+        }
+
+        public void setGlobal(Integer global) {
+            this.g = global;
+        }
+
+        public GenericLearnerProfileResponseView(Integer mName, Integer mEmailID, Integer mPhoneNo, Integer mDisplayPicturePath, Integer mCurrentStatus, Integer mPassword, LatLngResponseView mLastKnownGeoCoordinates) {
+            this._0 = mName;
+            this._1 = mEmailID;
+            this._2 = mPhoneNo;
+            this._3 = mDisplayPicturePath;
+            this._4 = mCurrentStatus;
+            this._5 = mPassword;
+            this._6 = mLastKnownGeoCoordinates;
+        }
+
+        public Integer getmName() {
+            return _0;
+        }
+
+        public void setmName(Integer mName) {
+            this._0 = mName;
+        }
+
+        public Integer getmEmailID() {
+            return _1;
+        }
+
+        public void setmEmailID(Integer mEmailID) {
+            this._1 = mEmailID;
+        }
+
+        public Integer getmPhoneNo() {
+            return _2;
+        }
+
+        public void setmPhoneNo(Integer mPhoneNo) {
+            this._2 = mPhoneNo;
+        }
+
+        public Integer getmDisplayPicturePath() {
+            return _3;
+        }
+
+        public void setmDisplayPicturePath(Integer mDisplayPicturePath) {
+            this._3 = mDisplayPicturePath;
+        }
+
+        public Integer getmCurrentStatus() {
+            return _4;
+        }
+
+        public void setmCurrentStatus(Integer mCurrentStatus) {
+            this._4 = mCurrentStatus;
+        }
+
+        public Integer getmPassword() {
+            return _5;
+        }
+
+        public void setmPassword(Integer mPassword) {
+            this._5 = mPassword;
+        }
+
+        public LatLngResponseView getmLastKnownGeoCoordinates() {
+            return _6;
+        }
+
+        public void setmLastKnownGeoCoordinates(LatLngResponseView mLastKnownGeoCoordinates) {
+            this._6 = mLastKnownGeoCoordinates;
+        }
+    }
+    public static class LatLngResponseView{
+        private Integer _0;
+        private Integer _1;
+
+        private Integer g;
+
+        public Integer getGlobal() {
+            return g;
+        }
+
+        public void setGlobal(Integer global) {
+            this.g = global;
+        }
+
+        public LatLngResponseView(Integer latitude, Integer longitude) {
+            this._0 = latitude;
+            this._1 = longitude;
+        }
+
+        public Integer getLatitude() {
+            return _0;
+        }
+
+        public void setLatitude(Integer latitude) {
+            this._0 = latitude;
+        }
+
+        public Integer getLongitude() {
+            return _1;
+        }
+
+        public void setLongitude(Integer longitude) {
+            this._1 = longitude;
+        }
+    }
 }

@@ -153,4 +153,135 @@ public class GenericLearnerProfileVer1 {
         }
         this.mPhoneNo = mPhoneNo;
     }
+
+    //--------------------------------------------------------------------------------------------------------------------
+
+    public static class GenericLearnerProfileResponseView {
+        private Integer _0;
+        private Integer _1;
+        private Integer _2;
+        private Integer _3;
+        private Integer _4;
+        private Integer _5;
+        private LatLng.LatLngResponseView _6;
+
+        private Integer nil;
+
+        public Integer getNil() {
+            return nil;
+        }
+
+        public void setNil(Integer nil) {
+            this.nil = nil;
+        }
+
+        private Integer g;
+
+        public Integer getGlobal() {
+            return g;
+        }
+
+        public void setGlobal(Integer global) {
+            this.g = global;
+        }
+
+        public GenericLearnerProfileResponseView() {
+        }
+
+        public GenericLearnerProfileResponseView(Integer mName, Integer mEmailID, Integer mPhoneNo, Integer mDisplayPicturePath, Integer mCurrentStatus, Integer mPassword, LatLng.LatLngResponseView mLastKnownGeoCoordinates) {
+            this._0 = mName;
+            this._1 = mEmailID;
+            this._2 = mPhoneNo;
+            this._3 = mDisplayPicturePath;
+            this._4 = mCurrentStatus;
+            this._5 = mPassword;
+            this._6 = mLastKnownGeoCoordinates;
+        }
+
+        public Integer getmName() {
+            return _0;
+        }
+
+        public void setmName(Integer mName) {
+            this._0 = mName;
+        }
+
+        public Integer getmEmailID() {
+            return _1;
+        }
+
+        public void setmEmailID(Integer mEmailID) {
+            this._1 = mEmailID;
+        }
+
+        public Integer getmPhoneNo() {
+            return _2;
+        }
+
+        public void setmPhoneNo(Integer mPhoneNo) {
+            this._2 = mPhoneNo;
+        }
+
+        public Integer getmDisplayPicturePath() {
+            return _3;
+        }
+
+        public void setmDisplayPicturePath(Integer mDisplayPicturePath) {
+            this._3 = mDisplayPicturePath;
+        }
+
+        public Integer getmCurrentStatus() {
+            return _4;
+        }
+
+        public void setmCurrentStatus(Integer mCurrentStatus) {
+            this._4 = mCurrentStatus;
+        }
+
+        public Integer getmPassword() {
+            return _5;
+        }
+
+        public void setmPassword(Integer mPassword) {
+            this._5 = mPassword;
+        }
+
+        public LatLng.LatLngResponseView getmLastKnownGeoCoordinates() {
+            return _6;
+        }
+
+        public void setmLastKnownGeoCoordinates(LatLng.LatLngResponseView mLastKnownGeoCoordinates) {
+            this._6 = mLastKnownGeoCoordinates;
+        }
+
+        public static GenericLearnerProfileVer1 normalize(GenericLearnerProfileResponseView spec, GenericLearnerProfileVer1 profile){
+            //All the base class fields have been asked to be null - WTH?
+            Integer i = spec.getNil();
+            if(i != null){
+                if(i.intValue() == 1){
+                    return null;
+                }
+            }
+            if(spec.getNil() == null){
+                if(spec.getmName() == null){
+                    profile.setName(null);
+                }
+                if(spec.getmEmailID() == null){
+                    profile.setEmailID(null);
+                }
+                if(spec.getmPhoneNo() == null){
+                    profile.setPhoneNo(null);
+                }
+                if(spec.getmPassword() == null){
+                    profile.setPassword(null);
+                }
+                if(spec.getmDisplayPicturePath() == null){
+                    profile.setDisplayPicturePath(null);
+                }
+                profile.setLastKnownGeoCoordinates(LatLng.LatLngResponseView.normalize(spec.getmLastKnownGeoCoordinates(), profile.getLastKnownGeoCoordinates()));
+            }
+
+            return profile;
+        }
+    }
 }

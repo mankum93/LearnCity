@@ -1,15 +1,13 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.util.account_management.impl;
 
 import android.util.Log;
 
+import com.learncity.util.account_management.AccountCreationClient;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learner.account.profile.model.LearnerProfile;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.util.account_management.AbstractTask;
 import com.learncity.util.account_management.Result;
-
-import static com.learncity.util.account_management.AccountCreationService.ACCOUNT_CREATION_COMPLETED;
-import static com.learncity.util.account_management.AccountCreationService.ACCOUNT_CREATION_FAILED;
 
 /**
  * Created by DJ on 2/15/2017.
@@ -86,9 +84,9 @@ public class GAEAccountCreationTaskVer2 extends AbstractTask<Void> {
         accountCreationClient.performCleanup();
 
         profile = null;
-        taskListener = null;
         accountCreationClient = null;
         result = null;
+        super.performCleanup();
     }
 
     private void selectClient(GenericLearnerProfile profile){

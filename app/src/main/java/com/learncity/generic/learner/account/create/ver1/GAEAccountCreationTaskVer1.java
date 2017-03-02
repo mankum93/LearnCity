@@ -2,9 +2,9 @@ package com.learncity.generic.learner.account.create.ver1;
 
 import android.util.Log;
 
-import com.learncity.generic.learner.account.create.AccountCreationClient;
-import com.learncity.generic.learner.account.create.GAELearnerAccountCreationClient;
-import com.learncity.generic.learner.account.create.GAETutorAccountCreationClient;
+import com.learncity.util.account_management.AccountCreationClient;
+import com.learncity.util.account_management.impl.GAELearnerAccountCreationClient;
+import com.learncity.util.account_management.impl.GAETutorAccountCreationClient;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learner.account.profile.model.LearnerProfile;
 import com.learncity.tutor.account.profile.model.TutorProfile;

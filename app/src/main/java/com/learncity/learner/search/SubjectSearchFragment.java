@@ -19,9 +19,8 @@ import com.learncity.learncity.R;
  */
 public class SubjectSearchFragment extends Fragment {
 
-    private String mEnteredSubjectSearchQuery;
-    private SubjectSearchQueryCallback mCallback;
 
+    private AppCompatMultiAutoCompleteTextView customMultiAutoCompleteTextView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -29,7 +28,7 @@ public class SubjectSearchFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_subject_search, container, false);
 
-        AppCompatMultiAutoCompleteTextView customMultiAutoCompleteTextView = (SubjectMultiAutoCompleteTextView)root.findViewById(R.id.subject_multi_auto_complete_view);
+        customMultiAutoCompleteTextView = (SubjectMultiAutoCompleteTextView)root.findViewById(R.id.subject_multi_auto_complete_view);
 
         //Initialize the adapter with dummy data and set it up
         customMultiAutoCompleteTextView.setAdapter(new SubjectSearchAdapter(getActivity(),
@@ -39,34 +38,15 @@ public class SubjectSearchFragment extends Fragment {
         /*Thought: After a subject is clicked/selected, it should be stored somewhere until the user presses the Search Button.
         * This "somewhere" has to account for combination of search parameters from various search interfaces in the same
         * activity.*/
-        AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String subjectName = (String)parent.getAdapter().getItem(position);
-                //Stash this subject name at an appropriate place for later use.
-                mEnteredSubjectSearchQuery = subjectName;
-                //If the hosting activity or whoever has set the callback for getting the search query; bless them with one
-                if(mCallback == null){
-                    //No blessing
-                }
-                else{
-                    mCallback.onSubjectSearchQuery(mEnteredSubjectSearchQuery);
-                }
-            }
-        };
-        customMultiAutoCompleteTextView.setOnItemClickListener(listener);
+
         //BEWARE!: Don't forget to set the Tokenizer. The suggestions won't show without it.
         customMultiAutoCompleteTextView.setTokenizer(new AppCompatMultiAutoCompleteTextView.CommaTokenizer());
         return root;
     }
 
-    public interface SubjectSearchQueryCallback{
-        void onSubjectSearchQuery(String subjectsSearchQuery);
+    public AppCompatMultiAutoCompleteTextView getCustomMultiAutoCompleteTextView() {
+        return customMultiAutoCompleteTextView;
     }
-    public void setSubjectSearchQueryCallback(SubjectSearchQueryCallback callback){
-        mCallback = callback;
-    }
-
 }
 
 class SubjectSearchAdapter extends ArrayAdapter<String>{

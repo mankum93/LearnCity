@@ -13,10 +13,11 @@ import android.widget.EditText;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.learncity.learncity.R;
-import com.learncity.util.account_management.AccountManager;
-import com.learncity.util.account_management.LoginService;
+import com.learncity.util.account_management.impl.AccountManager;
+import com.learncity.util.account_management.impl.LoginService;
 import com.learncity.util.account_management.Result;
 import com.learncity.util.account_management.Task;
+import com.learncity.util.account_management.impl.GAELoginTask;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;

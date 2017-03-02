@@ -1,4 +1,4 @@
-package com.learncity.generic.learner.account.create;
+package com.learncity.util.account_management;
 
 /**
  * Created by DJ on 2/5/2017.

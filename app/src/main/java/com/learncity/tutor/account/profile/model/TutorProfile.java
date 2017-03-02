@@ -30,15 +30,15 @@ public class TutorProfile extends GenericLearnerProfile {
     //List of all available types: R.array.type_of_tutor
     private String[] tutorTypes;
 
-    /**The disciplines/subjects that the tutor can teach*/
-    //List of all available disciplines/subjects: R.array.list_of_disciplines
+    /**The _3/subjects that the tutor can teach*/
+    //List of all available _3/subjects: R.array.list_of_disciplines
     private String[] disciplines;
 
     /**Rating is a average of all 5 point scale scores given by the students
-     * Minimum rating available: 1
-     * Maximum rating available: 5
-     * Initial rating(unrated): 0
-     * NOTE: In case of rating 0, status should be reflected as "Unrated"*/
+     * Minimum _4 available: 1
+     * Maximum _4 available: 5
+     * Initial _4(unrated): 0
+     * NOTE: In case of _4 0, status should be reflected as "Unrated"*/
     private int rating = 0;     //Initial: Unrated
 
     private Credits teachingCredits;
@@ -337,7 +337,7 @@ public class TutorProfile extends GenericLearnerProfile {
     //------------------------------------------------------------------------------------------------------------------
     /**Method invalidates the compulsory input for a learner profile
      * @param tutorTypes: For ex, I could be a Freelancer or a Schoolteacher, etc.
-     * @param disciplines: The subjects or disciplines that I teach; You can't be a tutor without specifying them
+     * @param disciplines: The subjects or _3 that I teach; You can't be a tutor without specifying them
      * */
     private void validateInput(String[] tutorTypes,
                                String[] disciplines){
@@ -374,5 +374,84 @@ public class TutorProfile extends GenericLearnerProfile {
             throw new IllegalStateException("A Tutor can not NOT have even a single Subject that he or she is able to teach");
         }
         return tutorProfile;
+    }
+    //-----------------------------------------------------------------------------------------------------------------
+
+    public static class TutorProfileResponseView extends GenericLearnerProfileResponseView{
+
+        private EducationalQualification.EducationalQualificationResponseView[] _0;
+        private Occupation.OccupationResponseView _1;
+        private Integer _2;
+        private Integer _3;
+        private Integer _4;
+        private Credits.CreditsResponseView _5;
+
+        private Integer g;
+
+        public Integer getGlobal() {
+            return g;
+        }
+
+        public void setGlobal(Integer global) {
+            this.g = global;
+        }
+
+        public TutorProfileResponseView(Integer mName, Integer mEmailID, Integer mPhoneNo, Integer mDisplayPicturePath, Integer mCurrentStatus, Integer mPassword, LatLngResponseView mLastKnownGeoCoordinates, EducationalQualification.EducationalQualificationResponseView[] educationalQualifications, Occupation.OccupationResponseView occupation, Integer tutorTypes, Integer disciplines, Integer rating, Credits.CreditsResponseView teachingCredits) {
+            super(mName, mEmailID, mPhoneNo, mDisplayPicturePath, mCurrentStatus, mPassword, mLastKnownGeoCoordinates);
+            this._0 = educationalQualifications;
+            this._1 = occupation;
+            this._2 = tutorTypes;
+            this._3 = disciplines;
+            this._4 = rating;
+            this._5 = teachingCredits;
+        }
+
+        public EducationalQualification.EducationalQualificationResponseView[] getEducationalQualifications() {
+            return _0;
+        }
+
+        public void setEducationalQualifications(EducationalQualification.EducationalQualificationResponseView[] educationalQualifications) {
+            this._0 = educationalQualifications;
+        }
+
+        public Occupation.OccupationResponseView getOccupation() {
+            return _1;
+        }
+
+        public void setOccupation(Occupation.OccupationResponseView occupation) {
+            this._1 = occupation;
+        }
+
+        public Integer getTutorTypes() {
+            return _2;
+        }
+
+        public void setTutorTypes(Integer tutorTypes) {
+            this._2 = tutorTypes;
+        }
+
+        public Integer getDisciplines() {
+            return _3;
+        }
+
+        public void setDisciplines(Integer disciplines) {
+            this._3 = disciplines;
+        }
+
+        public Integer getRating() {
+            return _4;
+        }
+
+        public void setRating(Integer rating) {
+            this._4 = rating;
+        }
+
+        public Credits.CreditsResponseView getTeachingCredits() {
+            return _5;
+        }
+
+        public void setTeachingCredits(Credits.CreditsResponseView teachingCredits) {
+            this._5 = teachingCredits;
+        }
     }
 }

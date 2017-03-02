@@ -1,29 +1,14 @@
 package com.learncity.generic.learner.account.create;
 
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
 
 import com.learncity.generic.learner.account.create.ver1.SignUpWithGoogleAccountActivityVer1;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
-import com.learncity.learner.account.profile.model.LearnerProfile;
-import com.learncity.learner.main.LearnerHomeActivity;
-import com.learncity.tutor.account.profile.model.TutorProfile;
-import com.learncity.tutor.main.TutorHomeActivity;
-import com.learncity.util.MultiSpinner;
-import com.learncity.util.account_management.AccountCreationService;
-import com.learncity.util.account_management.AccountManager;
 
 /**
  * Created by DJ on 10/30/2016.

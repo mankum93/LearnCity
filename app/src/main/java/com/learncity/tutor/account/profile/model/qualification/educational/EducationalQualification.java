@@ -91,4 +91,61 @@ public class EducationalQualification implements Parcelable {
             return new EducationalQualification[size];
         }
     };
+
+    //-----------------------------------------------------------------------------------------------------------------------
+    public static class EducationalQualificationResponseView{
+        private Integer _0;
+        private Integer _1;
+        private Integer _2;
+        private Duration.DurationResponseView _3;
+
+        private Integer g;
+
+        public Integer getGlobal() {
+            return g;
+        }
+
+        public void setGlobal(Integer global) {
+            this.g = global;
+        }
+
+        public EducationalQualificationResponseView(Integer mQualificationName, Integer mYearOfPassing, Integer mInstitution, Duration.DurationResponseView mDuration) {
+            this._0 = mQualificationName;
+            this._1 = mYearOfPassing;
+            this._2 = mInstitution;
+            this._3 = mDuration;
+        }
+
+        public Integer getmQualificationName() {
+            return _0;
+        }
+
+        public void setmQualificationName(Integer mQualificationName) {
+            this._0 = mQualificationName;
+        }
+
+        public Integer getmYearOfPassing() {
+            return _1;
+        }
+
+        public void setmYearOfPassing(Integer mYearOfPassing) {
+            this._1 = mYearOfPassing;
+        }
+
+        public Integer getmInstitution() {
+            return _2;
+        }
+
+        public void setmInstitution(Integer mInstitution) {
+            this._2 = mInstitution;
+        }
+
+        public Duration.DurationResponseView getmDuration() {
+            return _3;
+        }
+
+        public void setmDuration(Duration.DurationResponseView mDuration) {
+            this._3 = mDuration;
+        }
+    }
 }

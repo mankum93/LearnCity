@@ -23,8 +23,10 @@ import com.learncity.learner.main.LearnerHomeActivity;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.tutor.main.TutorHomeActivity;
 import com.learncity.util.MultiSpinner;
-import com.learncity.util.account_management.AccountCreationService;
-import com.learncity.util.account_management.AccountManager;
+import com.learncity.util.account_management.impl.AccountCreationService;
+import com.learncity.util.account_management.impl.AccountManager;
+import com.learncity.util.account_management.impl.GAEAccountCreationTaskVer2;
+import com.learncity.util.account_management.impl.SQLiteAccountCreationTaskVer2;
 
 /**
  * Created by DJ on 2/23/2017.
@@ -234,10 +236,16 @@ public abstract class SignUpFragment extends Fragment {
             @Override
             public void onAccountCreated() {
                 if(profile.getCurrentStatus() == GenericLearnerProfile.STATUS_LEARNER){
-                    startActivity(new Intent(getActivity(), LearnerHomeActivity.class));
+                    startActivity(
+                            new Intent(getActivity(), LearnerHomeActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    );
                 }
                 else{
-                    startActivity(new Intent(getActivity(), TutorHomeActivity.class));
+                    startActivity(
+                            new Intent(getActivity(), TutorHomeActivity.class)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    );
                 }
             }
 

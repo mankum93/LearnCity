@@ -1,9 +1,19 @@
-package com.learncity.util.account_management;
+package com.learncity.util.account_management.impl;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.learncity.generic.learner.account.profile.database.ProfileDbHelperVer1;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
+import com.learncity.util.account_management.Service;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.io.File;
+
+import static com.learncity.generic.learner.account.profile.database.ProfileDbHelperVer1.DATABASE_NAME;
 
 /**
  * Created by DJ on 2/16/2017.
@@ -11,13 +21,15 @@ import com.learncity.generic.learner.account.profile.database.ProfileDbHelperVer
 
 public class AccountManager {
 
+    private final static String TAG = "AccountManager";
+
     /**Constants for invoking different Account services*/
     public static final int ACCOUNT_CREATION_SERVICE = 0x01;
     public static final int LOGIN_SERVICE = 0x02;
 
     private static AccountManager accountManager;
 
-    private Context context;
+    //private Context context;
 
     private static LoginService loginService;
     private static AccountCreationService accountCreationService;
@@ -26,10 +38,22 @@ public class AccountManager {
     private boolean isLoginServiceShutdownComplete = false;
     private boolean isACCreationServiceShutdownComplete = false;
 
+    //This profile shall be linked to either the profile from new AC creation/Login response/Local Db
+    private static GenericLearnerProfile profile;
+
+    private static ProfileDbHelperVer1 profileDbHelperVer1;
+
     private Thread shutDownThread;
 
+    /**Shall hold reference to the an Anon instance of Object that shall receive result of the
+     * AC creation rather than the AccountManager directly. This workaround is to have the result
+     * available without an instance of AccountManager*/
+    private static ACCreationResultReceiver sACCreationResultReceiver;
+
     private AccountManager(Context context) {
-        this.context = context;
+        //this.context = context;
+        //Register with EventBus
+        //EventBus.getDefault().register(this);
     }
 
     public static AccountManager getAccountManager(@NonNull Context context){
@@ -38,12 +62,14 @@ public class AccountManager {
             throw new NullPointerException("Context can't be null");
         }
 
+        profile = isExistingAccountLocally(context);
+
         if(accountManager == null){
             return accountManager = new AccountManager(context);
         }
         else{
             //Refresh the context
-            accountManager.context = context;
+            //accountManager.context = context;
         }
         return accountManager;
     }
@@ -89,6 +115,13 @@ public class AccountManager {
                     accountCreationService = null;
                     loginService = null;
 
+                    //Unregister with EventBus
+                    //EventBus.getDefault().unregister(this);
+                    if(sACCreationResultReceiver != null){
+                        sACCreationResultReceiver.unregisterReceiver();
+                        sACCreationResultReceiver = null;
+                    }
+
                     shutDownThread = null;
 
                     accountManager = null;
@@ -97,7 +130,7 @@ public class AccountManager {
         });
         shutDownThread.start();
 
-        context = null;
+        //context = null;
     }
 
     /**Call this method to load the given service instance. The service can be loaded if you anticipating
@@ -134,6 +167,10 @@ public class AccountManager {
 
                 accountCreationService.setServiceStateListener(new ServiceStateListener());
                 service = (T)accountCreationService;
+
+                //Set the AC creation result receiver
+                sACCreationResultReceiver = new ACCreationResultReceiver();
+
                 break;
             case LOGIN_SERVICE:
                 if(loginService == null){
@@ -149,6 +186,8 @@ public class AccountManager {
 
         return service;
     }
+
+    //---------------------------------------------------------------------------------------------------------------------
 
     private static class ServiceStateListener implements Service.ServiceStateListener{
         @Override
@@ -177,14 +216,62 @@ public class AccountManager {
     }
 
     //-------------------------------------------------------------------------------------------------------------------
-    public static boolean isAccountAlreadyExistingOnThisDevice(Context context) {
-        return ProfileDbHelperVer1.isExistingUserAccount(context);
+    public static boolean isExistingDbOnThisDevice(Context context) {
+        File dbPath = ProfileDbHelperVer1.isExistingDatabase(context, DATABASE_NAME);
+        if(dbPath == null){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
+    public static GenericLearnerProfile isExistingAccountLocally(Context context){
+        if(profileDbHelperVer1 == null){
+            profileDbHelperVer1 = new ProfileDbHelperVer1(context);
+        }
+        //Proactively preparing the profile if there is an existing AC on ths device
+        if(isExistingDbOnThisDevice(context)){
+            //Stash the profile
+            if(profile == null){
+                profile = profileDbHelperVer1.isExistingUserAccount();
+            }
+        }
+        return profile;
+    }
+
+    public static GenericLearnerProfile getAccountDetails(Context context){
+        //Check if an Account exists locally in case it has not been checked for already
+        if(profile == null){
+            profile = isExistingAccountLocally(context);
+        }
+        return profile;
     }
 
 
     public static class NoSuchServiceException extends RuntimeException{
         public NoSuchServiceException(String msg){
             super(msg);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------
+    private static class ACCreationResultReceiver {
+
+        public ACCreationResultReceiver(){
+            //Register with EventBus
+            EventBus.getDefault().register(this);
+        }
+
+        @Subscribe
+        public void onReceiveProfileOnACCreation(AccountCreationService.ACCreationResult accountCreationFinalResult){
+            Log.i(TAG, "Profile received from the successful AC creation process");
+            profile = (GenericLearnerProfile) accountCreationFinalResult.getResponseData()[0];
+        }
+
+        public void unregisterReceiver(){
+            //Unregister with EventBus
+            EventBus.getDefault().unregister(this);
         }
     }
 }

@@ -1,19 +1,31 @@
-package com.learncity.util.account_management;
+package com.learncity.util.account_management.impl;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+
+import com.learncity.loginApi.model.GenericLearnerProfileVer1;
+import com.learncity.util.account_management.AbstractTask;
+import com.learncity.util.account_management.Service;
+import com.learncity.util.account_management.Task;
+import com.learncity.util.account_management.TaskProcessor;
+
+import java.io.IOException;
+
 
 /**
  * Created by DJ on 2/16/2017.
  */
 
-public class AccountCreationService {
+public class LoginService {
+
+    private final String TAG = "LoginService";
 
     /**Account creation status indicators*/
-    public static int ACCOUNT_CREATION_FAILED = Task.TASK_FAILED;
-    public static int ACCOUNT_CREATION_COMPLETED = Task.TASK_COMPLETED;
+    public static final int LOGIN_FAILED = Task.TASK_FAILED;
+    public static final int LOGIN_SUCCESSFUL = Task.TASK_COMPLETED;
 
     public static final int NOTIFY_UI_AUTO = TaskProcessor.NOTIFY_UI_AUTO;
     public static final int NOTIFY_UI_CUSTOM = TaskProcessor.NOTIFY_UI_CUSTOM;
@@ -21,7 +33,9 @@ public class AccountCreationService {
 
     private TaskProcessor taskProcessor;
     private Context context;
-    private AccountCreationListener accountCreationListener;
+    private LoginListener loginListener;
+
+    private LoginEventResponse loginEventResponse;
 
     private boolean finishUpInitiated = false;
     private boolean hasFinishedUp = false;
@@ -38,7 +52,7 @@ public class AccountCreationService {
     /**The default task processor listener in case the service caller decides not to provide one*/
     private TaskProcessorListenerImpl defaultTaskProcessorListener;
 
-    //private static AccountCreationService accountCreationService;
+    //private static LoginService loginService;
 
     /**Call this method to re-awaken the service(after it has been asked to finish up
      * and it has completed the finish up) to start taking requests again. If the finish up has not
@@ -95,9 +109,9 @@ public class AccountCreationService {
                                 }
                             }
                         }
-                        if(accountCreationListener != null){
+                        if(loginListener != null){
                             //Now that finishUp() has completed, please do the honors for the caller of this method
-                            accountCreationListener.onAccountCreationServiceRefresh();
+                            loginListener.onLoginServiceRefresh();
                         }
                         //Call the service state callback
                         if(serviceStateListener != null){
@@ -134,31 +148,35 @@ public class AccountCreationService {
         taskProcessor.refreshContext(context);
     }
 
-    public AccountCreationService(Context context) {
+
+    public LoginService(Context context) {
         this.context = context;
         //Initialize the TaskProcessor
         taskProcessor = new TaskProcessor(context);
+        //Register with EventBus
+        //EventBus.getDefault().register(this);
 
         //Update the Service state
         serviceState = Service.SERVICE_READY;
     }
 
     /*
-    public static AccountCreationService getAccountCreationService(@NonNull Context context){
+    public static LoginService getLoginService(@NonNull Context context){
 
-        if(accountCreationService == null){
-            return accountCreationService = new AccountCreationService(context);
+        if(loginService == null){
+            return loginService = new LoginService(context);
         }
         else{
             //Refresh the context
-            if(accountCreationService.context != context){
-                accountCreationService.context = context;
-                accountCreationService.taskProcessor.refreshContext(context);
+            if(loginService.context != context){
+                loginService.context = context;
+                loginService.taskProcessor.refreshContext(context);
             }
         }
-        return accountCreationService;
+        return loginService;
     }
     */
+
 
     /**Call this method to shutdown the service for good, i.e, the service shall not accept more request as well shall
      * have to be loaded again if is required. Call this method when you are sure that you are done using up the service.
@@ -189,11 +207,15 @@ public class AccountCreationService {
                         }
                     }
                 }
+                //Unregister the instace with the EventBus
+                //EventBus.getDefault().unregister(this);
                 taskProcessor.shutDown();
-                accountCreationListener = null;
+                loginListener = null;
                 taskProcessor = null;
                 context = null;
+                loginEventResponse = null;
                 defaultTaskProcessorListener = null;
+
                 //loginService = null;
 
                 //Call the service state callback
@@ -235,10 +257,6 @@ public class AccountCreationService {
         }
     }
 
-    public void setUIFlag(int notifyUIFlag) {
-        taskProcessor.setUIFlag(notifyUIFlag);
-    }
-
     /**Call this method when you want to queue tasks for processing. Do not call this method if you have initiated
      * a shutDown() or a finishUp()*/
     public void queueTasks(AbstractTask... tasks) {
@@ -257,49 +275,48 @@ public class AccountCreationService {
      *
      * Call this method ONLY if you are using the NOTIFY_UI_CUSTOM mode; Calling this method in NOTIFY_UI_AUTO mode
      * has NO EFFECT*/
-    public void cancelOnFailedAccountCreation() {
+    public void cancelOnFailedLogin() {
         taskProcessor.cancelOnFailedTask();
     }
-
 
     /**
      * @param listener Set this loginListener to listen to overall Account creation process. That includes a callback after all the
      * tasks have finished successfully; a callback in case a task fails any is intentionally made to cancel by the caller
-     * and a callback for performing any activity before the start of AC creation. NOTE: This activity shall be performed in
+     * and a callback for performing any activity before the start of Login process. NOTE: This activity shall be performed in
      * a background thread
      * */
-    public void setAccountCreationListener(AccountCreationListener listener) {
+    public void setLoginListener(LoginListener listener) {
         //If a task is queued after finishup; task processor will throw and exception but we have
         // to ensure that after shutdown, no more calls to service are serviced
         if(serviceState == Service.SERVICE_SHUTDOWN_REQUESTED){
             throw new IllegalStateException("You have requested for a service shutdown You can't queue any more requests." +
                     "To queue more request, load the service again");
         }
-        accountCreationListener = listener;
+        loginListener = listener;
 
         TaskProcessor.TaskProcessorListener taskListener;
 
-        if(accountCreationListener != null){
-            //Translate AccountCreationListener to TaskListener
+        if(loginListener != null){
+            //Translate LoginListener to TaskListener
             taskListener = new TaskProcessor.TaskProcessorListener() {
                 @Override
                 public void onTaskProcessingComplete() {
-                    accountCreationListener.onAccountCreated();
+                    loginListener.onLogin(loginEventResponse);
                 }
 
                 @Override
                 public void onTaskProcessingFailed() {
-                    accountCreationListener.onAccountCreationFailed();
+                    loginListener.onLoginFailed(loginEventResponse);
                 }
 
                 @Override
                 public void onPreTaskProcessingStart() {
-                    accountCreationListener.onPreAccountCreation();
+                    loginListener.onPreLogin();
                 }
 
                 @Override
                 public void onCleanupComplete() {
-                    synchronized (AccountCreationService.this){
+                    synchronized (LoginService.this){
                         hasFinishedUp = true;
                         //Wake up the waiting thread only if IT IS WAITING ;)
                         //If its not waiting then it won't because of the finishup flag set here
@@ -332,9 +349,12 @@ public class AccountCreationService {
         taskProcessor.setOverallTaskProcessorListener(taskListener);
     }
 
+    public void setUIFlag(int notifyUIFlag) {
+        taskProcessor.setUIFlag(notifyUIFlag);
+    }
 
     /**Provide your own implementation of an Retry Alert Dialog.*/
-    public void setACCreationRetryAlertDialog(AlertDialog taskProcessingRetry) {
+    public void setLoginRetryAlertDialog(AlertDialog taskProcessingRetry) {
         taskProcessor.setTaskProcessingRetryDialog(taskProcessingRetry);
     }
 
@@ -344,21 +364,21 @@ public class AccountCreationService {
      *
      * Call this method ONLY if you are using the NOTIFY_UI_CUSTOM mode; Calling this method in NOTIFY_UI_AUTO mode
      * has NO EFFECT*/
-    public void retryOnFailedAccountCreation() {
+    public void retryOnFailedLogin() {
         taskProcessor.retryOnFailedTask();
     }
 
     /**Provide your own implementation of a Progress Dialog.*/
-    public void setAccountCreationProgressDialog(ProgressDialog taskProcessingProgressDialog) {
+    public void setLoginProgressDialog(ProgressDialog taskProcessingProgressDialog) {
         taskProcessor.setTaskProcessingProgressDialog(taskProcessingProgressDialog);
     }
 
     /**This method initiates the processing of tasks
-     * @param tasks AccountCreationTask that will perform the Login*/
-    public void startAccountCreation(AbstractTask... tasks) {
+     * @param tasks LoginTask that will perform the Login*/
+    public void startLoginProcess(AbstractTask... tasks) {
         //It is possible that this method was called without setting a listener; Set the default one
         // in that case with the default flag(loginUIFlag) if not provided
-        if(accountCreationListener == null){
+        if(loginListener == null){
             if(defaultTaskProcessorListener != null){
                 defaultTaskProcessorListener = new TaskProcessorListenerImpl();
                 taskProcessor.setOverallTaskProcessorListener(defaultTaskProcessorListener);
@@ -366,19 +386,6 @@ public class AccountCreationService {
         }
         taskProcessor.startTasksProcessing(tasks);
     }
-    //-------------------------------------------------------------------------------------------------------------------
-
-    /**
-     * This interface shall be implemented by anyone wanting to get a window into the overall task processing states
-     * and perform tasks deemed necessary by them at those points.
-     */
-    public interface AccountCreationListener {
-        void onAccountCreated();
-        void onAccountCreationFailed();
-        void onPreAccountCreation();
-        void onAccountCreationServiceRefresh();
-    }
-
     //---------------------------------------------------------------------------------------------------------------------
     /**This listener enables listening to the States of service namely - onServiceCreate(),
      * onServiceFinishUp() and onServiceShutdown().
@@ -387,6 +394,30 @@ public class AccountCreationService {
     void setServiceStateListener(Service.ServiceStateListener listener){
         serviceStateListener = listener;
     }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    /*
+    @Subscribe
+    public void onLoginResponseFromServer(LoginEventResponse event){
+        Log.d(TAG, "Login event response received by LoginService");
+        this.loginEventResponse = event;
+        //TODO: Perform task on receiving response from server
+    }
+    */
+
+    //---------------------------------------------------------------------------------------------------------------------
+    /**
+     * This interface shall be implemented by anyone wanting to get a window into the overall task processing states
+     * and perform tasks deemed necessary by them at those points.
+     */
+    public interface LoginListener {
+
+        void onLogin(LoginEventResponse loginEventResponse);
+        void onLoginFailed(LoginEventResponse loginEventResponse);
+        void onPreLogin();
+        void onLoginServiceRefresh();
+    }
+
     //---------------------------------------------------------------------------------------------------------------------
     private class TaskProcessorListenerImpl implements TaskProcessor.TaskProcessorListener{
         @Override
@@ -406,7 +437,7 @@ public class AccountCreationService {
 
         @Override
         public void onCleanupComplete() {
-            synchronized (AccountCreationService.this){
+            synchronized (LoginService.this){
                 hasFinishedUp = true;
                 //Wake up the waiting thread only if IT IS WAITING ;)
                 //If its not waiting then it won't because of the finishup flag set here
@@ -425,6 +456,82 @@ public class AccountCreationService {
             if(serviceStateListener != null){
                 serviceStateListener.onServiceFinishUp();
             }
+        }
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+
+    /**This class simply encapsulates the login details*/
+    public static class LoginDetails{
+
+        private String emailID;
+        private String password;
+
+        public LoginDetails(@NonNull String emailID, @NonNull String password) {
+
+            if(emailID == null){
+                throw new NullPointerException("Email ID can't be null");
+            }
+            if(password == null){
+                throw new NullPointerException("Password can't be null");
+            }
+            this.emailID = emailID;
+            this.password = password;
+        }
+
+        public String getEmailID() {
+            return emailID;
+        }
+
+        public void setEmailID(String emailID) {
+            if(emailID == null){
+                throw new NullPointerException("Email ID can't be null");
+            }
+            this.emailID = emailID;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            if(password == null){
+                throw new NullPointerException("Password can't be null");
+            }
+            this.password = password;
+        }
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+
+    public static class LoginEventResponse {
+        //In case there is a successful login
+        private GenericLearnerProfileVer1 profileFromServer;
+        //In case there is an unsuccessful attempt
+        private IOException exception;
+
+        public LoginEventResponse(GenericLearnerProfileVer1 profileFromServer) {
+            this.profileFromServer = profileFromServer;
+        }
+
+        public LoginEventResponse(IOException exception) {
+            this.exception = exception;
+        }
+
+        public GenericLearnerProfileVer1 getProfileResponse() {
+            return profileFromServer;
+        }
+
+        public void setProfileResponse(GenericLearnerProfileVer1 profileFromServer) {
+            this.profileFromServer = profileFromServer;
+        }
+
+        public IOException getException() {
+            return exception;
+        }
+
+        public void setException(IOException exception) {
+            this.exception = exception;
         }
     }
 }
