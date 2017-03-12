@@ -28,9 +28,9 @@ dependencies {
     compile 'javax.servlet:servlet-api:2.5'
     compile 'com.googlecode.objectify:objectify:5.1.1'
     compile 'com.google.appengine.tools:appengine-gcs-client:0.6'
-    compile 'com.google.appengine:appengine-endpoints:1.9.34'
-    compile 'com.google.appengine:appengine-endpoints-deps:1.9.34'
     compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.google.http-client:google-http-client-gson:1.22.0'
+    compile 'com.google.http-client:google-http-client:1.22.0'
 }
 
 appengine {

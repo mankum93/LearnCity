@@ -6,13 +6,14 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.learncity.backend.persistence.tutorProfileVer1Api.TutorProfileVer1Api;
-import com.learncity.backend.persistence.tutorProfileVer1Api.model.TutorProfileVer1;
+
+import com.learncity.backend.tutor.tutorApi.TutorApi;
+import com.learncity.backend.tutor.tutorApi.model.TutorProfileVer1;
 import com.learncity.util.account_management.AccountCreationClient;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 
 import java.io.IOException;
-import java.util.Arrays;
+
 
 /**
  * Created by DJ on 2/7/2017.
@@ -22,7 +23,7 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
 
     private static final String TAG = "GAEACCreationClient";
 
-    private static TutorProfileVer1Api myApiService;
+    private static TutorApi myApiService;
 
     private TutorProfile profile;
 
@@ -41,7 +42,8 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
         if(myApiService == null){
             setApiService();
         }
-        populateProfileEntity(profile);
+
+        profileEntity = TutorProfile.populateProfileEntity(profile, profileEntity);
 
         clientListener.onClientPrepared();
     }
@@ -53,7 +55,7 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
         try{
             Log.d(TAG, "GAETutorAccountCreationClient.sendRequest(): " + "\n" + "MESSAGE: Sending Request for persistence..." +
                     "\n" +"Thread ID: " + Thread.currentThread().getId());
-            myApiService.insert(profileEntity).execute();
+            myApiService.insertTutorAccount(profileEntity).execute();
         }
         catch(IOException e){
             Log.e(TAG, "Account couldn't be created : IO Exception while performing the data-store transaction");
@@ -81,7 +83,7 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
     }
 
     private void setApiService(){
-        myApiService = new TutorProfileVer1Api.Builder(AndroidHttp.newCompatibleTransport(),
+        myApiService = new TutorApi.Builder(AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(), null)
                 // options for running against local devappserver
                 // - 10.0.2.2 is localhost's IP address in Android emulator
@@ -94,19 +96,5 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
                         abstractGoogleClientRequest.setDisableGZipContent(true);
                     }
                 }).build();
-    }
-
-    private void populateProfileEntity(TutorProfile tutorProfile){
-        //Populate the entity object with the profile info.
-
-        profileEntity = new TutorProfileVer1();
-
-        profileEntity.setName(tutorProfile.getName());
-        profileEntity.setEmailID(tutorProfile.getEmailID());
-        profileEntity.setPhoneNo(tutorProfile.getPhoneNo());
-        profileEntity.setPassword(tutorProfile.getPassword());
-        profileEntity.setCurrentStatus(tutorProfile.getCurrentStatus());
-        profileEntity.setTutorTypes(Arrays.asList(tutorProfile.getTutorTypes()));
-        profileEntity.setDisciplines(Arrays.asList(tutorProfile.getDisciplines()));
     }
 }

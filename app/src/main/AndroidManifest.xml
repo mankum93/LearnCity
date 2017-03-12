@@ -46,9 +46,14 @@
         <activity
             android:name="com.learncity.tutor.main.TutorHomeActivity"/>
 
-        <activity android:name="com.learncity.learner.search.SearchActivity" />
+        <activity android:name="com.learncity.learner.search.SearchActivityVer1" />
         <activity android:name="com.learncity.learner.account.profile.MyProfileActivity" />
         <activity android:name="com.learncity.tutor.account.profile.MyProfileActivity"/>
+
+
+        <!--SERVICES-->
+        <service android:name="com.learncity.learner.search.SearchService"
+            android:exported="false"/>
     </application>
 
 </manifest>

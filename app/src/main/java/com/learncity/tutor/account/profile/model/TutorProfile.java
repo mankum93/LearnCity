@@ -1,11 +1,21 @@
 package com.learncity.tutor.account.profile.model;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.learncity.backend.tutor.tutorApi.model.DurationVer1;
+import com.learncity.backend.tutor.tutorApi.model.EducationalQualificationVer1;
+import com.learncity.backend.tutor.tutorApi.model.OccupationVer1;
+import com.learncity.backend.tutor.tutorApi.model.TutorProfileVer1;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.tutor.account.profile.model.occupation.Occupation;
 import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualification;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by DJ on 10/22/2016.
@@ -453,5 +463,134 @@ public class TutorProfile extends GenericLearnerProfile {
         public void setTeachingCredits(Credits.CreditsResponseView teachingCredits) {
             this._5 = teachingCredits;
         }
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------------
+    public static TutorProfileVer1 populateProfileEntity(@NonNull TutorProfile profile, @Nullable TutorProfileVer1 profileEntity){
+        //Populate the entity object with the profile info.
+
+        if(profileEntity == null){
+            profileEntity = new TutorProfileVer1();
+        }
+        com.learncity.backend.tutor.tutorApi.model.LatLng ll = null;
+        if(profile.getLastKnownGeoCoordinates() != null){
+            ll = new com.learncity.backend.tutor.tutorApi.model.LatLng();
+            ll.setLatitude(profile.getLastKnownGeoCoordinates().latitude);
+            ll.setLongitude( profile.getLastKnownGeoCoordinates().longitude);
+        }
+
+        EducationalQualificationVer1[] ed1 = new EducationalQualificationVer1[profile.getEducationalQualifications().length];
+        int i = 0;
+        for(EducationalQualification ed : profile.getEducationalQualifications()){
+            Duration d = ed.getDuration();
+            DurationVer1 d1 = new DurationVer1();
+            d1.setNoOfYears(d.getNoOfYears());
+            d1.setNoOfMonths(d.getNoOfMonths());
+            d1.setNoOfDays(d.getNoOfDays());
+
+            ed1[i] = new EducationalQualificationVer1();
+            ed1[i].setInstitution(ed.getInstitution());
+            ed1[i].setQualificationName(ed.getmQualificationName());
+            ed1[i].setDuration(d1);
+            ed1[i].setYearOfPassing(ed.getYearOfPassing());
+        }
+
+        // Occupation
+        OccupationVer1 o = new OccupationVer1();
+        Duration d = profile.getOccupation().getCurrentExperience();
+        DurationVer1 d1 = new DurationVer1();
+        d1.setNoOfYears(d.getNoOfYears());
+        d1.setNoOfMonths(d.getNoOfMonths());
+        d1.setNoOfDays(d.getNoOfDays());
+
+        o.setCurrentDesignation(profile.getOccupation().getCurrentDesignation());
+        o.setCurrentOrganization(profile.getOccupation().getCurrentOrganization());
+        o.setCurrentExperience(d1);
+
+        profileEntity.setName(profile.getName());
+        profileEntity.setEmailID(profile.getEmailID());
+        profileEntity.setPhoneNo(profile.getPhoneNo());
+        profileEntity.setPassword(profile.getPassword());
+        profileEntity.setCurrentStatus(profile.getCurrentStatus());
+        profileEntity.setLastKnownGeoCoordinates(ll);
+        profileEntity.setDisplayPicturePath(profile.getDisplayPicturePath());
+        profileEntity.setEducationalQualifications(Arrays.asList(ed1));
+        profileEntity.setOccupation(o);
+        return profileEntity;
+    }
+
+    public static List<TutorProfile> populateProfilesFromEntities(List<TutorProfileVer1> profiles){
+        List<TutorProfile> pi = new ArrayList<TutorProfile>();
+        for(TutorProfileVer1 p : profiles){
+            pi.add(populateProfileFromEntity(null, p));
+        }
+        return pi;
+    }
+
+    public static TutorProfile populateProfileFromEntity(@Nullable TutorProfile profile, @NonNull TutorProfileVer1 profileEntity){
+
+        if(profile == null){
+            // Extracting educational qualifications
+            EducationalQualification[] ed1 = new EducationalQualification[profileEntity.getEducationalQualifications().size()];
+            int i = 0;
+            for(EducationalQualificationVer1 ed : profileEntity.getEducationalQualifications()){
+                DurationVer1 d1 = ed.getDuration();
+                Duration d = new Duration(d1.getNoOfYears(), d1.getNoOfMonths(), d1.getNoOfDays());
+                ed1[i] = new EducationalQualification(ed.getQualificationName(), ed.getInstitution(), d);
+                ed1[i].setYearOfPassing(ed.getYearOfPassing());
+                i++;
+            }
+
+            // Extracting Occupation
+            DurationVer1 d2 = profileEntity.getOccupation().getCurrentExperience();
+            Duration d3 = new Duration(d2.getNoOfYears(), d2.getNoOfMonths(), d2.getNoOfDays());
+            Occupation o = new Occupation(profileEntity.getOccupation().getCurrentOrganization(), d3,
+                    profileEntity.getOccupation().getCurrentDesignation());
+
+            profile = new TutorProfile.Builder(
+                    profileEntity.getName(),
+                    profileEntity.getEmailID(),
+                    profileEntity.getPhoneNo(),
+                    profileEntity.getCurrentStatus(),
+                    profileEntity.getPassword())
+                    .withImagePath(profileEntity.getDisplayPicturePath())
+                    .withGeoCoordinates(new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
+                            , profileEntity.getLastKnownGeoCoordinates().getLongitude()))
+                    .withEducationalQualifications(ed1)
+                    .withOccupation(o)
+                    .build();
+        }
+        else{
+            EducationalQualification[] ed1 = new EducationalQualification[profileEntity.getEducationalQualifications().size()];
+            int i = 0;
+            for(EducationalQualificationVer1 ed : profileEntity.getEducationalQualifications()){
+                DurationVer1 d1 = ed.getDuration();
+                Duration d = new Duration(d1.getNoOfYears(), d1.getNoOfMonths(), d1.getNoOfDays());
+                ed1[i] = new EducationalQualification(ed.getQualificationName(), ed.getInstitution(), d);
+                ed1[i].setYearOfPassing(ed.getYearOfPassing());
+                i++;
+            }
+
+            // Extracting Occupation
+            DurationVer1 d2 = profileEntity.getOccupation().getCurrentExperience();
+            Duration d3 = new Duration(d2.getNoOfYears(), d2.getNoOfMonths(), d2.getNoOfDays());
+            Occupation o = new Occupation(profileEntity.getOccupation().getCurrentOrganization(), d3,
+                    profileEntity.getOccupation().getCurrentDesignation());
+
+            profile.getTutorProfileBuilder()
+                    .withName(profileEntity.getName())
+                    .withEmailID(profileEntity.getEmailID())
+                    .withPhoneNo(profileEntity.getPhoneNo())
+                    .withCurrentStatus(profileEntity.getCurrentStatus())
+                    .withPassword(profileEntity.getPassword())
+                    .withImagePath(profileEntity.getDisplayPicturePath())
+                    .withGeoCoordinates(new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
+                            , profileEntity.getLastKnownGeoCoordinates().getLongitude()))
+                    .withEducationalQualifications(ed1)
+                    .withOccupation(o)
+                    .build();
+        }
+
+        return profile;
     }
 }

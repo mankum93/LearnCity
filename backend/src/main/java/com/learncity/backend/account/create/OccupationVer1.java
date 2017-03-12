@@ -1,11 +1,18 @@
 package com.learncity.backend.account.create;
 
 
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiClass;
+import com.google.api.server.spi.config.ApiNamespace;
+
+import java.io.Serializable;
+
 /**
  * Created by DJ on 11/13/2016.
  */
 
-public class OccupationVer1{
+
+public class OccupationVer1 implements Serializable{
 
     private String mCurrentOrganization;
     private String mCurrentDesignation;

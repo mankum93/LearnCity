@@ -6,10 +6,12 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.learncity.backend.account.create.learnerProfileVer1Api.LearnerProfileVer1Api;
-import com.learncity.backend.account.create.learnerProfileVer1Api.model.LearnerProfileVer1;
+
+import com.learncity.backend.learner.learnerApi.LearnerApi;
+import com.learncity.backend.learner.learnerApi.model.LearnerProfileVer1;
+
 import com.learncity.util.account_management.AccountCreationClient;
-import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
+
 import com.learncity.learner.account.profile.model.LearnerProfile;
 
 import java.io.IOException;
@@ -22,7 +24,7 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
 
     private static final String TAG = "GAEACCreationClient";
 
-    private static LearnerProfileVer1Api myApiService;
+    private static LearnerApi myApiService;
 
     private LearnerProfile profile;
 
@@ -41,7 +43,8 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
         if(myApiService == null){
             setApiService();
         }
-        populateProfileEntity(profile);
+
+        profileEntity = LearnerProfile.populateProfileEntity(profile, profileEntity);
 
         clientListener.onClientPrepared();
     }
@@ -53,7 +56,7 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
         try{
             Log.d(TAG, "GAELearnerAccountCreationClient.sendRequest(): " + "\n" + "MESSAGE: Sending Request for persistence..." +
                     "\n" +"Thread ID: " + Thread.currentThread().getId());
-            myApiService.insert(profileEntity).execute();
+            myApiService.insertLearnerAccount(profileEntity).execute();
         }
         catch(IOException e){
             Log.e(TAG, "Account couldn't be created : IO Exception while performing the data-store transaction");
@@ -80,7 +83,7 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
     }
 
     private void setApiService(){
-        myApiService = new LearnerProfileVer1Api.Builder(AndroidHttp.newCompatibleTransport(),
+        myApiService = new LearnerApi.Builder(AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(), null)
                 // options for running against local devappserver
                 // - 10.0.2.2 is localhost's IP address in Android emulator
@@ -93,17 +96,5 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
                         abstractGoogleClientRequest.setDisableGZipContent(true);
                     }
                 }).build();
-    }
-
-    private void populateProfileEntity(GenericLearnerProfile profile){
-        //Populate the entity object with the profile info.
-
-        profileEntity = new LearnerProfileVer1();
-
-        profileEntity.setName(profile.getName());
-        profileEntity.setEmailID(profile.getEmailID());
-        profileEntity.setPhoneNo(profile.getPhoneNo());
-        profileEntity.setPassword(profile.getPassword());
-        profileEntity.setCurrentStatus(profile.getCurrentStatus());
     }
 }

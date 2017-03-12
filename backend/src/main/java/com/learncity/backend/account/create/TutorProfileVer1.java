@@ -1,10 +1,13 @@
 package com.learncity.backend.account.create;
 
 
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiNamespace;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Subclass;
 
+import java.io.Serializable;
 import java.util.logging.Logger;
 
 /**
@@ -13,7 +16,7 @@ import java.util.logging.Logger;
 
 @Entity
 @Subclass(index = true)
-public class TutorProfileVer1 extends GenericLearnerProfileVer1 {
+public class TutorProfileVer1 extends GenericLearnerProfileVer1 implements Serializable{
 
     /** Educational qualification proof compulsory before start of teaching */
     private EducationalQualificationVer1[] educationalQualifications;

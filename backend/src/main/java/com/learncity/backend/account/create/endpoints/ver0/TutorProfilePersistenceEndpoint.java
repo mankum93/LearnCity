@@ -97,7 +97,7 @@ public class TutorProfilePersistenceEndpoint {
      *                           {@code TutorProfile}
      */
     @ApiMethod(
-            name = "update",
+            name = "updateAccount",
             path = "tutorProfile/{mEmailID}",
             httpMethod = ApiMethod.HttpMethod.PUT)
     public TutorProfile update(@Named("mEmailID") String mEmailID, TutorProfile tutorProfile) throws NotFoundException {

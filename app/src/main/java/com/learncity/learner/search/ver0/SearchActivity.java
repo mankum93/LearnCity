@@ -1,4 +1,4 @@
-package com.learncity.learner.search;
+package com.learncity.learner.search.ver0;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -24,9 +24,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.learncity.backend.tutor.tutorApi.model.SearchTutorsQuery;
+import com.learncity.backend.tutor.tutorApi.model.TutorProfileResponseView;
 import com.learncity.learncity.R;
-import com.learncity.searchApi.model.SearchTutorsQuery;
-import com.learncity.searchApi.model.TutorProfileResponseView;
+import com.learncity.learner.search.QualificationSearchFragment;
+import com.learncity.learner.search.SubjectSearchFragment;
 import com.learncity.util.ArraysUtil;
 
 import java.util.Arrays;
@@ -120,8 +122,8 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
 
                 TutorProfileResponseView spec = new TutorProfileResponseView();
                 spec.setGlobal(1);
-                mSearchQuery.setTutorProfileResponseView(spec);
-                new SearchTutorsAsyncTask().execute(mSearchQuery);
+                // mSearchQuery.setTutorProfileResponseView(spec);
+                // new SearchTutorsAsyncTask().execute(mSearchQuery);
             }
         });
     }

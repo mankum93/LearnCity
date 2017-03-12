@@ -66,10 +66,10 @@ public class LearnerUserIDEntity<T> {
 
     public static <T> void updateUserIDEntity(String emailID, Key<T> key) throws NotFoundException{
         if(emailID == null){
-            throw new NullPointerException("Email ID can't be null to update an entity");
+            throw new NullPointerException("Email ID can't be null to updateAccount an entity");
         }
         if(key == null){
-            throw new NullPointerException("Key can't be null to update an entity");
+            throw new NullPointerException("Key can't be null to updateAccount an entity");
         }
         LearnerUserIDEntity UserIDEntity = checkIfUserIDEntityExists(emailID);
 

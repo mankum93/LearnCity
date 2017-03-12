@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:text="TutorName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="29dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="24dp"
+        android:id="@+id/tutor_name" />
+
+    <TextView
+        android:text="Skill set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:id="@+id/skill_set"
+        android:layout_below="@+id/tutor_name"
+        android:layout_alignLeft="@+id/tutor_name"
+        android:layout_alignStart="@+id/tutor_name" />
+
+    <TextView
+        android:text="Tutor Type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/location"
+        android:layout_alignLeft="@+id/location"
+        android:layout_alignStart="@+id/location"
+        android:layout_marginTop="11dp"
+        android:id="@+id/tutor_types" />
+
+    <TextView
+        android:text="Location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/location"
+        android:layout_below="@+id/skill_set"
+        android:layout_alignLeft="@+id/skill_set"
+        android:layout_alignStart="@+id/skill_set"
+        android:layout_marginTop="12dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/list_selector_background_transition"
+        android:id="@+id/display_pic"
+        android:layout_alignTop="@+id/tutor_name"
+        android:adjustViewBounds="false"
+        android:layout_alignRight="@+id/tutor_rating"
+        android:layout_alignEnd="@+id/tutor_rating"
+        android:layout_alignLeft="@+id/tutor_rating"
+        android:layout_alignStart="@+id/tutor_rating"
+        android:scaleType="centerCrop"
+        android:layout_above="@+id/tutor_rating" />
+
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tutor_rating"
+        style="@android:style/Widget.DeviceDefault.Light.RatingBar.Small"
+        android:layout_below="@+id/tutor_types"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp" />
+
+</RelativeLayout>

@@ -1,4 +1,4 @@
-package com.learncity.learner.search;
+package com.learncity.learner.search.ver0;
 
 /**
  * Created by DJ on 11/5/2016.
@@ -11,10 +11,9 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.learncity.searchApi.SearchApi;
-import com.learncity.searchApi.model.CollectionResponseTutorProfileVer1;
-import com.learncity.searchApi.model.SearchTutorsQuery;
-import com.learncity.searchApi.model.TutorProfileVer1;
+import com.learncity.backend.persistence.tutorProfileVer1Api.model.CollectionResponseTutorProfileVer1;
+import com.learncity.backend.tutor.tutorApi.TutorApi;
+import com.learncity.backend.tutor.tutorApi.model.SearchTutorsQuery;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,14 +22,14 @@ class SearchTutorsAsyncTask extends AsyncTask<SearchTutorsQuery, Void, Void> {
     private static final String TAG = "SearchTutorsAsyncTask";
 
     //Client that is gonna talk to the endpoint
-    private static SearchApi myApiService = null;
+    private static TutorApi myApiService = null;
     private CollectionResponseTutorProfileVer1 response;
 
 
     @Override
     protected Void doInBackground(SearchTutorsQuery... params) {
         if(myApiService == null) {  // Only do this once
-            SearchApi.Builder builder = new SearchApi.Builder(AndroidHttp.newCompatibleTransport(),
+            TutorApi.Builder builder = new TutorApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
                     // options for running against local devappserver
                     // - 10.0.2.2 is localhost's IP address in Android emulator
@@ -54,6 +53,7 @@ class SearchTutorsAsyncTask extends AsyncTask<SearchTutorsQuery, Void, Void> {
         Log.i(TAG, "Search Query: " + query);
         //Now push the query to the server
 
+        /*
         try{
             response = myApiService.searchTutors(query).execute();
         }
@@ -69,6 +69,7 @@ class SearchTutorsAsyncTask extends AsyncTask<SearchTutorsQuery, Void, Void> {
         if(profiles != null){
             Log.d(TAG, "No of profiles searched: " + profiles.size() + "\n" + profiles);
         }
+        */
 
         return null;
     }

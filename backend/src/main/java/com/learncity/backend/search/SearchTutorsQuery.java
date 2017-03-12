@@ -1,7 +1,9 @@
 package com.learncity.backend.search;
 
 
+import com.learncity.backend.account.create.Account;
 import com.learncity.backend.account.create.LatLng;
+import com.learncity.backend.account.create.TutorAccount;
 import com.learncity.backend.account.create.TutorProfileVer1;
 
 /**
@@ -15,7 +17,7 @@ public class SearchTutorsQuery {
     private LatLng location;
 
     //Response view
-    private TutorProfileVer1.TutorProfileResponseView _0;
+    private TutorAccount.TutorAccountResponseView _0;
 
     public SearchTutorsQuery(){
 
@@ -52,11 +54,11 @@ public class SearchTutorsQuery {
         this.location = location;
     }
 
-    public TutorProfileVer1.TutorProfileResponseView getTutorProfileResponseView() {
+    public TutorAccount.TutorAccountResponseView getAccountResponseView() {
         return _0;
     }
 
-    public void setTutorProfileResponseView(TutorProfileVer1.TutorProfileResponseView tutorProfileResponseView) {
+    public void setAccountResponseView(TutorAccount.TutorAccountResponseView tutorProfileResponseView) {
         this._0 = tutorProfileResponseView;
     }
 }

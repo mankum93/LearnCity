@@ -1,4 +1,4 @@
-package com.learncity.backend.account.create.endpoints;
+package com.learncity.backend.account.create.endpoints.ver1;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -10,7 +10,7 @@ import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cmd.Query;
 import com.learncity.backend.account.LearnerUserIDEntity;
-import com.learncity.backend.account.create.TutorProfileVer1;
+import com.learncity.backend.account.create.LearnerProfileVer1;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,114 +29,117 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
  * DO NOT deploy this code unchanged as part of a real application to real users.
  */
 @Api(
-        name = "tutorProfileVer1Api",
+        name = "learnerProfileVer1Api",
         version = "v1",
-        resource = "tutorProfileVer1",
+        resource = "learnerProfileVer1",
+        title = "LearnerProfileVer1 API",
         namespace = @ApiNamespace(
-                ownerDomain = "persistence.backend.learncity.com",
-                ownerName = "persistence.backend.learncity.com",
+                ownerDomain = "create.account.backend.learncity.com",
+                ownerName = "create.account.backend.learncity.com",
                 packagePath = ""
         )
 )
-public class TutorProfileVer1PersistenceEndpoint {
+public class LearnerProfileVer1PersistenceEndpoint {
 
-    private static final Logger logger = Logger.getLogger(TutorProfileVer1PersistenceEndpoint.class.getName());
+    private static final Logger logger = Logger.getLogger(LearnerProfileVer1PersistenceEndpoint.class.getName());
 
     private static final int DEFAULT_LIST_LIMIT = 20;
 
     static {
         // Typically you would register this inside an OfyServive wrapper. See: https://code.google.com/p/objectify-appengine/wiki/BestPractices
-        ObjectifyService.register(TutorProfileVer1.class);
+        ObjectifyService.register(LearnerProfileVer1.class);
         ObjectifyService.register(LearnerUserIDEntity.class);
     }
 
     /**
-     * Returns the {@link TutorProfileVer1} with the corresponding ID.
+     * Returns the {@link LearnerProfileVer1} with the corresponding ID.
      *
      * @param mEmailID the ID of the entity to be retrieved
      * @return the entity with the corresponding ID
-     * @throws NotFoundException if there is no {@code TutorProfileVer1} with the provided ID.
+     * @throws NotFoundException if there is no {@code LearnerProfileVer1} with the provided ID.
      */
     @ApiMethod(
             name = "get",
-            path = "tutorProfileVer1/{mEmailID}",
+            path = "learnerProfileVer1/{mEmailID}",
             httpMethod = ApiMethod.HttpMethod.GET)
-    public TutorProfileVer1 get(@Named("mEmailID") String mEmailID) throws NotFoundException {
-        logger.info("Getting TutorProfileVer1 with ID: " + mEmailID);
-        TutorProfileVer1 tutorProfileVer1 = ofy().load().type(TutorProfileVer1.class).id(mEmailID).now();
-        if (tutorProfileVer1 == null) {
-            throw new NotFoundException("Could not find TutorProfileVer1 with ID: " + mEmailID);
+    public LearnerProfileVer1 get(@Named("mEmailID") String mEmailID) throws NotFoundException {
+        logger.info("Getting LearnerProfileVer1 with ID: " + mEmailID);
+        LearnerProfileVer1 learnerProfileVer1 = ofy().load().type(LearnerProfileVer1.class).id(mEmailID).now();
+        if (learnerProfileVer1 == null) {
+            throw new NotFoundException("Could not find LearnerProfileVer1 with ID: " + mEmailID);
         }
-        return tutorProfileVer1;
+        return learnerProfileVer1;
     }
 
     /**
-     * Inserts a new {@code TutorProfileVer1}.
+     * Inserts a new {@code LearnerProfileVer1}.
      */
     @ApiMethod(
             name = "insert",
-            path = "tutorProfileVer1",
+            path = "learnerProfileVer1",
             httpMethod = ApiMethod.HttpMethod.POST)
-    public TutorProfileVer1 insert(TutorProfileVer1 tutorProfileVer1) {
+    public LearnerProfileVer1 insert(LearnerProfileVer1 learnerProfileVer1) {
         // Typically in a RESTful API a POST does not have a known ID (assuming the ID is used in the resource path).
-        // You should validate that tutorProfileVer1.mEmailID has not been set. If the ID type is not supported by the
+        // You should validate that learnerProfileVer1.mEmailID has not been set. If the ID type is not supported by the
         // Objectify ID generator, e.g. long or String, then you should generate the unique ID yourself prior to saving.
         //
         // If your client provides the ID then you should probably use PUT instead.
 
-        if(LearnerUserIDEntity.checkIfAccountExists(tutorProfileVer1.getEmailID())){
+        //Check if the AC already exists with this email ID
+        if(LearnerUserIDEntity.checkIfAccountExists(learnerProfileVer1.getEmailID())){
             return null;
         }
         else{
             //Create a User ID entity
-            LearnerUserIDEntity.createUserIDEntity(tutorProfileVer1.getEmailID(), TutorProfileVer1.class);
+            LearnerUserIDEntity.createUserIDEntity(learnerProfileVer1.getEmailID(), LearnerProfileVer1.class);
         }
-        ofy().save().entity(tutorProfileVer1).now();
-        logger.info("Created TutorProfileVer1.");
+        ofy().save().entity(learnerProfileVer1).now();
+        logger.info("Created LearnerProfileVer1.");
 
-        return ofy().load().entity(tutorProfileVer1).now();
+        return ofy().load().entity(learnerProfileVer1).now();
     }
 
     /**
-     * Updates an existing {@code TutorProfileVer1}.
+     * Updates an existing {@code LearnerProfileVer1}.
      *
-     * @param mEmailID         the ID of the entity to be updated
-     * @param tutorProfileVer1 the desired state of the entity
+     * @param mEmailID           the ID of the entity to be updated
+     * @param learnerProfileVer1 the desired state of the entity
      * @return the updated version of the entity
      * @throws NotFoundException if the {@code mEmailID} does not correspond to an existing
-     *                           {@code TutorProfileVer1}
+     *                           {@code LearnerProfileVer1}
      */
     @ApiMethod(
-            name = "update",
-            path = "tutorProfileVer1/{mEmailID}",
+            name = "updateAccount",
+            path = "learnerProfileVer1/{mEmailID}",
             httpMethod = ApiMethod.HttpMethod.PUT)
-    public TutorProfileVer1 update(@Named("mEmailID") String mEmailID, TutorProfileVer1 tutorProfileVer1) throws NotFoundException {
+    public LearnerProfileVer1 update(@Named("mEmailID") String mEmailID, LearnerProfileVer1 learnerProfileVer1) throws NotFoundException {
         // TODO: You should validate your ID parameter against your resource's ID here.
 
         //First, we should check for an existing Email ID
         if(!LearnerUserIDEntity.checkIfAccountExists(mEmailID)){
             throw new NotFoundException("Could not find LearnerProfileVer1 with ID: " + mEmailID);
         }
+        //TODO: Remove the below operation since we have already checked for Account through User ID list
         //checkExists(mEmailID);
-        ofy().save().entity(tutorProfileVer1).now();
-        logger.info("Updated TutorProfileVer1: " + tutorProfileVer1);
+        ofy().save().entity(learnerProfileVer1).now();
+        logger.info("Updated LearnerProfileVer1: " + learnerProfileVer1);
 
         //Update the User ID entity before
-        LearnerUserIDEntity.updateUserIDEntity(mEmailID, TutorProfileVer1.class);
+        LearnerUserIDEntity.updateUserIDEntity(mEmailID, LearnerProfileVer1.class);
 
-        return ofy().load().entity(tutorProfileVer1).now();
+        return ofy().load().entity(learnerProfileVer1).now();
     }
 
     /**
-     * Deletes the specified {@code TutorProfileVer1}.
+     * Deletes the specified {@code LearnerProfileVer1}.
      *
      * @param mEmailID the ID of the entity to delete
      * @throws NotFoundException if the {@code mEmailID} does not correspond to an existing
-     *                           {@code TutorProfileVer1}
+     *                           {@code LearnerProfileVer1}
      */
     @ApiMethod(
             name = "remove",
-            path = "tutorProfileVer1/{mEmailID}",
+            path = "learnerProfileVer1/{mEmailID}",
             httpMethod = ApiMethod.HttpMethod.DELETE)
     public void remove(@Named("mEmailID") String mEmailID) throws NotFoundException {
         checkExists(mEmailID);
@@ -144,8 +147,8 @@ public class TutorProfileVer1PersistenceEndpoint {
         //Remove the User ID entity before the profile entity deletion
         LearnerUserIDEntity.deleteUserIDEntity(mEmailID);
 
-        ofy().delete().type(TutorProfileVer1.class).id(mEmailID).now();
-        logger.info("Deleted TutorProfileVer1 with ID: " + mEmailID);
+        ofy().delete().type(LearnerProfileVer1.class).id(mEmailID).now();
+        logger.info("Deleted LearnerProfileVer1 with ID: " + mEmailID);
     }
 
     /**
@@ -157,27 +160,27 @@ public class TutorProfileVer1PersistenceEndpoint {
      */
     @ApiMethod(
             name = "list",
-            path = "tutorProfileVer1",
+            path = "learnerProfileVer1",
             httpMethod = ApiMethod.HttpMethod.GET)
-    public CollectionResponse<TutorProfileVer1> list(@Nullable @Named("cursor") String cursor, @Nullable @Named("limit") Integer limit) {
+    public CollectionResponse<LearnerProfileVer1> list(@Nullable @Named("cursor") String cursor, @Nullable @Named("limit") Integer limit) {
         limit = limit == null ? DEFAULT_LIST_LIMIT : limit;
-        Query<TutorProfileVer1> query = ofy().load().type(TutorProfileVer1.class).limit(limit);
+        Query<LearnerProfileVer1> query = ofy().load().type(LearnerProfileVer1.class).limit(limit);
         if (cursor != null) {
             query = query.startAt(Cursor.fromWebSafeString(cursor));
         }
-        QueryResultIterator<TutorProfileVer1> queryIterator = query.iterator();
-        List<TutorProfileVer1> tutorProfileVer1List = new ArrayList<TutorProfileVer1>(limit);
+        QueryResultIterator<LearnerProfileVer1> queryIterator = query.iterator();
+        List<LearnerProfileVer1> learnerProfileVer1List = new ArrayList<LearnerProfileVer1>(limit);
         while (queryIterator.hasNext()) {
-            tutorProfileVer1List.add(queryIterator.next());
+            learnerProfileVer1List.add(queryIterator.next());
         }
-        return CollectionResponse.<TutorProfileVer1>builder().setItems(tutorProfileVer1List).setNextPageToken(queryIterator.getCursor().toWebSafeString()).build();
+        return CollectionResponse.<LearnerProfileVer1>builder().setItems(learnerProfileVer1List).setNextPageToken(queryIterator.getCursor().toWebSafeString()).build();
     }
 
     private void checkExists(String mEmailID) throws NotFoundException {
         try {
-            ofy().load().type(TutorProfileVer1.class).id(mEmailID).safe();
+            ofy().load().type(LearnerProfileVer1.class).id(mEmailID).safe();
         } catch (com.googlecode.objectify.NotFoundException e) {
-            throw new NotFoundException("Could not find TutorProfileVer1 with ID: " + mEmailID);
+            throw new NotFoundException("Could not find LearnerProfileVer1 with ID: " + mEmailID);
         }
     }
 }

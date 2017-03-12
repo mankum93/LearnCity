@@ -1,10 +1,17 @@
 package com.learncity.backend.account.create;
 
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiClass;
+import com.google.api.server.spi.config.ApiNamespace;
+
+import java.io.Serializable;
+
 /**
  * Created by DJ on 2/4/2017.
  */
 
-public class LatLng {
+
+public class LatLng implements Serializable {
 
     private double latitude;
     private double longitude;

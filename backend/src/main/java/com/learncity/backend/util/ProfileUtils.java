@@ -1,4 +1,4 @@
-package com.learncity.backend.setup;
+package com.learncity.backend.util;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;

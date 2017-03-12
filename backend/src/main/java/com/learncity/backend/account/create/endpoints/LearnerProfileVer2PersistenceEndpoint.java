@@ -1,6 +1,7 @@
 package com.learncity.backend.account.create.endpoints;
 
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiClass;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
@@ -9,11 +10,13 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cmd.Query;
-import com.learncity.backend.account.LearnerUserIDEntity;
+import com.learncity.backend.account.create.Account;
+import com.learncity.backend.account.create.LearnerAccount;
 import com.learncity.backend.account.create.LearnerProfileVer1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
@@ -29,25 +32,27 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
  * DO NOT deploy this code unchanged as part of a real application to real users.
  */
 @Api(
-        name = "learnerProfileVer1Api",
+        name = "learnerApi",
         version = "v1",
-        resource = "learnerProfileVer1",
         namespace = @ApiNamespace(
-                ownerDomain = "create.account.backend.learncity.com",
-                ownerName = "create.account.backend.learncity.com",
+                ownerDomain = "learner.backend.learncity.com",
+                ownerName = "learner.backend.learncity.com",
                 packagePath = ""
         )
 )
-public class LearnerProfileVer1PersistenceEndpoint {
+@ApiClass(
+        resource = "createLearnerAccount"
+)
+public class LearnerProfileVer2PersistenceEndpoint extends BaseLearnerEndpoint{
 
-    private static final Logger logger = Logger.getLogger(LearnerProfileVer1PersistenceEndpoint.class.getName());
+    private static final Logger logger = Logger.getLogger(LearnerProfileVer2PersistenceEndpoint.class.getName());
 
     private static final int DEFAULT_LIST_LIMIT = 20;
 
     static {
         // Typically you would register this inside an OfyServive wrapper. See: https://code.google.com/p/objectify-appengine/wiki/BestPractices
         ObjectifyService.register(LearnerProfileVer1.class);
-        ObjectifyService.register(LearnerUserIDEntity.class);
+        ObjectifyService.register(LearnerAccount.class);
     }
 
     /**
@@ -58,23 +63,19 @@ public class LearnerProfileVer1PersistenceEndpoint {
      * @throws NotFoundException if there is no {@code LearnerProfileVer1} with the provided ID.
      */
     @ApiMethod(
-            name = "get",
+            name = "getLearnerProfile",
             path = "learnerProfileVer1/{mEmailID}",
             httpMethod = ApiMethod.HttpMethod.GET)
+    @Override
     public LearnerProfileVer1 get(@Named("mEmailID") String mEmailID) throws NotFoundException {
-        logger.info("Getting LearnerProfileVer1 with ID: " + mEmailID);
-        LearnerProfileVer1 learnerProfileVer1 = ofy().load().type(LearnerProfileVer1.class).id(mEmailID).now();
-        if (learnerProfileVer1 == null) {
-            throw new NotFoundException("Could not find LearnerProfileVer1 with ID: " + mEmailID);
-        }
-        return learnerProfileVer1;
+        return (LearnerProfileVer1) super.get(mEmailID);
     }
 
     /**
      * Inserts a new {@code LearnerProfileVer1}.
      */
     @ApiMethod(
-            name = "insert",
+            name = "insertLearnerAccount",
             path = "learnerProfileVer1",
             httpMethod = ApiMethod.HttpMethod.POST)
     public LearnerProfileVer1 insert(LearnerProfileVer1 learnerProfileVer1) {
@@ -85,17 +86,26 @@ public class LearnerProfileVer1PersistenceEndpoint {
         // If your client provides the ID then you should probably use PUT instead.
 
         //Check if the AC already exists with this email ID
-        if(LearnerUserIDEntity.checkIfAccountExists(learnerProfileVer1.getEmailID())){
+        Account acc = null;
+        try{
+            acc = checkIfAccountExists(learnerProfileVer1.getEmailID());
+        }
+        catch(NotFoundException nfe){
+            // Account already not existing - Move with AC creation
+        }
+        if(acc != null){
+            // Account already exists; can't insert/overwrite the existing one
             return null;
         }
-        else{
-            //Create a User ID entity
-            LearnerUserIDEntity.createUserIDEntity(learnerProfileVer1.getEmailID(), LearnerProfileVer1.class);
-        }
-        ofy().save().entity(learnerProfileVer1).now();
-        logger.info("Created LearnerProfileVer1.");
+        acc = new LearnerAccount(learnerProfileVer1, null);
+        logger.log(Level.INFO, learnerProfileVer1 + "");
+        ofy().save().entity(acc).now();
+        logger.info("Created Learner Account");
 
-        return ofy().load().entity(learnerProfileVer1).now();
+        //Schedule an updateAccount with location info. with the given coordinates
+        scheduleLocationInfoUpdation(acc, acc.getProfile().getLastKnownGeoCoordinates());
+
+        return (LearnerProfileVer1) ofy().load().entity(acc).now().getProfile();
     }
 
     /**
@@ -108,46 +118,30 @@ public class LearnerProfileVer1PersistenceEndpoint {
      *                           {@code LearnerProfileVer1}
      */
     @ApiMethod(
-            name = "update",
+            name = "updateLearnerAccount",
             path = "learnerProfileVer1/{mEmailID}",
             httpMethod = ApiMethod.HttpMethod.PUT)
     public LearnerProfileVer1 update(@Named("mEmailID") String mEmailID, LearnerProfileVer1 learnerProfileVer1) throws NotFoundException {
-        // TODO: You should validate your ID parameter against your resource's ID here.
 
-        //First, we should check for an existing Email ID
-        if(!LearnerUserIDEntity.checkIfAccountExists(mEmailID)){
-            throw new NotFoundException("Could not find LearnerProfileVer1 with ID: " + mEmailID);
-        }
-        //TODO: Remove the below operation since we have already checked for Account through User ID list
-        //checkExists(mEmailID);
-        ofy().save().entity(learnerProfileVer1).now();
-        logger.info("Updated LearnerProfileVer1: " + learnerProfileVer1);
+        logger.info("Created Learner Account");
 
-        //Update the User ID entity before
-        LearnerUserIDEntity.updateUserIDEntity(mEmailID, LearnerProfileVer1.class);
-
-        return ofy().load().entity(learnerProfileVer1).now();
+        return (LearnerProfileVer1) updateAccount(mEmailID, learnerProfileVer1);
     }
 
     /**
-     * Deletes the specified {@code LearnerProfileVer1}.
+     * Deletes the specified {@code TutorProfileVer1}.
      *
      * @param mEmailID the ID of the entity to delete
      * @throws NotFoundException if the {@code mEmailID} does not correspond to an existing
-     *                           {@code LearnerProfileVer1}
+     *                           {@code TutorProfileVer1}
      */
     @ApiMethod(
-            name = "remove",
-            path = "learnerProfileVer1/{mEmailID}",
+            name = "removeLearnerAccount",
+            path = "Account/{mEmailID}",
             httpMethod = ApiMethod.HttpMethod.DELETE)
+    @Override
     public void remove(@Named("mEmailID") String mEmailID) throws NotFoundException {
-        checkExists(mEmailID);
-
-        //Remove the User ID entity before the profile entity deletion
-        LearnerUserIDEntity.deleteUserIDEntity(mEmailID);
-
-        ofy().delete().type(LearnerProfileVer1.class).id(mEmailID).now();
-        logger.info("Deleted LearnerProfileVer1 with ID: " + mEmailID);
+        super.remove(mEmailID);
     }
 
     /**
@@ -158,28 +152,22 @@ public class LearnerProfileVer1PersistenceEndpoint {
      * @return a response that encapsulates the result list and the next page token/cursor
      */
     @ApiMethod(
-            name = "list",
+            name = "listLearnerProfiles",
             path = "learnerProfileVer1",
             httpMethod = ApiMethod.HttpMethod.GET)
     public CollectionResponse<LearnerProfileVer1> list(@Nullable @Named("cursor") String cursor, @Nullable @Named("limit") Integer limit) {
         limit = limit == null ? DEFAULT_LIST_LIMIT : limit;
-        Query<LearnerProfileVer1> query = ofy().load().type(LearnerProfileVer1.class).limit(limit);
+        Query<Account> query = ofy().load().type(Account.class).limit(limit);
         if (cursor != null) {
             query = query.startAt(Cursor.fromWebSafeString(cursor));
         }
-        QueryResultIterator<LearnerProfileVer1> queryIterator = query.iterator();
+        QueryResultIterator<Account> queryIterator = query.iterator();
         List<LearnerProfileVer1> learnerProfileVer1List = new ArrayList<LearnerProfileVer1>(limit);
         while (queryIterator.hasNext()) {
-            learnerProfileVer1List.add(queryIterator.next());
+            learnerProfileVer1List.add((LearnerProfileVer1) queryIterator.next().getProfile());
         }
         return CollectionResponse.<LearnerProfileVer1>builder().setItems(learnerProfileVer1List).setNextPageToken(queryIterator.getCursor().toWebSafeString()).build();
     }
 
-    private void checkExists(String mEmailID) throws NotFoundException {
-        try {
-            ofy().load().type(LearnerProfileVer1.class).id(mEmailID).safe();
-        } catch (com.googlecode.objectify.NotFoundException e) {
-            throw new NotFoundException("Could not find LearnerProfileVer1 with ID: " + mEmailID);
-        }
-    }
+
 }

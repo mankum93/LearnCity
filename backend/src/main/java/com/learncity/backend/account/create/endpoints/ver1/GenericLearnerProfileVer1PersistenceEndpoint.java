@@ -1,4 +1,4 @@
-package com.learncity.backend.account.create.endpoints;
+package com.learncity.backend.account.create.endpoints.ver1;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -99,7 +99,7 @@ public class GenericLearnerProfileVer1PersistenceEndpoint {
      *                           {@code GenericLearnerProfileVer1}
      */
     @ApiMethod(
-            name = "update",
+            name = "updateAccount",
             path = "genericLearnerProfileVer1/{mEmailID}",
             httpMethod = ApiMethod.HttpMethod.PUT)
     public GenericLearnerProfileVer1 update(@Named("mEmailID") String mEmailID, GenericLearnerProfileVer1 genericLearnerProfileVer1) throws NotFoundException {

@@ -3,12 +3,15 @@ package com.learncity.backend.account.create;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
+import java.io.Serializable;
+
 /**
  * Created by DJ on 11/13/2016.
  */
 
+
 @Entity
-public class GenericLearnerProfileVer1 {
+public class GenericLearnerProfileVer1 implements Serializable{
 
     /**Possible states of an App user
      * Undefined is for temporary profile building; A final validation before finalizing the profile shall

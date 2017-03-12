@@ -2,7 +2,7 @@
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee">
     <listener>
         <listener-class>
-            com.learncity.backend.setup.ServerSetupListener
+            com.learncity.backend.setup.ServerSetupListenerVer1
         </listener-class>
     </listener>
     <filter>
@@ -21,10 +21,12 @@
             <param-value>com.learncity.backend.search.SearchTutorsEndpoint,
                 com.learncity.backend.account.create.endpoints.ver0.GenericLearnerProfilePersistenceEndpoint,
                 com.learncity.backend.account.create.endpoints.ver0.TutorProfilePersistenceEndpoint,
-                com.learncity.backend.account.create.endpoints.TutorProfileVer1PersistenceEndpoint,
-                com.learncity.backend.account.create.endpoints.GenericLearnerProfileVer1PersistenceEndpoint,
+                com.learncity.backend.account.create.endpoints.ver1.TutorProfileVer1PersistenceEndpoint,
+                com.learncity.backend.account.create.endpoints.ver1.GenericLearnerProfileVer1PersistenceEndpoint,
                 com.learncity.backend.account.login.LoginEndpoint,
-                com.learncity.backend.account.create.endpoints.LearnerProfileVer1PersistenceEndpoint
+                com.learncity.backend.account.create.endpoints.ver1.LearnerProfileVer1PersistenceEndpoint,
+                com.learncity.backend.account.create.endpoints.LearnerProfileVer2PersistenceEndpoint,
+                com.learncity.backend.account.create.endpoints.TutorProfileVer2PersistenceEndpoint
             </param-value>
         </init-param>
     </servlet>

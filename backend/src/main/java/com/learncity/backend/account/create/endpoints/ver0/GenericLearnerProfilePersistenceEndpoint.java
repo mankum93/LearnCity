@@ -97,7 +97,7 @@ public class GenericLearnerProfilePersistenceEndpoint {
      *                           {@code GenericLearnerProfile}
      */
     @ApiMethod(
-            name = "update",
+            name = "updateAccount",
             path = "genericLearnerProfile/{mEmailID}",
             httpMethod = ApiMethod.HttpMethod.PUT)
     public GenericLearnerProfile update(@Named("mEmailID") String mEmailID, GenericLearnerProfile genericLearnerProfile) throws NotFoundException {

@@ -1,6 +1,11 @@
 package com.learncity.backend.account.create;
 
 
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiClass;
+import com.google.api.server.spi.config.ApiNamespace;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -9,7 +14,8 @@ import java.util.Date;
  * Credits reflect a numerical score/points system that determines the ability to get contact details of a student
  * with a certain(there is no absolutely certain value) number available/associated with a Tutor's account
  */
-public class TeachingCredits {
+
+public class TeachingCredits implements Serializable{
 
     private static final long CREDIT_INR_EQV = 10L;
 

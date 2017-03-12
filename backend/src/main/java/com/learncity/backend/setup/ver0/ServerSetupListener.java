@@ -1,11 +1,12 @@
-package com.learncity.backend.setup;
+package com.learncity.backend.setup.ver0;
 
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.VoidWork;
 import com.learncity.backend.account.create.LearnerProfileVer1;
 import com.learncity.backend.account.create.TutorProfileVer1;
-import com.learncity.backend.account.create.endpoints.LearnerProfileVer1PersistenceEndpoint;
-import com.learncity.backend.account.create.endpoints.TutorProfileVer1PersistenceEndpoint;
+import com.learncity.backend.account.create.endpoints.ver1.LearnerProfileVer1PersistenceEndpoint;
+import com.learncity.backend.account.create.endpoints.ver1.TutorProfileVer1PersistenceEndpoint;
+import com.learncity.backend.util.ProfileUtils;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

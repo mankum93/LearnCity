@@ -26,6 +26,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
         name = "loginApi",
         version = "v1",
         title = "Login API",
+        resource = "login",
         namespace = @ApiNamespace(
                 ownerDomain = "learncity.com",
                 ownerName = "Learncity",

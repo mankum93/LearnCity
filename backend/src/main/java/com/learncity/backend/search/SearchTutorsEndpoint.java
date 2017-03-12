@@ -1,6 +1,7 @@
 package com.learncity.backend.search;
 
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiClass;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
@@ -8,6 +9,9 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cmd.Query;
+import com.learncity.backend.account.create.Account;
+import com.learncity.backend.account.create.GenericLearnerProfileVer1;
+import com.learncity.backend.account.create.TutorAccount;
 import com.learncity.backend.account.create.TutorProfileVer1;
 import com.learncity.backend.util.ArraysUtil;
 
@@ -26,14 +30,16 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
  */
 
 @Api(
-        name = "searchApi",
+        name = "tutorApi",
         version = "v1",
-        title = "Search API",
         namespace = @ApiNamespace(
-                ownerDomain = "learncity.com",
-                ownerName = "Learncity",
+                ownerDomain = "tutor.backend.learncity.com",
+                ownerName = "tutor.backend.learncity.com",
                 packagePath = ""
         )
+)
+@ApiClass(
+        resource = "searchTutorAccount"
 )
 public class SearchTutorsEndpoint {
 
@@ -43,11 +49,11 @@ public class SearchTutorsEndpoint {
 
     static {
         // Typically you would register this inside an OfyServive wrapper. See: https://code.google.com/p/objectify-appengine/wiki/BestPractices
-        ObjectifyService.register(TutorProfileVer1.class);
+        ObjectifyService.register(Account.class);
     }
 
-    private QueryResultIterator<TutorProfileVer1> bufferQueryIterator;
-    private QueryResultIterator<TutorProfileVer1> queryIterator;
+    private QueryResultIterator<Account> bufferQueryIterator;
+    private QueryResultIterator<Account> queryIterator;
 
     /**
      * List all entities as per the query.
@@ -55,89 +61,91 @@ public class SearchTutorsEndpoint {
      */
     @ApiMethod(name = "searchTutors",
             httpMethod = ApiMethod.HttpMethod.POST)
-    public CollectionResponse<TutorProfileVer1> searchTutors(SearchTutorsQuery searchTutorsQuery, @Nullable @Named("cursor") String cursor, @Nullable @Named("limit") Integer limit) {
+    public CollectionResponse<TutorAccount> searchTutors(SearchTutorsQuery searchTutorsQuery, @Nullable @Named("cursor") String cursor, @Nullable @Named("limit") Integer limit) {
 
         logger.info("Search Query: " + searchTutorsQuery);
 
-        List<TutorProfileVer1> tutorProfileList = new ArrayList<TutorProfileVer1>(20);
+        List<TutorAccount> tutorAccounts = new ArrayList<TutorAccount>(50);
 
-        int noOfProfilesChecked = 0;
-        int resultProfiles = 0;
+        int noOfAccountsChecked = 0;
+        int resultAccounts = 0;
         boolean stop = false;
 
         //Load the profiles initially
-        queryIterator = loadTutorProfiles(cursor, 100);
+        queryIterator = loadTutorAccounts(cursor, 100);
 
-        while(resultProfiles < 20){
-            while(noOfProfilesChecked != 100){
+        while(resultAccounts < 20){
+            while(noOfAccountsChecked != 100){
                 if(queryIterator.hasNext()){
-                    TutorProfileVer1 profile;
-
-                    profile = queryIterator.next();
+                    TutorAccount account = (TutorAccount) queryIterator.next();
 
                     //TODO: Take care of the trimming as it should not be required ideally
-                    List<String> tutorTypes = Arrays.asList(ArraysUtil.trimArray(profile.getTutorTypes()));
-                    List<String> disciplines = Arrays.asList(ArraysUtil.trimArray(profile.getDisciplines()));
+                    List<String> tutorTypes = Arrays.asList(ArraysUtil.trimArray(account.getProfile().getTutorTypes()));
+                    List<String> disciplines = Arrays.asList(ArraysUtil.trimArray(account.getProfile().getDisciplines()));
                     for(String sub : searchTutorsQuery.getSubjects()){
                         if(disciplines.contains(sub)){
                             for(String type : searchTutorsQuery.getTutorTypes()){
                                 if(tutorTypes.contains(type)){
-                                    tutorProfileList.add(TutorProfileVer1.TutorProfileResponseView.normalize(searchTutorsQuery.getTutorProfileResponseView(), profile));
-                                    resultProfiles++;
+                                    account = TutorAccount.TutorAccountResponseView.normalize(searchTutorsQuery.getAccountResponseView(), account);
+                                    tutorAccounts.add(account);
+                                    if(account != null){
+                                        resultAccounts++;
+                                    }
                                 }
                             }
                         }
                     }
-                    noOfProfilesChecked++;
+                    noOfAccountsChecked++;
                 }
                 else{
                     stop = true;
-                    logger.info("No of Profiles checked(no more items): " + noOfProfilesChecked);
+                    logger.info("No of Profiles checked(no more items): " + noOfAccountsChecked);
                     //There are no more items to iterate over - break away
                     break;
                 }
-                if(noOfProfilesChecked == 50){
-                    logger.info("No of Profiles checked(=50): " + noOfProfilesChecked);
+                if(noOfAccountsChecked == 50){
+                    logger.info("No of Profiles checked(=50): " + noOfAccountsChecked);
                     break;
                 }
             }
             //If we are out without being able to check 50 profiles then its the end of the list
-            if(noOfProfilesChecked < 50){
-                logger.info("No of Profiles checked(<50): " + noOfProfilesChecked);
+            if(noOfAccountsChecked < 50){
+                logger.info("No of Profiles checked(<50): " + noOfAccountsChecked);
                 //Return whatever we have
                 break;
             }
-            else if(noOfProfilesChecked == 100){
-                logger.info("No of Profiles checked(=100): " + noOfProfilesChecked);
+            else if(noOfAccountsChecked == 100){
+                logger.info("No of Profiles checked(=100): " + noOfAccountsChecked);
                 //Reset the count
-                noOfProfilesChecked = 0;
+                noOfAccountsChecked = 0;
                 queryIterator = bufferQueryIterator;
             }
             else if(stop == true){
                 break;
             }
             //Load the next 100 profiles in advance if 20 profiles haven't found still
-            if(resultProfiles < 20){
-                bufferQueryIterator = loadTutorProfiles(queryIterator.getCursor().toWebSafeString(), 100);
+            if(resultAccounts < 20){
+                bufferQueryIterator = loadTutorAccounts(queryIterator.getCursor().toWebSafeString(), 100);
                 if(!bufferQueryIterator.hasNext()){
                     break;
                 }
             }
 
         }
-        logger.info("No of Profile results: " + resultProfiles);
+        logger.info("No of Profile results: " + resultAccounts);
 
         //Log the list
-        logger.info("Profiles searched: " + tutorProfileList + "");
-        return CollectionResponse.<TutorProfileVer1>builder().setItems(tutorProfileList).setNextPageToken(queryIterator.getCursor().toWebSafeString()).build();
+        logger.info("Profiles searched: " + tutorAccounts + "");
+        return CollectionResponse.<TutorAccount>builder().setItems(tutorAccounts).setNextPageToken(queryIterator.getCursor().toWebSafeString()).build();
     }
 
-    private QueryResultIterator<TutorProfileVer1> loadTutorProfiles(@Nullable String cursor, @Nullable Integer limit){
+    private QueryResultIterator<Account> loadTutorAccounts(@Nullable String cursor, @Nullable Integer limit){
 
         limit = limit == null ? DEFAULT_LIST_LIMIT : limit;
 
-        Query<TutorProfileVer1> query = ofy().load()
-                .type(TutorProfileVer1.class)
+        Query<Account> query = ofy().load()
+                .type(Account.class)
+                .filter("accountStatus", GenericLearnerProfileVer1.STATUS_TUTOR)
                 .limit(limit);
         if (cursor != null) {
             query = query.startAt(Cursor.fromWebSafeString(cursor));

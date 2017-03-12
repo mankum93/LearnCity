@@ -1,8 +1,12 @@
 package com.learncity.learner.account.profile.model;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
+
+import com.learncity.backend.learner.learnerApi.model.LearnerProfileVer1;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 
 /**
@@ -167,5 +171,56 @@ public class LearnerProfile extends GenericLearnerProfile {
 
     //------------------------------------------------------------------------------------------------------------------
 
+    public static LearnerProfileVer1 populateProfileEntity(@NonNull LearnerProfile profile, @Nullable LearnerProfileVer1 profileEntity){
+        //Populate the entity object with the profile info.
+
+        if(profileEntity == null){
+            profileEntity = new LearnerProfileVer1();
+        }
+        com.learncity.backend.learner.learnerApi.model.LatLng ll = null;
+        if(profile.getLastKnownGeoCoordinates() != null){
+            ll = new com.learncity.backend.learner.learnerApi.model.LatLng();
+            ll.setLatitude(profile.getLastKnownGeoCoordinates().latitude);
+            ll.setLongitude( profile.getLastKnownGeoCoordinates().longitude);
+        }
+
+        profileEntity.setName(profile.getName());
+        profileEntity.setEmailID(profile.getEmailID());
+        profileEntity.setPhoneNo(profile.getPhoneNo());
+        profileEntity.setPassword(profile.getPassword());
+        profileEntity.setCurrentStatus(profile.getCurrentStatus());
+        profileEntity.setLastKnownGeoCoordinates(ll);
+        profileEntity.setDisplayPicturePath(profile.getDisplayPicturePath());
+        return profileEntity;
+    }
+
+    public static LearnerProfile populateProfileFromEntity(@Nullable LearnerProfile profile, @NonNull LearnerProfileVer1 profileEntity){
+
+        if(profile == null){
+            profile = new LearnerProfile.Builder(
+                    profileEntity.getName(),
+                    profileEntity.getEmailID(),
+                    profileEntity.getPhoneNo(),
+                    profileEntity.getCurrentStatus(),
+                    profileEntity.getPassword())
+                    .withImagePath(profileEntity.getDisplayPicturePath())
+                    .withGeoCoordinates(new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
+                            , profileEntity.getLastKnownGeoCoordinates().getLongitude()))
+                    .build();
+        }
+        else{
+            profile.getLearnerProfileBuilder()
+                    .withName(profileEntity.getName())
+                    .withEmailID(profileEntity.getEmailID())
+                    .withPhoneNo(profileEntity.getPhoneNo())
+                    .withCurrentStatus(profileEntity.getCurrentStatus())
+                    .withPassword(profileEntity.getPassword())
+                    .withImagePath(profileEntity.getDisplayPicturePath())
+                    .withGeoCoordinates(new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
+                            , profileEntity.getLastKnownGeoCoordinates().getLongitude())).build();
+        }
+
+        return profile;
+    }
 
 }
