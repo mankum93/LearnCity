@@ -1,6 +1,7 @@
 package com.learncity;
 
 import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.learncity.generic.learner.account.profile.database.ProfileDbHelperVer1;
@@ -13,7 +14,7 @@ import org.greenrobot.eventbus.EventBus;
  * Created by DJ on 2/8/2017.
  */
 
-public class LearnCityApplication extends Application {
+public class LearnCityApplication extends MultiDexApplication {
 
     private static final String TAG = "LearnCityApplication";
 

@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -187,9 +188,11 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
                 //Bundle b = new Bundle();
                 //b.putString(SearchService.SEARCH_QUERY, new Gson().toJson(mSearchQuery));
                 //search.setData(b);
+                Log.d(TAG, "Posting Search query on Search button press.");
                 EventBus.getDefault().postSticky(mSearchQuery);
                 try{
                     if(cancelSearch){
+                        dismissSearchProgressDialog();
                         return;
                     }
                     mService.send(search);
@@ -203,6 +206,7 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onSearch(SearchService.SearchEvent searchEvent){
+        dismissSearchProgressDialog();
         if(searchEvent == null){
             return;
         }
@@ -210,11 +214,9 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
 
         if(mBound){
             if(accounts == null && searchEvent.getException() == null){
-                if(!cancelSearch){
-                    throw new IllegalStateException("Serious Error: Even without being asked to cancel both the" +
-                            "accounts list and any exception(if there had been) are null.");
-                }
-                // Search was cancelled successfully. Do nothing.
+                Log.d(TAG, "No search results were found.");
+                // There wasn't any search result
+                Toast.makeText(this, "No tutors found. Try with a different query.", Toast.LENGTH_SHORT).show();
             }
             else if(accounts != null){
                 Log.d(TAG, "Searched accounts received: " + accounts);
@@ -223,7 +225,7 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
                 }
                 // Show these accounts in a list view
                 Intent i = new Intent(this, SearchResultsActivity.class);
-                i.putExtra(SEARCHED_ACCOUNTS, refactorAccounts(accounts).toArray());
+                i.putExtra(SEARCHED_ACCOUNTS, refactorAccountsToArray(accounts));
                 startActivity(i);
             }
             else{
@@ -270,13 +272,13 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
         }
     }
 
-    private List<com.learncity.tutor.account.TutorAccount> refactorAccounts(List<TutorAccount> accounts){
+    private List<com.learncity.tutor.account.TutorAccount> refactorAccountsToList(List<TutorAccount> accounts){
         // Extract the list of accounts from backend
         List<TutorProfileVer1> profiles = new ArrayList<TutorProfileVer1>();
         List<Account.LocationInfo> locationInfos = new ArrayList<Account.LocationInfo>();
         for(TutorAccount acc : accounts){
             profiles.add(acc.getProfile());
-            locationInfos.add(new Account.LocationInfo(acc.getLocationInfo().getShortFormattedAddress()));
+            locationInfos.add(new Account.LocationInfo((acc.getLocationInfo() == null ? null: acc.getLocationInfo().getShortFormattedAddress())));
         }
 
         // Populate a profile model
@@ -290,6 +292,12 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
             i++;
         }
         return acc;
+    }
+
+    private com.learncity.tutor.account.TutorAccount[] refactorAccountsToArray(List<TutorAccount> accounts){
+
+        List<com.learncity.tutor.account.TutorAccount> refactoredProfiles = refactorAccountsToList(accounts);
+        return refactoredProfiles.toArray(new com.learncity.tutor.account.TutorAccount[refactoredProfiles.size()]);
     }
 
     private void showSearchAlertDialog(String msg){
@@ -316,8 +324,8 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
             searchProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
-                    dialog.cancel();
                     cancelSearch = true;
+                    Log.d(TAG, "Requesting Search cancellation on Search Progress dialog dismissal");
                     EventBus.getDefault().postSticky(new SearchService.CancelSearchEvent(SearchService.SEARCH_TUTORS));
                     // Try cancelling the search
                 }
@@ -331,10 +339,11 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
 
     private void dismissSearchProgressDialog(){
         //If dialog already dismissed, no use dismissing it again
-        if(searchProgressDialog.isShowing()){
-            Log.d(TAG, "Dismissing the search progress dialog...");
-            searchProgressDialog.dismiss();
-            searchProgressDialog.cancel();
+        if(searchProgressDialog != null){
+            if(searchProgressDialog.isShowing()){
+                Log.d(TAG, "Dismissing the search progress dialog...");
+                searchProgressDialog.dismiss();
+            }
         }
     }
 
@@ -376,6 +385,7 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
             unbindService(mConnection);
             mBound = false;
         }
+        cancelSearch = false;
     }
     private boolean areGooglePlayServicesAvailable() {
         int errorCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);

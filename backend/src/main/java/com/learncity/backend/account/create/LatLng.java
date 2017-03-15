@@ -93,6 +93,11 @@ public class LatLng implements Serializable {
         }
 
         public static LatLng normalize(LatLngResponseView latLngSpec, LatLng latlng){
+
+            if(latLngSpec == null){
+                return null;
+            }
+
             Integer i = latLngSpec.getNil();
             if(i != null){
                 if(i.intValue() == 1){

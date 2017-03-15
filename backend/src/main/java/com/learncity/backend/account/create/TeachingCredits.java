@@ -95,6 +95,11 @@ public class TeachingCredits implements Serializable{
         }
 
         public static TeachingCredits normalize(CreditsResponseView spec, TeachingCredits credits){
+
+            if(spec == null){
+                return null;
+            }
+
             Integer i = spec.getNil();
             if(i != null){
                 if(i.intValue() == 1){

@@ -8,10 +8,7 @@
     android:layout_marginStart="10dp"
     android:layout_marginRight="10dp"
     android:layout_marginEnd="10dp"
-    android:background="@color/common_action_bar_splitter"
-    android:layout_marginBottom="10dp"
-    android:layout_marginTop="10dp"
-    android:elevation="2dp">
+    android:background="@color/common_action_bar_splitter">
 
 
     <RelativeLayout
@@ -76,20 +73,14 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
 
-        <com.iarcuschin.simpleratingbar.SimpleRatingBar
+        <RatingBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tutor_rating"
+            style="@android:style/Widget.DeviceDefault.Light.RatingBar.Small"
             android:layout_below="@+id/display_pic"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            app:srb_starSize="13dp"
-            app:srb_numberOfStars="5"
-            app:srb_borderColor="@color/light_blue"
-            app:srb_fillColor="@color/blue"
-            app:srb_starBorderWidth="1"
-            app:srb_isIndicator="true"
-            android:layout_marginTop="2dp" />
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 

@@ -43,6 +43,12 @@ public class ProfileUtils {
         else{
             throw new IllegalStateException("Invalid User status");
         }
+        //Before returning profiles, perform any checkup code.
+        for(GenericLearnerProfileVer1 profile : profiles){
+            if(profile instanceof TutorProfileVer1){
+                ((TutorProfileVer1) profile).refineProfileData();
+            }
+        }
         return profiles;
     }
 }

@@ -16,6 +16,3 @@
 #   public *;
 #}
 
-#-keep class com.google.gson.stream.** { *; }
-
-#-keep class com.learncity.searchApi.model.** { *; }

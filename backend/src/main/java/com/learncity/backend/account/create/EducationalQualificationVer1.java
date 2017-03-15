@@ -137,6 +137,11 @@ public class EducationalQualificationVer1 implements Serializable{
         }
 
         public static EducationalQualificationVer1 normalize(EducationalQualificationResponseView spec, EducationalQualificationVer1 ed){
+
+            if(spec == null){
+                return null;
+            }
+
             Integer i = spec.getNil();
             if(i != null){
                 if(i.intValue() == 1){

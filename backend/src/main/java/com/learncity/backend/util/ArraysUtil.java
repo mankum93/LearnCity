@@ -1,10 +1,16 @@
 package com.learncity.backend.util;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.logging.Logger;
+
 /**
  * Created by DJ on 2/4/2017.
  */
 
 public class ArraysUtil {
+
+    private static final Logger logger = Logger.getLogger(ArraysUtil.class.getSimpleName());
 
     private static String ARRAY_SEPARATOR = "__,__";
 
@@ -53,6 +59,17 @@ public class ArraysUtil {
         for (int i = 0; i < array.length; i++)
             array[i] = array[i].trim();
 
+        logger.info("Trimmed Array: " + Arrays.toString(array));
         return array;
+    }
+
+    public static String[] ensureUniqueness(String[] source){
+        if(source == null || source.length == 0){
+            return source;
+        }
+        source = new HashSet<String>(Arrays.asList(source)).toArray(new String[0]);
+
+        logger.info("Array with duplicates removed: " + Arrays.toString(source));
+        return source;
     }
 }

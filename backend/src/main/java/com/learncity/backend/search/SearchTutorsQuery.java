@@ -6,6 +6,8 @@ import com.learncity.backend.account.create.LatLng;
 import com.learncity.backend.account.create.TutorAccount;
 import com.learncity.backend.account.create.TutorProfileVer1;
 
+import java.util.Arrays;
+
 /**
  * Created by DJ on 11/4/2016.
  */
@@ -24,9 +26,9 @@ public class SearchTutorsQuery {
     }
     @Override
     public String toString(){
-        return new StringBuilder(subjects + "").append("\n")
-                .append(tutorTypes + "").append("\n")
-                .append(location + "")
+        return new StringBuilder(subjects == null? "Subjects: " + null + "\n" : "Subjects: " + Arrays.toString(subjects) + "").append("\n")
+                .append(tutorTypes == null? "Tutor types: " + null + "\n" : "Tutor types: " + Arrays.toString(tutorTypes) + "").append("\n")
+                .append(location == null? "Location" + null + "\n" : "Location" + "{" + location.getLatitude() + "," + location.getLongitude() + "}" + "")
                 .toString();
     }
 

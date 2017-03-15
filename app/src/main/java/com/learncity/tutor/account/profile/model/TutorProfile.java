@@ -13,6 +13,8 @@ import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile
 import com.learncity.tutor.account.profile.model.occupation.Occupation;
 import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualification;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -310,9 +312,9 @@ public class TutorProfile extends GenericLearnerProfile {
 
     public TutorProfile(Parcel in) {
         super(in);
-        this.educationalQualifications = (EducationalQualification[])in.readParcelableArray(EducationalQualification[].class.getClassLoader());
-        this.tutorTypes = (String[])in.readArray(String.class.getClassLoader());
-        this.disciplines = (String[])in.readArray(String.class.getClassLoader());
+        this.educationalQualifications = in.createTypedArray(EducationalQualification.CREATOR);
+        this.tutorTypes = in.createStringArray();
+        this.disciplines = in.createStringArray();
         this.occupation = in.readParcelable(Occupation.class.getClassLoader());
         this.rating = in.readInt();
         this.teachingCredits = in.readParcelable(Credits.class.getClassLoader());
@@ -323,12 +325,12 @@ public class TutorProfile extends GenericLearnerProfile {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeArray(educationalQualifications);
+        dest.writeTypedArray(educationalQualifications, 0);
         dest.writeStringArray(tutorTypes);
         dest.writeStringArray(disciplines);
-        dest.writeValue(occupation);
+        dest.writeParcelable(occupation, 0);
         dest.writeInt(rating);
-        dest.writeValue(teachingCredits);
+        dest.writeParcelable(teachingCredits, 0);
     }
 
     @SuppressWarnings("unused")
@@ -529,65 +531,147 @@ public class TutorProfile extends GenericLearnerProfile {
 
     public static TutorProfile populateProfileFromEntity(@Nullable TutorProfile profile, @NonNull TutorProfileVer1 profileEntity){
 
+        if(profileEntity == null){
+            return null;
+        }
         if(profile == null){
             // Extracting educational qualifications
-            EducationalQualification[] ed1 = new EducationalQualification[profileEntity.getEducationalQualifications().size()];
-            int i = 0;
-            for(EducationalQualificationVer1 ed : profileEntity.getEducationalQualifications()){
-                DurationVer1 d1 = ed.getDuration();
-                Duration d = new Duration(d1.getNoOfYears(), d1.getNoOfMonths(), d1.getNoOfDays());
-                ed1[i] = new EducationalQualification(ed.getQualificationName(), ed.getInstitution(), d);
-                ed1[i].setYearOfPassing(ed.getYearOfPassing());
-                i++;
+            EducationalQualification[] ed1 = null;
+            if(profileEntity.getEducationalQualifications() != null){
+                ed1 = new EducationalQualification[profileEntity.getEducationalQualifications().size()];
+
+                int i = 0;
+                for(EducationalQualificationVer1 ed : profileEntity.getEducationalQualifications()){
+                    DurationVer1 d1 = ed.getDuration();
+                    Duration d = null;
+                    if(d1 != null){
+                        d = new Duration(d1.getNoOfYears(), d1.getNoOfMonths(), d1.getNoOfDays());
+                    }
+
+                    ed1[i] = new EducationalQualification(ed.getQualificationName(), ed.getInstitution(), d);
+                    ed1[i].setYearOfPassing(ed.getYearOfPassing());
+                    i++;
+                }
             }
 
             // Extracting Occupation
-            DurationVer1 d2 = profileEntity.getOccupation().getCurrentExperience();
-            Duration d3 = new Duration(d2.getNoOfYears(), d2.getNoOfMonths(), d2.getNoOfDays());
-            Occupation o = new Occupation(profileEntity.getOccupation().getCurrentOrganization(), d3,
-                    profileEntity.getOccupation().getCurrentDesignation());
+            Occupation o = null;
+            if(profileEntity.getOccupation() != null){
+                DurationVer1 d2 = profileEntity.getOccupation().getCurrentExperience();
+                Duration d3 = null;
+                if(d2 != null){
+                    d3 = new Duration(d2.getNoOfYears(), d2.getNoOfMonths(), d2.getNoOfDays());
+                }
 
+                o = new Occupation(profileEntity.getOccupation().getCurrentOrganization(), d3,
+                        profileEntity.getOccupation().getCurrentDesignation());
+            }
+
+            LatLng l = null;
+            if((profileEntity.getLastKnownGeoCoordinates() != null)){
+                l = new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
+                        , profileEntity.getLastKnownGeoCoordinates().getLongitude());
+            }
+
+            Credits c = null;
+            if(profileEntity.getTeachingCredits() != null){
+                try{
+                    c = new Credits(profileEntity.getTeachingCredits().getAvailableCredits(),
+                            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                                    .parse(profileEntity.getTeachingCredits().getDateOfExpiryOfCredits().toStringRfc3339()));
+                }catch(ParseException p){
+                    throw new RuntimeException("Date format parse error");
+                }
+            }
+            Integer _r = profileEntity.getRating();
+            int r = _r == null ? -1 : _r;
+
+            Integer s;
             profile = new TutorProfile.Builder(
-                    profileEntity.getName(),
-                    profileEntity.getEmailID(),
-                    profileEntity.getPhoneNo(),
-                    profileEntity.getCurrentStatus(),
-                    profileEntity.getPassword())
+                    profileEntity.getName() == null ? "" : profileEntity.getName(),
+                    profileEntity.getEmailID() == null ? "" : profileEntity.getEmailID(),
+                    profileEntity.getPhoneNo() == null ? "" : profileEntity.getPhoneNo(),
+                    (s = profileEntity.getCurrentStatus()) == null ? STATUS_UNDEFINED :
+                            (s != STATUS_LEARNER || s != STATUS_TUTOR ? STATUS_UNDEFINED : s),
+                    profileEntity.getPassword() == null ? GenericLearnerProfile.PASSWORD_NULL : profileEntity.getPassword())
                     .withImagePath(profileEntity.getDisplayPicturePath())
-                    .withGeoCoordinates(new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
-                            , profileEntity.getLastKnownGeoCoordinates().getLongitude()))
+                    .withGeoCoordinates(l)
                     .withEducationalQualifications(ed1)
                     .withOccupation(o)
+                    .withDisciplines(profileEntity.getDisciplines() != null ? profileEntity.getDisciplines().toArray(new String[profileEntity.getDisciplines().size()]) : null)
+                    .withTutorTypes(profileEntity.getTutorTypes() != null ? profileEntity.getTutorTypes().toArray(new String[profileEntity.getDisciplines().size()]) : null)
+                    .withTeachingCredits(c)
+                    .withRating(r <= 0 ? 0 : r >= 5 ? 5 : r)
                     .build();
         }
         else{
-            EducationalQualification[] ed1 = new EducationalQualification[profileEntity.getEducationalQualifications().size()];
-            int i = 0;
-            for(EducationalQualificationVer1 ed : profileEntity.getEducationalQualifications()){
-                DurationVer1 d1 = ed.getDuration();
-                Duration d = new Duration(d1.getNoOfYears(), d1.getNoOfMonths(), d1.getNoOfDays());
-                ed1[i] = new EducationalQualification(ed.getQualificationName(), ed.getInstitution(), d);
-                ed1[i].setYearOfPassing(ed.getYearOfPassing());
-                i++;
+            // Extracting educational qualifications
+            EducationalQualification[] ed1 = null;
+            if(profileEntity.getEducationalQualifications() != null){
+                ed1 = new EducationalQualification[profileEntity.getEducationalQualifications().size()];
+
+                int i = 0;
+                for(EducationalQualificationVer1 ed : profileEntity.getEducationalQualifications()){
+                    DurationVer1 d1 = ed.getDuration();
+                    Duration d = null;
+                    if(d1 != null){
+                        d = new Duration(d1.getNoOfYears(), d1.getNoOfMonths(), d1.getNoOfDays());
+                    }
+
+                    ed1[i] = new EducationalQualification(ed.getQualificationName(), ed.getInstitution(), d);
+                    ed1[i].setYearOfPassing(ed.getYearOfPassing());
+                    i++;
+                }
             }
 
             // Extracting Occupation
-            DurationVer1 d2 = profileEntity.getOccupation().getCurrentExperience();
-            Duration d3 = new Duration(d2.getNoOfYears(), d2.getNoOfMonths(), d2.getNoOfDays());
-            Occupation o = new Occupation(profileEntity.getOccupation().getCurrentOrganization(), d3,
-                    profileEntity.getOccupation().getCurrentDesignation());
+            Occupation o = null;
+            if(profileEntity.getOccupation() != null){
+                DurationVer1 d2 = profileEntity.getOccupation().getCurrentExperience();
+                Duration d3 = null;
+                if(d2 != null){
+                    d3 = new Duration(d2.getNoOfYears(), d2.getNoOfMonths(), d2.getNoOfDays());
+                }
 
+                o = new Occupation(profileEntity.getOccupation().getCurrentOrganization(), d3,
+                        profileEntity.getOccupation().getCurrentDesignation());
+            }
+
+            LatLng l = null;
+            if((profileEntity.getLastKnownGeoCoordinates() == null)){
+                l = new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
+                        , profileEntity.getLastKnownGeoCoordinates().getLongitude());
+            }
+
+            Credits c = null;
+            if(profileEntity.getTeachingCredits() != null){
+                try{
+                    c = new Credits(profileEntity.getTeachingCredits().getAvailableCredits(),
+                            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                                    .parse(profileEntity.getTeachingCredits().getDateOfExpiryOfCredits().toStringRfc3339()));
+                }catch(ParseException p){
+                    throw new RuntimeException("Date format parse error");
+                }
+            }
+            Integer _r = profileEntity.getRating();
+            int r = _r == null ? -1 : _r;
+
+            Integer s;
             profile.getTutorProfileBuilder()
-                    .withName(profileEntity.getName())
-                    .withEmailID(profileEntity.getEmailID())
-                    .withPhoneNo(profileEntity.getPhoneNo())
-                    .withCurrentStatus(profileEntity.getCurrentStatus())
-                    .withPassword(profileEntity.getPassword())
+                    .withName(profileEntity.getName() == null ? "" : profileEntity.getName())
+                    .withEmailID(profileEntity.getEmailID() == null ? "" : profileEntity.getEmailID())
+                    .withPhoneNo(profileEntity.getPhoneNo() == null ? "" : profileEntity.getPhoneNo())
+                    .withCurrentStatus((s = profileEntity.getCurrentStatus()) == null ? STATUS_UNDEFINED :
+                            (s != STATUS_LEARNER || s != STATUS_TUTOR ? STATUS_UNDEFINED : s))
+                    .withPassword(profileEntity.getPassword() == null ? GenericLearnerProfile.PASSWORD_NULL : profileEntity.getPassword())
                     .withImagePath(profileEntity.getDisplayPicturePath())
-                    .withGeoCoordinates(new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
-                            , profileEntity.getLastKnownGeoCoordinates().getLongitude()))
+                    .withGeoCoordinates(l)
                     .withEducationalQualifications(ed1)
                     .withOccupation(o)
+                    .withDisciplines(profileEntity.getDisciplines() != null ? profileEntity.getDisciplines().toArray(new String[profileEntity.getDisciplines().size()]) : null)
+                    .withTutorTypes(profileEntity.getTutorTypes() != null ? profileEntity.getTutorTypes().toArray(new String[profileEntity.getDisciplines().size()]) : null)
+                    .withTeachingCredits(c)
+                    .withRating(r <= 0 ? 0 : r >= 5 ? 5 : r)
                     .build();
         }
 

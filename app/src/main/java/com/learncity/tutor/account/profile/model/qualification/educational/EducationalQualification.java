@@ -15,7 +15,6 @@ public class EducationalQualification implements Parcelable {
     private String mInstitution;
     private Duration mDuration;
 
-    //I expect any person to provide these at the least. I mean, come on!
     public EducationalQualification(String mQualificationName, String mInstitution, Duration mDuration) {
         this.mQualificationName = mQualificationName;
         this.mInstitution = mInstitution;
@@ -63,7 +62,7 @@ public class EducationalQualification implements Parcelable {
         mQualificationName = in.readString();
         mYearOfPassing = in.readInt();
         mInstitution = in.readString();
-        mDuration = (Duration) in.readValue(Duration.class.getClassLoader());
+        mDuration = in.readParcelable(Duration.class.getClassLoader());
     }
 
     @Override
@@ -76,7 +75,7 @@ public class EducationalQualification implements Parcelable {
         dest.writeString(mQualificationName);
         dest.writeInt(mYearOfPassing);
         dest.writeString(mInstitution);
-        dest.writeValue(mDuration);
+        dest.writeParcelable(mDuration, 0);
     }
 
     @SuppressWarnings("unused")

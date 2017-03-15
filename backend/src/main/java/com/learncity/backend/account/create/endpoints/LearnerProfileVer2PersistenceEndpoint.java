@@ -103,7 +103,7 @@ public class LearnerProfileVer2PersistenceEndpoint extends BaseLearnerEndpoint{
         logger.info("Created Learner Account");
 
         //Schedule an updateAccount with location info. with the given coordinates
-        scheduleLocationInfoUpdation(acc, acc.getProfile().getLastKnownGeoCoordinates());
+        //scheduleLocationInfoUpdation(acc, acc.getProfile().getLastKnownGeoCoordinates());
 
         return (LearnerProfileVer1) ofy().load().entity(acc).now().getProfile();
     }

@@ -76,6 +76,7 @@ public class SearchService extends Service {
         SearchTutorsQuery query;
 
         {
+            Log.d(TAG, "Registering the SearchHandler with the EventBus...");
             EventBus.getDefault().register(this);
         }
 
@@ -119,6 +120,9 @@ public class SearchService extends Service {
         }
         @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
         public void onReceiveSearchQuery(SearchTutorsQuery query){
+            // TODO: Check the repeated calling of this method. This method is called only on the
+            // Search button press. If you perform more than 1 search, this method starts to get
+            // called incrementally repeatedly with each search.
             Log.d(TAG, "Search query received: " + query);
             this.query = query;
         }
@@ -128,6 +132,7 @@ public class SearchService extends Service {
             if(event.getSearchType() == SEARCH_TUTORS){
                 searchTutorsTask.cancel();
             }
+            EventBus.getDefault().removeStickyEvent(event);
         }
         @Override
         public void finalize() throws Throwable{
@@ -153,7 +158,8 @@ public class SearchService extends Service {
             initClient();
         }
 
-        public List<TutorAccount> search(SearchTutorsQuery  query) throws IOException{
+        public synchronized List<TutorAccount> search(SearchTutorsQuery  query) throws IOException{
+            cancel = false;
             this.query = query;
             return call();
         }
@@ -164,7 +170,7 @@ public class SearchService extends Service {
             cancel = false;
         }
 
-        public void cancel(){
+        public synchronized void cancel(){
             cancel = true;
         }
 
@@ -178,22 +184,14 @@ public class SearchService extends Service {
             //Now push the query to the server
 
             if(cancel){
+                cancel = false;
                 return null;
             }
             response = myApiService.searchTutors(query).execute();
 
-            if(response == null){
-                throw new RuntimeException("Response can't be null. Any possible exception has already been handled");
-            }
             List<TutorAccount> accounts = response.getItems();
-            // The accounts shouldn't be null otherwise there is serious error. The response sent by the server is
-            // a CollectionResponse with a valid accounts list instance in all the cases
-            if(accounts != null){
-                Log.d(TAG, "No of accounts searched: " + accounts.size() + "\n" + accounts);
-            }
-            else{
-                throw new RuntimeException("Serious error: Accounts list in the CollectionResponse is null and this is an impossibility.");
-            }
+            Log.d(TAG, "No of accounts searched: " + (accounts != null ? accounts.size() : 0) + "\n" + accounts + "\n");
+
             return accounts;
         }
 

@@ -6,6 +6,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Subclass;
+import com.learncity.backend.util.ArraysUtil;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -71,9 +72,9 @@ public class TutorProfileVer1 extends GenericLearnerProfileVer1 implements Seria
     }
 
     public void setTutorTypes(String[] tutorTypes) {
-        if(tutorTypes == null){
+        /*if(tutorTypes == null){
             throw new IllegalStateException("Tutor Types are null");
-        }
+        }*/
         this.tutorTypes = tutorTypes;
     }
 
@@ -82,9 +83,9 @@ public class TutorProfileVer1 extends GenericLearnerProfileVer1 implements Seria
     }
 
     public void setDisciplines(String[] disciplines) {
-        if(disciplines == null){
+        /*if(disciplines == null){
             throw new IllegalStateException("Disciplines are null");
-        }
+        }*/
         this.disciplines = disciplines;
     }
 
@@ -103,6 +104,17 @@ public class TutorProfileVer1 extends GenericLearnerProfileVer1 implements Seria
     public void setTeachingCredits(TeachingCredits teachingCredits) {
         this.teachingCredits = teachingCredits;
     }
+    public void ensureTutorTypesArrayUniqueness(){
+        tutorTypes = ArraysUtil.ensureUniqueness(tutorTypes);
+    }
+    public void ensureDisciplinesArrayUniqueness(){
+        disciplines = ArraysUtil.ensureUniqueness(disciplines);
+    }
+    public void refineProfileData(){
+        tutorTypes = ArraysUtil.trimArray(ArraysUtil.ensureUniqueness(tutorTypes));
+        disciplines = ArraysUtil.trimArray(ArraysUtil.ensureUniqueness(disciplines));
+    }
+
 
     //-----------------------------------------------------------------------------------------------------------------
 
@@ -206,6 +218,10 @@ public class TutorProfileVer1 extends GenericLearnerProfileVer1 implements Seria
         }
 
         public static TutorProfileVer1 normalize(TutorProfileResponseView responseSpec, TutorProfileVer1 profile){
+
+            if(responseSpec == null){
+                return null;
+            }
 
             logger.info("Response spec: " + responseSpec);
             Integer i = responseSpec.getNil();

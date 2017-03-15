@@ -129,6 +129,11 @@ public class OccupationVer1 implements Serializable{
         }
 
         public static OccupationVer1 normalize(OccupationResponseView occupationSpec, OccupationVer1 occupation){
+
+            if(occupationSpec == null){
+                return null;
+            }
+
             Integer i = occupationSpec.getNil();
             if(i != null){
                 if(i.intValue() == 1){

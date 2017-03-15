@@ -6,7 +6,10 @@ import com.learncity.backend.account.create.LearnerProfileVer1;
 import com.learncity.backend.account.create.endpoints.LearnerProfileVer2PersistenceEndpoint;
 import com.learncity.backend.account.create.TutorProfileVer1;
 import com.learncity.backend.account.create.endpoints.TutorProfileVer2PersistenceEndpoint;
+import com.learncity.backend.util.JSONUtils;
 import com.learncity.backend.util.ProfileUtils;
+
+import java.io.IOException;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -31,7 +34,18 @@ public class ServerSetupListenerVer1 implements ServletContextListener {
         final LearnerProfileVer1[] learnerProfiles = (LearnerProfileVer1[]) ProfileUtils.getJSONToProfiles(STATUS_LEARNER);
         final TutorProfileVer1[] tutorProfiles = (TutorProfileVer1[]) ProfileUtils.getJSONToProfiles(STATUS_TUTOR);
 
+        // Treat the JSON file for redundant entries
+        /*
+        try{
+            JSONUtils.removeDuplicateStringElementsFromAllArrays("TutorProfiles.json");
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace();
+        }
+        */
+
         //Insert this data into the datastore
+
         ObjectifyService.run(new VoidWork() {
             @Override
             public void vrun() {
@@ -43,6 +57,7 @@ public class ServerSetupListenerVer1 implements ServletContextListener {
                 }
             }
         });
+
     }
 
     @Override

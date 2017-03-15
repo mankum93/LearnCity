@@ -150,6 +150,10 @@ public class Account implements Serializable{
         }
 
         public static Account normalize(AccountResponseView spec, Account acc){
+            if(spec == null){
+                return null;
+            }
+
             Integer i = spec.getNil();
             if(i != null){
                 if(i.intValue() == 1){

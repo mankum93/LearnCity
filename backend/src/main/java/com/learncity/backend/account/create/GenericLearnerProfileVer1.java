@@ -83,9 +83,9 @@ public class GenericLearnerProfileVer1 implements Serializable{
 
     public void setPassword(String mPassword) {
 
-        if(mPassword == null){
+        /*if(mPassword == null){
             throw new IllegalStateException("Password is null");
-        }
+        }*/
         this.mPassword = mPassword;
     }
 
@@ -125,9 +125,9 @@ public class GenericLearnerProfileVer1 implements Serializable{
     }
 
     public void setName(String mName) {
-        if(mName == null){
+        /*if(mName == null){
             throw new IllegalStateException("Name is null");
-        }
+        }*/
 
         this.mName = mName;
     }
@@ -138,9 +138,9 @@ public class GenericLearnerProfileVer1 implements Serializable{
 
     public void setEmailID(String mEmailID) {
 
-        if(mEmailID == null){
+        /*if(mEmailID == null){
             throw new IllegalStateException("EmailId is null");
-        }
+        }*/
 
         this.mEmailID = mEmailID;
     }
@@ -151,9 +151,9 @@ public class GenericLearnerProfileVer1 implements Serializable{
 
     public void setPhoneNo(String mPhoneNo) {
 
-        if(mPhoneNo == null){
+        /*if(mPhoneNo == null){
             throw new IllegalStateException("Phone No is null");
-        }
+        }*/
         this.mPhoneNo = mPhoneNo;
     }
 
@@ -258,6 +258,11 @@ public class GenericLearnerProfileVer1 implements Serializable{
         }
 
         public static GenericLearnerProfileVer1 normalize(GenericLearnerProfileResponseView spec, GenericLearnerProfileVer1 profile){
+
+            if(spec == null){
+                return null;
+            }
+
             //All the base class fields have been asked to be null - WTH?
             Integer i = spec.getNil();
             if(i != null){

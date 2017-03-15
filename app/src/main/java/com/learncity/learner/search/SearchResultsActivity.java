@@ -2,9 +2,11 @@ package com.learncity.learner.search;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +14,13 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.learncity.learncity.R;
 import com.learncity.tutor.account.TutorAccount;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.util.ArraysUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +29,8 @@ import java.util.List;
  */
 
 public class SearchResultsActivity extends AppCompatActivity {
+
+    private static final String TAG = SearchResultsActivity.class.getSimpleName();
 
     public static final String SEARCHED_ACCOUNTS = "SEARCHED_ACCOUNTS";
 
@@ -37,8 +43,12 @@ public class SearchResultsActivity extends AppCompatActivity {
         //Get the Recycler View
         RecyclerView searchResultsView = (RecyclerView) findViewById(R.id.search_results);
 
+        List<TutorAccount> list = new ArrayList<>(10);
+        for(Parcelable p : getIntent ().getParcelableArrayExtra(SEARCHED_ACCOUNTS)){
+            list.add((TutorAccount)p);
+        }
         //Set the Adapter on this Recycler View
-        SearchResultsAdapter adapter = new SearchResultsAdapter(Arrays.asList((TutorAccount[])getIntent().getParcelableArrayExtra(SEARCHED_ACCOUNTS)), this);
+        SearchResultsAdapter adapter = new SearchResultsAdapter(list, this);
         searchResultsView.setAdapter(adapter);
         searchResultsView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -88,14 +98,16 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             ImageView displayPic = (ImageView) itemView.findViewById(R.id.display_pic);
 
-            RatingBar rating = (RatingBar) itemView.findViewById(R.id.tutor_rating);
+            SimpleRatingBar rating = (SimpleRatingBar) itemView.findViewById(R.id.tutor_rating);
 
             // Now, bind each part
             tutorName.setText(account.getProfile().getName());
             skillSet.setText(ArraysUtil.convertArrayToString(account.getProfile().getDisciplines(), ", "));
-            tutorTypes.setText(ArraysUtil.convertArrayToString(account.getProfile().getDisciplines(), ", "));
+            tutorTypes.setText(ArraysUtil.convertArrayToString(account.getProfile().getTutorTypes(), ", "));
             location.setText(account.getLocationInfo().getShortFormattedAddress());
-            rating.setNumStars(account.getProfile().getRating());
+            int r = account.getProfile().getRating();
+            Log.d(TAG, "Rating: " + r);
+            rating.setRating(r);
             // TODO: Bind the display pic
         }
     }

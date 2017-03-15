@@ -79,9 +79,8 @@ public class SearchTutorsEndpoint {
                 if(queryIterator.hasNext()){
                     TutorAccount account = (TutorAccount) queryIterator.next();
 
-                    //TODO: Take care of the trimming as it should not be required ideally
-                    List<String> tutorTypes = Arrays.asList(ArraysUtil.trimArray(account.getProfile().getTutorTypes()));
-                    List<String> disciplines = Arrays.asList(ArraysUtil.trimArray(account.getProfile().getDisciplines()));
+                    List<String> tutorTypes = Arrays.asList(account.getProfile().getTutorTypes());
+                    List<String> disciplines = Arrays.asList(account.getProfile().getDisciplines());
                     for(String sub : searchTutorsQuery.getSubjects()){
                         if(disciplines.contains(sub)){
                             for(String type : searchTutorsQuery.getTutorTypes()){

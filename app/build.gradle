@@ -11,6 +11,7 @@ android {
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -63,4 +64,6 @@ dependencies {
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.49'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.android.support:recyclerview-v7:25.1.1'
+    compile 'com.iarcuschin:simpleratingbar:0.1.5'
+    compile 'com.android.support:multidex:1.0.1'
 }

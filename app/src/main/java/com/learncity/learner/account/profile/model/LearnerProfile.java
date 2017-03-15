@@ -196,6 +196,15 @@ public class LearnerProfile extends GenericLearnerProfile {
 
     public static LearnerProfile populateProfileFromEntity(@Nullable LearnerProfile profile, @NonNull LearnerProfileVer1 profileEntity){
 
+        if(profileEntity == null){
+            return null;
+        }
+
+        LatLng l = null;
+        if(profileEntity.getLastKnownGeoCoordinates() != null){
+            l = new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
+                    , profileEntity.getLastKnownGeoCoordinates().getLongitude());
+        }
         if(profile == null){
             profile = new LearnerProfile.Builder(
                     profileEntity.getName(),
@@ -204,8 +213,7 @@ public class LearnerProfile extends GenericLearnerProfile {
                     profileEntity.getCurrentStatus(),
                     profileEntity.getPassword())
                     .withImagePath(profileEntity.getDisplayPicturePath())
-                    .withGeoCoordinates(new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
-                            , profileEntity.getLastKnownGeoCoordinates().getLongitude()))
+                    .withGeoCoordinates(l)
                     .build();
         }
         else{
@@ -216,8 +224,7 @@ public class LearnerProfile extends GenericLearnerProfile {
                     .withCurrentStatus(profileEntity.getCurrentStatus())
                     .withPassword(profileEntity.getPassword())
                     .withImagePath(profileEntity.getDisplayPicturePath())
-                    .withGeoCoordinates(new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
-                            , profileEntity.getLastKnownGeoCoordinates().getLongitude())).build();
+                    .withGeoCoordinates(l).build();
         }
 
         return profile;

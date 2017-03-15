@@ -1,5 +1,7 @@
 package com.learncity.learner.account;
 
+import android.os.Parcelable;
+
 import com.learncity.generic.learner.account.Account;
 import com.learncity.learner.account.profile.model.LearnerProfile;
 
@@ -8,7 +10,7 @@ import com.learncity.learner.account.profile.model.LearnerProfile;
  */
 
 
-public class LearnerAccount extends Account {
+public class LearnerAccount extends Account{
 
     public LearnerAccount(LearnerProfile profile) {
         super(profile);

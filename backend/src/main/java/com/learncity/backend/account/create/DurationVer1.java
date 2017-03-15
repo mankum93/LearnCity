@@ -120,6 +120,9 @@ public class DurationVer1 implements Serializable{
 
         //No normalization is required because these are primitives
         public static DurationVer1 normalize(DurationResponseView durationSpec, DurationVer1 duration){
+            if(durationSpec == null){
+                return null;
+            }
             Integer i = durationSpec.getNil();
             if(i != null){
                 if(i.intValue() == 1){

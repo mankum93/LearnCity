@@ -6,6 +6,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
+import com.googlecode.objectify.ObjectifyService;
 import com.learncity.backend.account.create.Account;
 import com.learncity.backend.account.create.GenericLearnerProfileVer1;
 import com.learncity.backend.account.create.LatLng;
@@ -28,6 +29,10 @@ public class BaseLearnerEndpoint {
 
     private static final Logger logger = Logger.getLogger(BaseLearnerEndpoint.class.getName());
 
+
+    static {
+        ObjectifyService.register(Account.class);
+    }
 
     public GenericLearnerProfileVer1 get(String mEmailID) throws NotFoundException {
         logger.info("Getting Learner Account with ID: " + mEmailID);

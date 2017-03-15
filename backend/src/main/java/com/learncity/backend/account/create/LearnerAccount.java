@@ -9,7 +9,6 @@ import java.io.Serializable;
  * Created by DJ on 3/7/2017.
  */
 
-@Entity
 @Subclass(index = true)
 public class LearnerAccount extends Account implements Serializable{
 
@@ -78,6 +77,10 @@ public class LearnerAccount extends Account implements Serializable{
         }
 
         public static LearnerAccount normalize(LearnerAccountResponseView spec, LearnerAccount acc){
+
+            if(spec == null){
+                return null;
+            }
 
             Integer i = spec.getNil();
             if(i != null){
