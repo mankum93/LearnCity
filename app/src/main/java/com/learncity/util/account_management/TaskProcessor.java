@@ -163,6 +163,12 @@ public class TaskProcessor {
     //Has to be called from main thread or some other thread only, not the queue processor thread
     public void startTasksProcessing(AbstractTask... tasks){
 
+        if(tasks == null || tasks.length == 0){
+            Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: No tasks to process. Aborting..." +
+                    "\n" +"Thread ID: " + Thread.currentThread().getId());
+            return;
+        }
+
         //If the TaskProcessor has already been used and disposed, any fresh requests to the same instance
         //assume that the state set by other parties has remained state and they want the TaskProcessor
         //to act on the same state as last time. The parties are free to overwrite the state they have set before
@@ -216,6 +222,8 @@ public class TaskProcessor {
                         while(shouldWaitForNewTasks){
                             synchronized (lockForNewTasks){
                                 try{
+                                    Log.d(TAG, "TaskProcessor.startTasksProcessing(): " + "\n" + "MESSAGE: Suspending this thread until notified by user's response to the retry dialog..." +
+                                            "\n" +"Thread ID: " + Thread.currentThread().getId());
                                     lockForNewTasks.wait();
                                 }catch(InterruptedException ie){
                                     //Think of something
@@ -252,6 +260,7 @@ public class TaskProcessor {
         if(task == null){
             throw new NullPointerException("Can't process a null task!");
         }
+
         //Update the state for the task
         task.taskState = AbstractTask.TASK_EXECUTION_STARTED;
 
@@ -262,7 +271,7 @@ public class TaskProcessor {
             workerThread = new TaskProcessingWorkerThread("TaskProcessorWorkerThread");
         }
         if(!workerThread.isAlive()){
-            Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Starting worker thread to initiate the AC creation process..." +
+            Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Starting worker thread to initiate the processing of tasks..." +
                     "\n" +"Thread ID: " + Thread.currentThread().getId());
             workerThread.start();
         }
@@ -273,6 +282,9 @@ public class TaskProcessor {
             public void run() {
 
                 int taskExecutionStatusCode;
+
+                Log.d(TAG, "TaskProcessor.performTaskProcessing(): " + "\n" + "MESSAGE: Current task being processed: " + task +
+                        "\n" +"Thread ID: " + Thread.currentThread().getId());
 
                 currentTaskInExecution = task;
 
@@ -543,12 +555,11 @@ public class TaskProcessor {
         performCleanup();
     }
 
-    /**This method can be invoked in case the current task in execution has failed. Users need not call ths method
-     * in case of NOTIFY_UI_AUTO mode because the Retry and Progress dialogs are internally handled in this mode
-     * and task automatically retries as per the user's response to those dialogs.
-     *
-     * Call this method ONLY if you are using the NOTIFY_UI_CUSTOM mode; Calling this method in NOTIFY_UI_AUTO mode
-     * has NO EFFECT*/
+    /**This method must be invoked in case the current task in execution has failed. There are
+     * 2 use cases for this method :
+     * - If you have set NOTIFY_UI_AUTO mode but have provided your own dialogs.
+     * - If you are using NOTIFY_UI_CUSTOM mode and managing the dialogs yourself.
+     * */
     public synchronized void retryOnFailedTask(){
 
         Log.d(TAG, "TaskProcessor.retryOnFailedTask(): " + "\n" + "MESSAGE: retryOnFailedTask() called..." +
@@ -561,7 +572,15 @@ public class TaskProcessor {
 
         //Even though its Auto, the person has still called this method. Nevermind, we shall ignore
         if(notifyUIFlag == NOTIFY_UI_AUTO){
-            //Do nothing.
+            if(workerThread != null && workerThread.isAlive() && workerThread.getState() == Thread.State.WAITING){
+                shouldTaskProcessingBeRetried = true;
+
+                //Inform the guy waiting to know the user's response
+                informedAboutRetryInternal = true;
+                synchronized(lockForRetryInternal){
+                    lockForRetryInternal.notify();
+                }
+            }
         }
         else{
             Log.d(TAG, "TaskProcessor.retryOnFailedTask(): " + "\n" + "MESSAGE: RETRY button clicked..." +
@@ -577,12 +596,11 @@ public class TaskProcessor {
         }
     }
 
-    /**This method can be invoked in case the current task in execution has failed. Users need not call ths method
-     * in case of NOTIFY_UI_AUTO mode because the Retry and Progress dialogs are internally handled in this mode
-     * and task processing automatically retries as per the user's response to those dialogs.
-     *
-     * Call this method ONLY if you are using the NOTIFY_UI_CUSTOM mode; Calling this method in NOTIFY_UI_AUTO mode
-     * has NO EFFECT*/
+    /**This method can be invoked in case the current task in execution has failed.
+     * There are 2 use cases for this method :
+     * - If you have set NOTIFY_UI_AUTO mode but have provided your own dialogs.
+     * - If you are using NOTIFY_UI_CUSTOM mode and managing the dialogs yourself.
+     * */
     public synchronized void cancelOnFailedTask(){
 
         Log.d(TAG, "TaskProcessor.cancelOnFailedTask(): " + "\n" + "MESSAGE: cancelOnFailedTask() called..." +
@@ -595,7 +613,15 @@ public class TaskProcessor {
 
         //Even though its Auto, the person has still called this method. Nevermind, we shall ignore
         if(notifyUIFlag == NOTIFY_UI_AUTO){
-            //Do nothing.
+            if(workerThread != null && workerThread.isAlive() && workerThread.getState() == Thread.State.WAITING){
+                shouldTaskProcessingBeRetried = false;
+
+                //Inform the guy waiting to know the user's response
+                informedAboutRetryInternal = true;
+                synchronized(lockForRetryInternal){
+                    lockForRetryInternal.notify();
+                }
+            }
         }
         else{
             Log.d(TAG, "TaskProcessor.cancelOnFailedTask(): " + "\n" + "MESSAGE: CANCEL button clicked..." +
@@ -764,13 +790,11 @@ public class TaskProcessor {
                                             "\n" +"Thread ID: " + Thread.currentThread().getId());
 
                                     dialog.cancel();
-
                                     shouldTaskProcessingBeRetried = true;
 
                                     //Inform the guy waiting to know the user's response
                                     informedAboutRetryInternal = true;
                                     synchronized(lockForRetryInternal){
-                                        TaskProcessor.this.shouldTaskProcessingBeRetried = shouldTaskProcessingBeRetried;
                                         lockForRetryInternal.notify();
                                     }
                                 }
@@ -788,7 +812,6 @@ public class TaskProcessor {
                                     //Inform the guy waiting to know the user's response
                                     informedAboutRetryInternal = true;
                                     synchronized(lockForRetryInternal){
-                                        TaskProcessor.this.shouldTaskProcessingBeRetried = shouldTaskProcessingBeRetried;
                                         lockForRetryInternal.notify();
                                     }
                                 }
@@ -841,11 +864,11 @@ public class TaskProcessor {
     private void dismissTaskProcessingProgressDialog(){
         //If dialog already dismissed, no use dismissing it again
         if(taskProcessingProgressDialog.isShowing()){
-            Log.d(TAG, "AccountCreationManager.showRetryDialog(): " + "\n" + "MESSAGE: Dismissing the progress dialog..." +
-                    "\n" +"Thread ID: " + Thread.currentThread().getId());
             mUIHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(TAG, "AccountCreationManager.dismissTaskProcessingProgressDialog(): " + "\n" + "MESSAGE: Dismissing the progress dialog..." +
+                            "\n" +"Thread ID: " + Thread.currentThread().getId());
                     taskProcessingProgressDialog.dismiss();
                     taskProcessingProgressDialog.cancel();
                 }

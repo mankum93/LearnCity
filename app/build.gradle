@@ -1,14 +1,13 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "com.learncity.learncity"
         minSdkVersion 15
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -24,8 +23,8 @@ android {
         javaMaxHeapSize "2g"
     }
 
-    sourceSets{
-        main{
+    sourceSets {
+        main {
             res.srcDirs = [
                     'src/main/res/layouts/common/layout/ver3/layout',
                     'src/main/res/layouts/common/layout/ver3',
@@ -53,17 +52,21 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(path: ':backend', configuration: 'android-endpoints')
-    compile 'com.android.support:appcompat-v7:24.2.1'
+
+    compile 'com.android.support:appcompat-v7:25.3.0'
     compile 'com.google.code.findbugs:jsr305:2.0.1'
-    testCompile 'junit:junit:4.12'
-    compile 'com.google.android.gms:play-services-maps:9.0.0'
-    compile 'com.google.android.gms:play-services-auth:9.0.0'
-    compile 'com.google.android.gms:play-services-location:9.0.0'
+    compile 'com.google.android.gms:play-services-maps:10.2.0'
+    compile 'com.google.android.gms:play-services-auth:10.2.0'
+    compile 'com.google.android.gms:play-services-location:10.2.0'
     compile 'com.thomashaertel:multispinner:0.1.1'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.49'
     compile 'com.google.code.gson:gson:2.8.0'
-    compile 'com.android.support:recyclerview-v7:25.1.1'
+    compile 'com.android.support:recyclerview-v7:25.3.0'
     compile 'com.iarcuschin:simpleratingbar:0.1.5'
     compile 'com.android.support:multidex:1.0.1'
+    compile 'com.google.firebase:firebase-messaging:10.0.1'
+    testCompile 'junit:junit:4.12'
 }
+
+apply plugin: 'com.google.gms.google-services'

@@ -50,7 +50,7 @@ public class AccountCreationService {
      * and it has completed the finish up) to start taking requests again. If the finish up has not
      * completed yet, this method facilitates specifying if you
      * want to block the main thread or wait in the background thread to let it finish up.
-     * Define the code to be executed on finish up in the LoginListener.onLoginServiceRefresh()
+     * Define the code to be executed on finish up in the AccountCreationListener.onAccountCreationServiceRefresh()
      * (only in the case you choose to invoke this method in non-blocking mode).
      * NOTE: Most probably, you won't feel the need to call this method - you can refrain from calling
      * finishUp() on the service and queue tasks when the need arises again. However, if there is a considerable
@@ -59,7 +59,9 @@ public class AccountCreationService {
      * @param context You can optionally pass in the context if it has changed(you are on some other Activity for example)
      * By default, it uses the previously set context
      * @param shouldBlock Specify if you want to block the main thread until it finishes up refreshing with "true"
-     * Or, false will not block but you will have to write the code to be executed on refreshUp in the LoginListener.onLoginServiceRefresh()*/
+     * Or, false will not block but you will have to write the code to be executed on refreshUp in
+     * the AccountCreationListener.onAccountCreationServiceRefresh()
+     * */
     public void refreshService(@Nullable Context context, boolean shouldBlock){
         //If a task is queued after finishup; task processor will throw and exception but we have
         // to ensure that after shutdown, no more calls to service are serviced
@@ -263,16 +265,6 @@ public class AccountCreationService {
         taskProcessor.queueTasks(tasks);
     }
 
-    /**This method can be invoked in case the current task in execution has failed. Users need not call ths method
-     * in case of NOTIFY_UI_AUTO mode because the Retry and Progress dialogs are internally handled in this mode
-     * and task processing automatically retries as per the user's response to those dialogs.
-     *
-     * Call this method ONLY if you are using the NOTIFY_UI_CUSTOM mode; Calling this method in NOTIFY_UI_AUTO mode
-     * has NO EFFECT*/
-    public void cancelOnFailedAccountCreation() {
-        taskProcessor.cancelOnFailedTask();
-    }
-
 
     /**
      * @param listener Set this loginListener to listen to overall Account creation process. That includes a callback after all the
@@ -350,14 +342,24 @@ public class AccountCreationService {
         taskProcessor.setTaskProcessingRetryDialog(taskProcessingRetry);
     }
 
-    /**This method can be invoked in case the current task in execution has failed. Users need not call ths method
-     * in case of NOTIFY_UI_AUTO mode because the Retry and Progress dialogs are internally handled in this mode
-     * and task automatically retries as per the user's response to those dialogs.
-     *
-     * Call this method ONLY if you are using the NOTIFY_UI_CUSTOM mode; Calling this method in NOTIFY_UI_AUTO mode
-     * has NO EFFECT*/
+    /**
+     * This method must be invoked in case the AC creation has failed and should be retried.
+     * There are 2 use cases for this method :
+     * - If you have set NOTIFY_UI_AUTO mode but have provided your own dialogs.
+     * - If you are using NOTIFY_UI_CUSTOM mode and managing the dialogs yourself.
+     * */
     public void retryOnFailedAccountCreation() {
         taskProcessor.retryOnFailedTask();
+    }
+
+    /**
+     * This method must be invoked in case the AC creation has failed and further should not be tried.
+     * There are 2 use cases for this method :
+     * - If you have set NOTIFY_UI_AUTO mode but have provided your own dialogs.
+     * - If you are using NOTIFY_UI_CUSTOM mode and managing the dialogs yourself.
+     * */
+    public void cancelOnFailedAccountCreation() {
+        taskProcessor.cancelOnFailedTask();
     }
 
     /**Provide your own implementation of a Progress Dialog.*/

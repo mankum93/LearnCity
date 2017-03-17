@@ -3,6 +3,7 @@ package com.learncity.tutor.account.profile.model;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.learncity.backend.tutor.tutorApi.model.DurationVer1;
@@ -24,6 +25,8 @@ import java.util.List;
  */
 
 public class TutorProfile extends GenericLearnerProfile {
+    
+    private static final String TAG = TutorProfile.class.getSimpleName();
 
     /**Null object pattern for Tutor Types */
     public static final String[] TUTOR_TYPES_NULL = {"TUTOR_TYPES_NULL"};
@@ -471,6 +474,10 @@ public class TutorProfile extends GenericLearnerProfile {
     public static TutorProfileVer1 populateProfileEntity(@NonNull TutorProfile profile, @Nullable TutorProfileVer1 profileEntity){
         //Populate the entity object with the profile info.
 
+        if(profile == null){
+            Log.d(TAG, "There is no profile to populate the entity.");
+            return null;
+        }
         if(profileEntity == null){
             profileEntity = new TutorProfileVer1();
         }
@@ -532,6 +539,7 @@ public class TutorProfile extends GenericLearnerProfile {
     public static TutorProfile populateProfileFromEntity(@Nullable TutorProfile profile, @NonNull TutorProfileVer1 profileEntity){
 
         if(profileEntity == null){
+            Log.d(TAG, "There is no profile entity to populate the profile.");
             return null;
         }
         if(profile == null){

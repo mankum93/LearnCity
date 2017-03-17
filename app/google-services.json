@@ -1,7 +1,9 @@
 {
   "project_info": {
     "project_number": "294076902789",
-    "project_id": "unified-surfer-147104"
+    "firebase_url": "https://unified-surfer-147104.firebaseio.com",
+    "project_id": "unified-surfer-147104",
+    "storage_bucket": "unified-surfer-147104.appspot.com"
   },
   "client": [
     {
@@ -13,11 +15,15 @@
       },
       "oauth_client": [
         {
+          "client_id": "294076902789-3qm9us04k88chf6bdqva1oet8tg0i905.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
           "client_id": "294076902789-qhtuqjmfdtjkiqe1gpi0ajgdn5o3cqpk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.learncity.learncity",
-            "certificate_hash": "673B86F316D29F5BBA5EF5161518C5485B6D67F2"
+            "certificate_hash": "673b86f316d29f5bba5ef5161518c5485b6d67f2"
           }
         },
         {
@@ -35,11 +41,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "294076902789-3qm9us04k88chf6bdqva1oet8tg0i905.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

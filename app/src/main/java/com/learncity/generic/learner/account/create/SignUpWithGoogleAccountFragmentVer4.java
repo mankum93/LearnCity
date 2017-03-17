@@ -35,8 +35,6 @@ public class SignUpWithGoogleAccountFragmentVer4 extends SignUpFragment{
         super.onCreate(savedInstanceState);
         profileFromGoogleAccount = getActivity().getIntent().getParcelableExtra(SignUpWithGoogleAccountActivityVer1.EXTRAS_GENERIC_PROFILE_INCOMPLETE);
 
-        //Set the listener on it
-        setACCreationServiceListener();
     }
 
     @Override
@@ -62,6 +60,7 @@ public class SignUpWithGoogleAccountFragmentVer4 extends SignUpFragment{
 
         return  profile;
     }
+
 }
 
 

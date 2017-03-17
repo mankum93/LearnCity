@@ -1,8 +1,10 @@
 package com.learncity.learner.search;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,18 +12,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.learncity.learncity.R;
 import com.learncity.tutor.account.TutorAccount;
-import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.util.ArraysUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -69,7 +69,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             // Create the view that shall hold the result
             View v = LayoutInflater.from(context).inflate(R.layout.view_tutor_search_result, parent, false);
-            return new SearchResultViewHolder(v);
+            return new SearchResultViewHolder(context, v);
         }
 
 
@@ -85,30 +85,71 @@ public class SearchResultsActivity extends AppCompatActivity {
     }
 
     private static class SearchResultViewHolder extends RecyclerView.ViewHolder{
-        public SearchResultViewHolder(View itemView){
+
+        private static Drawable profilePicPlaceholderDrawable;
+
+        private TextView tutorName;
+        private TextView skillSet;
+        private TextView tutorTypes;
+        private TextView location;
+        private ImageView displayPic;
+        private SimpleRatingBar rating;
+
+        private ImageButton requestTutorButton;
+
+        private static View.OnClickListener requestTutorsButtonListener;
+
+        public SearchResultViewHolder(Context context, View itemView){
             super(itemView);
+
+            // Dissect the view
+            tutorName = (TextView) itemView.findViewById(R.id.tutor_name);
+            skillSet = (TextView) itemView.findViewById(R.id.skill_set);
+            tutorTypes = (TextView) itemView.findViewById(R.id.tutor_types);
+            location = (TextView) itemView.findViewById(R.id.location);
+
+            displayPic = (ImageView) itemView.findViewById(R.id.display_pic);
+
+            rating = (SimpleRatingBar) itemView.findViewById(R.id.tutor_rating);
+
+            requestTutorButton = (ImageButton) itemView.findViewById(R.id.request_tutor);
+
+            if(profilePicPlaceholderDrawable == null){
+                profilePicPlaceholderDrawable = ContextCompat.getDrawable(context, R.drawable.user_pic_placeholder);
+            }
         }
 
-        public void bindProfileToView(TutorAccount account){
-            // Dissect the view
-            TextView tutorName = (TextView) itemView.findViewById(R.id.tutor_name);
-            TextView skillSet = (TextView) itemView.findViewById(R.id.skill_set);
-            TextView tutorTypes = (TextView) itemView.findViewById(R.id.tutor_types);
-            TextView location = (TextView) itemView.findViewById(R.id.location);
-
-            ImageView displayPic = (ImageView) itemView.findViewById(R.id.display_pic);
-
-            SimpleRatingBar rating = (SimpleRatingBar) itemView.findViewById(R.id.tutor_rating);
+        public void bindProfileToView(final TutorAccount account){
 
             // Now, bind each part
             tutorName.setText(account.getProfile().getName());
-            skillSet.setText(ArraysUtil.convertArrayToString(account.getProfile().getDisciplines(), ", "));
-            tutorTypes.setText(ArraysUtil.convertArrayToString(account.getProfile().getTutorTypes(), ", "));
-            location.setText(account.getLocationInfo().getShortFormattedAddress());
+
+            String[] skillSet1 = account.getProfile().getDisciplines();
+            skillSet.setText(skillSet1 == null || skillSet1.length == 0 ? "" : ArraysUtil.convertArrayToString(account.getProfile().getDisciplines(), ", "));
+
+            String[] tutorTypes1 = account.getProfile().getTutorTypes();
+            tutorTypes.setText(tutorTypes1 == null || tutorTypes1.length == 0 ? "" : ArraysUtil.convertArrayToString(account.getProfile().getTutorTypes(), ", "));
+
+            String shortFormattedAddress = account.getLocationInfo().getShortFormattedAddress();
+            location.setText(shortFormattedAddress == null || shortFormattedAddress.isEmpty() ? "" : shortFormattedAddress);
+
             int r = account.getProfile().getRating();
-            Log.d(TAG, "Rating: " + r);
             rating.setRating(r);
-            // TODO: Bind the display pic
+
+            // Binding the placeholder pic
+            displayPic.setImageDrawable(profilePicPlaceholderDrawable);
+            // TODO: Bind the display pic to actual user DP
+
+            if(requestTutorsButtonListener == null){
+                requestTutorsButtonListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "Tutor requested: " + account.getProfile());
+                        // TODO: Send a notification to the Tutor
+                    }
+                };
+            }
+            requestTutorButton.setOnClickListener(requestTutorsButtonListener);
         }
     }
 }

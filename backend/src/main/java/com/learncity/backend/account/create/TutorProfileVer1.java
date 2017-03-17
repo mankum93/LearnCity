@@ -241,8 +241,10 @@ public class TutorProfileVer1 extends GenericLearnerProfileVer1 implements Seria
                 if(responseSpec.getDisciplines() == null){
                     profile.setDisciplines(null);
                 }
-                for(EducationalQualificationVer1 ed : profile.getEducationalQualifications()){
-                    ed = EducationalQualificationVer1.EducationalQualificationResponseView.normalize(responseSpec.getEducationalQualification(), ed);
+                if(responseSpec.getEducationalQualification() != null){
+                    for(EducationalQualificationVer1 ed : profile.getEducationalQualifications()){
+                        ed = EducationalQualificationVer1.EducationalQualificationResponseView.normalize(responseSpec.getEducationalQualification(), ed);
+                    }
                 }
                 profile.setOccupation(OccupationVer1.OccupationResponseView.normalize(responseSpec.getOccupation(), profile.getOccupation()));
 

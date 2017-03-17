@@ -85,7 +85,7 @@ public abstract class SignUpFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, "TaskProcessor.showRetryDialog(): " + "\n" + "MESSAGE: RETRY button clicked..." +
                                 "\n" +"Thread ID: " + Thread.currentThread().getId());
-
+                        accountCreationService.retryOnFailedAccountCreation();
                         dialog.cancel();
 
                     }
@@ -95,6 +95,7 @@ public abstract class SignUpFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, "TaskProcessor.showRetryDialog(): " + "\n" + "MESSAGE: CANCEL button clicked..." +
                                 "\n" +"Thread ID: " + Thread.currentThread().getId());
+                        accountCreationService.cancelOnFailedAccountCreation();
                         dialog.cancel();
 
                     }
@@ -270,14 +271,14 @@ public abstract class SignUpFragment extends Fragment {
     }
 
     void showConditionalTutorUI() {
-        //Initialize the first time
+        // Initialize the first time
         if(typeOfTutorMultiSpinner == null && subjectsICanTeachMultiSpinner == null){
             profileFieldsContainer = (ViewGroup)rootView.findViewById(R.id.profile_fields_container);
             rootTutorConditionalLayout = layoutInflater.inflate(
                     R.layout.layout_conditional_tutor_ui,
                     profileFieldsContainer,
                     false);
-            //Add the inflated layout to the second last of the container
+            // Add the inflated layout to the second last of the container
             profileFieldsContainer.addView(rootTutorConditionalLayout, profileFieldsContainer.getChildCount()-2);
             typeOfTutorMultiSpinner = (MultiSpinner) rootTutorConditionalLayout.findViewById(R.id.type_of_tutor_spinner);
             subjectsICanTeachMultiSpinner = (MultiSpinner) rootTutorConditionalLayout.findViewById(R.id.subjects_taught_spinner);
@@ -294,14 +295,14 @@ public abstract class SignUpFragment extends Fragment {
             typeOfTutorMultiSpinner.setAdapter(adapterTypeOfTutor, false, new com.thomashaertel.widget.MultiSpinner.MultiSpinnerListener() {
                 @Override
                 public void onItemsSelected(boolean[] selected) {
-                    //Stash the list of tutor-types somewhere
+                    // Stash the list of tutor-types somewhere
                     tutorTypes = typeOfTutorMultiSpinner.getSelectedItemsArray(String.class);
                 }
             });
             subjectsICanTeachMultiSpinner.setAdapter(adapterSubjects, false, new com.thomashaertel.widget.MultiSpinner.MultiSpinnerListener() {
                 @Override
                 public void onItemsSelected(boolean[] selected) {
-                    //Stash the list of subjects somewhere
+                    // Stash the list of subjects somewhere
                     subjects = subjectsICanTeachMultiSpinner.getSelectedItemsArray(String.class);
                 }
             });
@@ -309,7 +310,7 @@ public abstract class SignUpFragment extends Fragment {
             subjectsICanTeachMultiSpinner.setInitialDisplayText("Select subjects");
         }
         else{
-            //Initialized but not visible
+            // Initialized but not visible
             rootTutorConditionalLayout.setVisibility(View.VISIBLE);
         }
         isConditionalTutorUIVisible = true;
@@ -322,14 +323,14 @@ public abstract class SignUpFragment extends Fragment {
 
     void validateConditionalTutorInput(){
         if(typeOfTutorMultiSpinner.getSelectedItemsCount() == 0){
-            //No item selected
+            // No item selected
             Log.e(TAG, "No item selected; can't continue like this");
-            //TODO: Prompt the user in the UI about this
+            // TODO: Prompt the user in the UI about this
         }
         if(subjectsICanTeachMultiSpinner.getSelectedItemsCount() == 0){
-            //No item selected
+            // No item selected
             Log.e(TAG, "No item selected; can't continue like this");
-            //TODO: Prompt the user in the UI about this
+            // TODO: Prompt the user in the UI about this
         }
     }
 
@@ -339,43 +340,43 @@ public abstract class SignUpFragment extends Fragment {
     }
 
     private void validatePassword() {
-        //Retyped password didn't match the Password
+        // Retyped password didn't match the Password
         if(!password.getText().toString().equals(retypedPassword.getText().toString())){
             Log.e(TAG, "Retyped password didn't match the typed password");
-            //TODO: Prompt the user in the UI about this
+            // TODO: Prompt the user in the UI about this
         }
     }
 
     private void validatePhoneNo() {
-        //Phone No should be 10 digits exactly(Indian mobile numbers)
+        // Phone No should be 10 digits exactly(Indian mobile numbers)
         if(phoneNo.length()!=10){
             Log.e(TAG, "Phone No length is " + phoneNo.length() + "\n"
                     + "It should be 10 characters exactly");
-            //TODO: Prompt the user in the UI about this
+            // TODO: Prompt the user in the UI about this
         }
     }
 
     @Override
     public void onPause(){
-        //TODO: Cancelling the newAccountCreateOnServerAsyncTask of "Account creation". User is gonna have to reenter the info. on opening the App next time
+        // TODO: Cancelling the newAccountCreateOnServerAsyncTask of "Account creation". User is gonna have to reenter the info. on opening the App next time
 
         super.onPause();
     }
     @Override
     public void onStop(){
-        //Stop the AC creation service
-        accountCreationService.shutDown();
+        // Stop the AC creation service
         super.onStop();
     }
     @Override
     public void onResume(){
         super.onResume();
-        //Pressing back button from the home page for the first time will bring back to the
-        //A/C creation page if we don't take care of it
+        // Pressing back button from the home page for the first time will bring back to the
+        // A/C creation page if we don't take care of it
     }
 
     @Override
     public void onDestroy(){
+        accountCreationService.shutDown();
         super.onDestroy();
     }
 }

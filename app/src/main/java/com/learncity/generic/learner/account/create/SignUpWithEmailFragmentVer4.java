@@ -28,8 +28,6 @@ public class SignUpWithEmailFragmentVer4 extends SignUpFragment{
 
     private ViewGroup rootView;
 
-    private AccountCreationService accountCreationService;
-
     public SignUpWithEmailFragmentVer4 newInstance(){
         return new SignUpWithEmailFragmentVer4();
     }
@@ -37,11 +35,6 @@ public class SignUpWithEmailFragmentVer4 extends SignUpFragment{
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
-        //Fetch the AC creation service
-        accountCreationService = AccountManager.fetchService(getActivity(), AccountManager.ACCOUNT_CREATION_SERVICE);
-        //Set the listener on it
-        setACCreationServiceListener();
     }
 
     @Override

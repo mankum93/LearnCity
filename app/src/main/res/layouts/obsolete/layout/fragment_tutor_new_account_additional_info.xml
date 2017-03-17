@@ -148,7 +148,7 @@
                             android:id="@+id/add_more_qualification_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/drawable_add_new_qualification"/>
+                            android:background="@drawable/drawable_add_new_icon"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
