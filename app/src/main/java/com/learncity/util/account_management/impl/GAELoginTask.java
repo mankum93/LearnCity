@@ -14,6 +14,7 @@ import com.learncity.util.account_management.Result;
 
 import java.io.IOException;
 
+import static com.learncity.LearnCityApplication.BACKEND_ROOT_URL;
 import static com.learncity.util.account_management.impl.LoginService.LOGIN_FAILED;
 import static com.learncity.util.account_management.impl.LoginService.LOGIN_SUCCESSFUL;
 
@@ -114,7 +115,7 @@ public class GAELoginTask extends AbstractTask<LoginService.LoginEventResponse> 
                 // options for running against local devappserver
                 // - 10.0.2.2 is localhost's IP address in Android emulator
                 // - turn off compression when running against local devappserver
-                .setRootUrl("http://10.0.2.2:8080/_ah/api/")
+                .setRootUrl(BACKEND_ROOT_URL)
                 .setApplicationName("Learn City")
                 .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                     @Override

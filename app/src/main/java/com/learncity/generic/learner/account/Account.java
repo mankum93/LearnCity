@@ -10,7 +10,9 @@ import android.os.Parcelable;
 
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 
-/**Class encapsulating Profile, and other details/computations possibly from the _1*/
+import java.util.UUID;
+
+/**Class encapsulating Profile, and other details/computations of/from the fields*/
 public class Account implements Parcelable {
 
     /**Email Id of the User */
@@ -22,18 +24,16 @@ public class Account implements Parcelable {
     // Profile info.
     private GenericLearnerProfile profile;
 
-    // Tutor's location info. - this would be computed from {Latitude, Longitude} which shall be available
-    // from the _1 info. Also, this holds a reference to the LatLng{Latitude, Longitude} from the _1.
+    // Tutor's location info. - this would be computed from {Latitude, Longitude}
     private LocationInfo locationInfo;
 
+    /** 'UUID type 5' based on Email ID of the user(UUID impl is based on RFC-4122).
+     * See <a href="https://github.com/cowtowncoder/java-uuid-generator">Project Repo</a>
+     * */
+    private UUID emailBasedUUID;
+
     public Account(GenericLearnerProfile profile) {
-        if(profile == null){
-            throw new NullPointerException("Profile can't be null");
-        }
-        this.profile = profile;
-        mEmailID = profile.getEmailID();
-        // Auto boxing
-        this.accountStatus = profile.getCurrentStatus();
+        this(profile, null);
     }
 
     public Account(GenericLearnerProfile profile, LocationInfo locationInfo) {
@@ -72,6 +72,15 @@ public class Account implements Parcelable {
         this.locationInfo = locationInfo;
     }
 
+    public UUID getEmailBasedUUID() {
+        return emailBasedUUID;
+    }
+
+    public void setEmailBasedUUID(UUID emailBasedUUID) {
+        this.emailBasedUUID = emailBasedUUID;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
     public static class LocationInfo implements Parcelable {
         private String shortFormattedAddress;
 
@@ -120,6 +129,7 @@ public class Account implements Parcelable {
         accountStatus = in.readByte() == 0x00 ? null : in.readInt();
         profile = (GenericLearnerProfile) in.readValue(GenericLearnerProfile.class.getClassLoader());
         locationInfo = (LocationInfo) in.readValue(LocationInfo.class.getClassLoader());
+        emailBasedUUID = UUID.fromString(in.readString());
     }
 
     @Override
@@ -138,6 +148,7 @@ public class Account implements Parcelable {
         }
         dest.writeValue(profile);
         dest.writeValue(locationInfo);
+        dest.writeString(emailBasedUUID.toString());
     }
 
     @SuppressWarnings("unused")

@@ -16,6 +16,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.learncity.backend.learner.learnerApi.LearnerApi;
+import com.learncity.backend.tutor.tutorApi.TutorApi;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
 import com.learncity.learner.account.profile.model.LearnerProfile;
@@ -27,6 +33,12 @@ import com.learncity.util.account_management.impl.AccountCreationService;
 import com.learncity.util.account_management.impl.AccountManager;
 import com.learncity.util.account_management.impl.GAEAccountCreationTaskVer2;
 import com.learncity.util.account_management.impl.SQLiteAccountCreationTaskVer2;
+
+import java.io.IOException;
+
+import static com.learncity.LearnCityApplication.BACKEND_ROOT_URL;
+import static com.learncity.tutor.jobs.TutorsFirebaseInstanceIDService.FIREBASE_TOKEN;
+import static com.learncity.tutor.jobs.TutorsFirebaseInstanceIDService.IS_FIREBASE_TOKEN_STASH_PENDING;
 
 /**
  * Created by DJ on 2/23/2017.
@@ -236,6 +248,73 @@ public abstract class SignUpFragment extends Fragment {
         accountCreationService.setAccountCreationListener(new AccountCreationService.AccountCreationListener() {
             @Override
             public void onAccountCreated() {
+                Log.d(TAG, "AccountCreationService.AccountCreationListener.onAccountCreated: Account creation " +
+                        "process complete.");
+                // If Firebase token stash is pending, stash it
+                boolean isFirebaseTokenStashPending = getActivity().getSharedPreferences("MISC", 0)
+                        .getBoolean(IS_FIREBASE_TOKEN_STASH_PENDING, false);
+                if(isFirebaseTokenStashPending){
+                    String token = getActivity().getSharedPreferences("MISC", 0).getString(FIREBASE_TOKEN, null);
+                    if(token == null){
+                        // Even though the Stash is pending, token is null
+                        Log.e(TAG, "Firebase token is scheduled to be stashed but is null. Check the token" +
+                                "generation process");
+                    }
+                    else{
+                        // TODO: Stash the token locally
+                        Log.d(TAG, "Sending the request for stashing the Firebase token to the server...\n"
+                        + "Email ID: " + profile.getEmailID() + "\n" +
+                        "Token: " + token);
+                        // Stash the token to the server
+                        if(profile.getCurrentStatus() == GenericLearnerProfile.STATUS_LEARNER){
+                            LearnerApi myApiService = new LearnerApi.Builder(AndroidHttp.newCompatibleTransport(),
+                                    new AndroidJsonFactory(), null)
+                                    .setRootUrl(BACKEND_ROOT_URL)
+                                    .setApplicationName("Learn City")
+                                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                                        @Override
+                                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                                            abstractGoogleClientRequest.setDisableGZipContent(true);
+                                        }
+                                    }).build();
+                            try{
+                                myApiService.updateWithFirebaseToken(token, profile.getEmailID()).execute();
+                            }catch(IOException e){
+                                Log.e(TAG, "Account couldn't be updated with Firebase token: IO Exception while performing the data-store transaction");
+                                e.printStackTrace();
+                            }
+                        }
+                        else if(profile.getCurrentStatus() == GenericLearnerProfile.STATUS_TUTOR){
+                            Log.d(TAG, "Sending the request for stashing the Firebase token to the server...\n"
+                                    + "Email ID: " + profile.getEmailID() + "\n" +
+                                    "Token: " + token);
+                            TutorApi myApiService = new TutorApi.Builder(AndroidHttp.newCompatibleTransport(),
+                                    new AndroidJsonFactory(), null)
+                                    .setRootUrl(BACKEND_ROOT_URL)
+                                    .setApplicationName("Learn City")
+                                    .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                                        @Override
+                                        public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                                            abstractGoogleClientRequest.setDisableGZipContent(true);
+                                        }
+                                    }).build();
+                            try{
+                                myApiService.updateWithFirebaseToken(token, profile.getEmailID()).execute();
+                            }catch(IOException e){
+                                Log.e(TAG, "Account couldn't be updated with Firebase token: IO Exception while performing the data-store transaction");
+                                e.printStackTrace();
+                            }
+                        }
+                        else{
+                            Log.wtf(TAG, "User data locally found corrupt with symptom:\n" + "USER STATUS: " + profile.getCurrentStatus());
+                            // TODO: Refresh profile from the server as and when appropriate and/or investigate the issue
+                        }
+                    }
+                }
+                else{
+                    Log.i(TAG, "Firebase token has already been stashed!");
+                }
+
                 if(profile.getCurrentStatus() == GenericLearnerProfile.STATUS_LEARNER){
                     startActivity(
                             new Intent(getActivity(), LearnerHomeActivity.class)

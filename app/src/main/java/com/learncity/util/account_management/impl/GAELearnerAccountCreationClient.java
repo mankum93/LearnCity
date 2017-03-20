@@ -16,6 +16,8 @@ import com.learncity.learner.account.profile.model.LearnerProfile;
 
 import java.io.IOException;
 
+import static com.learncity.LearnCityApplication.BACKEND_ROOT_URL;
+
 /**
  * Created by DJ on 2/5/2017.
  */
@@ -85,10 +87,7 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
     private void setApiService(){
         myApiService = new LearnerApi.Builder(AndroidHttp.newCompatibleTransport(),
                 new AndroidJsonFactory(), null)
-                // options for running against local devappserver
-                // - 10.0.2.2 is localhost's IP address in Android emulator
-                // - turn off compression when running against local devappserver
-                .setRootUrl("http://10.0.2.2:8080/_ah/api/")
+                .setRootUrl(BACKEND_ROOT_URL)
                 .setApplicationName("Learn City")
                 .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                     @Override

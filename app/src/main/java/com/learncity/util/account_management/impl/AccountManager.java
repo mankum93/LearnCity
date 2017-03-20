@@ -41,6 +41,11 @@ public class AccountManager {
     //This profile shall be linked to either the profile from new AC creation/Login response/Local Db
     private static GenericLearnerProfile profile;
 
+    /**Every user has a device token corresponding to the current App instance(on the device).
+     * This token is for use by Firebase Connection server to send the message to the
+     * device.*/
+    public static String userDeviceFirebaseToken;
+
     private static ProfileDbHelperVer1 profileDbHelperVer1;
 
     private Thread shutDownThread;

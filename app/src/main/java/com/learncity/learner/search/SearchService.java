@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import static com.learncity.LearnCityApplication.BACKEND_ROOT_URL;
+
 /**
  * Created by DJ on 3/3/2017.
  */
@@ -201,7 +203,7 @@ public class SearchService extends Service {
                     // options for running against local devappserver
                     // - 10.0.2.2 is localhost's IP address in Android emulator
                     // - turn off compression when running against local devappserver
-                    .setRootUrl("http://10.0.2.2:8080/_ah/api/")
+                    .setRootUrl(BACKEND_ROOT_URL)
                     .setApplicationName("Learn City")
                     .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                         @Override

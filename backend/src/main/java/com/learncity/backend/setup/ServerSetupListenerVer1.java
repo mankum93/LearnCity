@@ -3,13 +3,10 @@ package com.learncity.backend.setup;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.VoidWork;
 import com.learncity.backend.account.create.LearnerProfileVer1;
-import com.learncity.backend.account.create.endpoints.LearnerProfileVer2PersistenceEndpoint;
+import com.learncity.backend.account.create.endpoints.LearnerAccountPersistenceEndpoint;
 import com.learncity.backend.account.create.TutorProfileVer1;
-import com.learncity.backend.account.create.endpoints.TutorProfileVer2PersistenceEndpoint;
-import com.learncity.backend.util.JSONUtils;
+import com.learncity.backend.account.create.endpoints.TutorAccountPersistenceEndpoint;
 import com.learncity.backend.util.ProfileUtils;
-
-import java.io.IOException;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -27,8 +24,8 @@ public class ServerSetupListenerVer1 implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         //Endpoint service
-        final LearnerProfileVer2PersistenceEndpoint learnerEndpoint = new LearnerProfileVer2PersistenceEndpoint();
-        final TutorProfileVer2PersistenceEndpoint tutorEndpoint = new TutorProfileVer2PersistenceEndpoint();
+        final LearnerAccountPersistenceEndpoint learnerEndpoint = new LearnerAccountPersistenceEndpoint();
+        final TutorAccountPersistenceEndpoint tutorEndpoint = new TutorAccountPersistenceEndpoint();
 
         //Retrieve the dummy profile data
         final LearnerProfileVer1[] learnerProfiles = (LearnerProfileVer1[]) ProfileUtils.getJSONToProfiles(STATUS_LEARNER);

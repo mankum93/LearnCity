@@ -25,8 +25,8 @@
                 com.learncity.backend.account.create.endpoints.ver1.GenericLearnerProfileVer1PersistenceEndpoint,
                 com.learncity.backend.account.login.LoginEndpoint,
                 com.learncity.backend.account.create.endpoints.ver1.LearnerProfileVer1PersistenceEndpoint,
-                com.learncity.backend.account.create.endpoints.LearnerProfileVer2PersistenceEndpoint,
-                com.learncity.backend.account.create.endpoints.TutorProfileVer2PersistenceEndpoint
+                com.learncity.backend.account.create.endpoints.LearnerAccountPersistenceEndpoint,
+                com.learncity.backend.account.create.endpoints.TutorAccountPersistenceEndpoint
             </param-value>
         </init-param>
     </servlet>

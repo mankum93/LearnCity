@@ -1,5 +1,6 @@
 package com.learncity.backend.account.create.endpoints;
 
+import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;
@@ -16,26 +17,23 @@ import com.learncity.backend.util.LocationUtil;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Named;
-
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 /**
  * Created by DJ on 3/9/2017.
  */
 
-/**To house the common helper methods for the derived endpoints*/
+/**To house the common/helper methods for the derived endpoints*/
 public class BaseLearnerEndpoint {
 
     private static final Logger logger = Logger.getLogger(BaseLearnerEndpoint.class.getName());
-
 
     static {
         ObjectifyService.register(Account.class);
     }
 
     public GenericLearnerProfileVer1 get(String mEmailID) throws NotFoundException {
-        logger.info("Getting Learner Account with ID: " + mEmailID);
+        logger.info("Getting Account with ID: " + mEmailID);
         //Check if the AC already exists with this email ID
         Account acc = null;
         try{
@@ -54,7 +52,7 @@ public class BaseLearnerEndpoint {
         // First, we should check for an existing Email ID
         Account acc = null;
         try{
-            acc = checkIfAccountExists(learnerProfileVer1.getEmailID());
+            acc = checkIfAccountExists(mEmailID);
         }
         catch(NotFoundException nfe){
             throw nfe;
@@ -67,11 +65,34 @@ public class BaseLearnerEndpoint {
         return ofy().load().entity(acc).now().getProfile();
     }
 
+    public GenericLearnerProfileVer1 updateWithFirebaseToken(String mEmailID, String firebaseToken) throws NotFoundException {
+
+        // First, we should check for an existing Email ID
+        Account acc = null;
+        try{
+            acc = checkIfAccountExists(mEmailID);
+        }
+        catch(NotFoundException nfe){
+            throw nfe;
+        }
+        //Set the Firebase token on the Account
+        acc.setUserDeviceFirebaseToken(firebaseToken);
+
+        // Account is not null at this point
+        acc.setProfile(acc.getProfile());
+
+        ofy().save().entity(acc).now();
+
+        logger.info("Updated Learner Account with Firebase token: " + firebaseToken);
+
+        return ofy().load().entity(acc).now().getProfile();
+    }
+
     public void remove(String mEmailID) throws NotFoundException {
         checkIfAccountExists(mEmailID);
 
         ofy().delete().type(Account.class).id(mEmailID).now();
-        logger.info("Deleted TutorProfileVer1 with ID: " + mEmailID);
+        logger.info("Deleted Account with ID: " + mEmailID);
     }
 
     void scheduleLocationInfoUpdation(final Account acc, final LatLng geoCoordinates){

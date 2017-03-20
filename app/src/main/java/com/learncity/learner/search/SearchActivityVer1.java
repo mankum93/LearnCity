@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.learncity.backend.tutor.tutorApi.model.LocationInfo;
 import com.learncity.backend.tutor.tutorApi.model.SearchTutorsQuery;
 import com.learncity.backend.tutor.tutorApi.model.TutorAccount;
 import com.learncity.backend.tutor.tutorApi.model.TutorAccountResponseView;
@@ -58,6 +59,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static com.learncity.learner.search.SearchResultsActivity.SEARCHED_ACCOUNTS;
 
@@ -274,20 +276,29 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
 
     private List<com.learncity.tutor.account.TutorAccount> refactorAccountsToList(List<TutorAccount> accounts){
         // Extract the list of accounts from backend
-        List<TutorProfileVer1> profiles = new ArrayList<TutorProfileVer1>();
-        List<Account.LocationInfo> locationInfos = new ArrayList<Account.LocationInfo>();
+        List<TutorProfileVer1> profiles = new ArrayList<TutorProfileVer1>(20);
+        List<Account.LocationInfo> locationInfos = new ArrayList<Account.LocationInfo>(20);
+        List<UUID> userUUIDs = new ArrayList<UUID>(20);
         for(TutorAccount acc : accounts){
             profiles.add(acc.getProfile());
-            locationInfos.add(new Account.LocationInfo((acc.getLocationInfo() == null ? null: acc.getLocationInfo().getShortFormattedAddress())));
+
+            LocationInfo li = acc.getLocationInfo();
+            if(li != null){
+                locationInfos.add(new Account.LocationInfo(li.getShortFormattedAddress()));
+            }
+            // We are not putting a null check for this because it is a
+            // user identifier and is always expected to accompany user info.
+            userUUIDs.add(UUID.fromString(acc.getEmailBasedUUID()));
         }
 
-        // Populate a profile model
-        List<com.learncity.tutor.account.TutorAccount> acc = new ArrayList<com.learncity.tutor.account.TutorAccount>();
+        // Populate with Account fields
+        List<com.learncity.tutor.account.TutorAccount> acc = new ArrayList<com.learncity.tutor.account.TutorAccount>(20);
         List<TutorProfile> refactoredProfiles = TutorProfile.populateProfilesFromEntities(profiles);
         int i = 0;
         for(TutorProfile p : refactoredProfiles){
             com.learncity.tutor.account.TutorAccount t = new com.learncity.tutor.account.TutorAccount(p);
-            t.setLocationInfo(new Account.LocationInfo(locationInfos.get(i).getShortFormattedAddress()));
+            t.setLocationInfo(locationInfos.get(i));
+            t.setEmailBasedUUID(userUUIDs.get(i));
             acc.add(t);
             i++;
         }
