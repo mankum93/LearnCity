@@ -7,10 +7,19 @@ import android.content.IntentSender;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.google.android.gms.auth.api.Auth;
@@ -23,6 +32,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
 import com.learncity.learner.account.profile.model.LearnerProfile;
+
+import static com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4.SignUpPageTutorContentFragment.TUTOR_CONTENT_DISCIPLINES;
+import static com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4.SignUpPageTutorContentFragment.TUTOR_CONTENT_PLACEHOLDER;
+import static com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4.SignUpPageTutorContentFragment.TUTOR_CONTENT_TUTOR_TYPES;
 
 /**
  * Created by DJ on 1/21/2017.
@@ -43,6 +56,8 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity{
     private boolean mResolvingError = false;
 
     GoogleApiClient mGoogleApiClient;
+    private ViewPager tutorContentPager;
+    private TutorSignUpPageContentPagerAdapter signUpPageContentPagerAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -84,6 +99,11 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity{
                 startActivity(createACWithEmail);
             }
         });
+
+        // ViewPager for the Tutor related content
+        tutorContentPager = (ViewPager) findViewById(R.id.tutor_content_pager);
+        signUpPageContentPagerAdapter = new TutorSignUpPageContentPagerAdapter(getSupportFragmentManager());
+        tutorContentPager.setAdapter(signUpPageContentPagerAdapter);
     }
 
     @Override
@@ -221,6 +241,78 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity{
             //The person doesn't have a Google Account even though he clicked on for Sign-Up through Google
             //In this case, we will do nothing but he or she shall have to click on the
             //"Sign Up with Email"
+        }
+    }
+    //-------------------------------------------------------------------------------------------------------------------
+    public static class TutorSignUpPageContentPagerAdapter extends FragmentPagerAdapter{
+        public TutorSignUpPageContentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch(position){
+                case 0:
+                    return SignUpPageTutorContentFragment.newInstance(TUTOR_CONTENT_TUTOR_TYPES);
+                case 1:
+                    return SignUpPageTutorContentFragment.newInstance(TUTOR_CONTENT_DISCIPLINES);
+            }
+            // Default case
+            return SignUpPageTutorContentFragment.newInstance(TUTOR_CONTENT_PLACEHOLDER);
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+    }
+    //--------------------------------------------------------------------------------------------------------------------
+
+    public static class SignUpPageTutorContentFragment extends Fragment {
+
+        private static final String TAG = "TutorContentFragment";
+
+        public static final String ARG_TUTOR_CONTENT = "tutor_content";
+        /**Fragments arguments for Tutor content to be displayed on the Sign Up Page*/
+        public static final String TUTOR_CONTENT_TUTOR_TYPES = "tutor_types";   // Serial Order: 1
+        public static final String TUTOR_CONTENT_DISCIPLINES = "disciplines";   // Serial Order: 2
+        public static final String TUTOR_CONTENT_PLACEHOLDER = "placeholder_content";
+
+        private AppCompatImageView imageView;
+
+        public static SignUpPageTutorContentFragment newInstance(String tutorContentType){
+            Bundle b = new Bundle();
+
+            if(tutorContentType == null || tutorContentType.equals(TUTOR_CONTENT_PLACEHOLDER)){
+                Log.w(TAG, "tutorContentType is null: Cannot return a fragment for the Tutor content." +
+                        "\n" + "For a presentable solution, returning a Fragment based on a placeholder content." +
+                        "\n" + "Ensure that you intended for a placeholder indeed.");
+                // TODO: Create an image resource for the placeholder and put an argument for it here
+            }
+            else if(tutorContentType.equals(TUTOR_CONTENT_TUTOR_TYPES)){
+                b.putInt(ARG_TUTOR_CONTENT, R.drawable.tutor_types_word_cloud);
+            }
+            else{
+                b.putInt(ARG_TUTOR_CONTENT, R.drawable.sign_up_page_subjects);
+            }
+
+            SignUpPageTutorContentFragment fragment = new SignUpPageTutorContentFragment();
+            fragment.setArguments(b);
+
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+            View rootView = inflater.inflate(
+                    R.layout.fragment_sign_up_page_tutor_content, container, false);
+
+            imageView = (AppCompatImageView) rootView.findViewById(R.id.tutor_content_image_view);
+            imageView.setBackgroundDrawable(
+                    ContextCompat.getDrawable(getActivity(), getArguments().getInt(ARG_TUTOR_CONTENT)));
+
+            return rootView;
         }
     }
 }

@@ -6,10 +6,10 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.learncity.backend.tutor.tutorApi.model.DurationVer1;
-import com.learncity.backend.tutor.tutorApi.model.EducationalQualificationVer1;
-import com.learncity.backend.tutor.tutorApi.model.OccupationVer1;
-import com.learncity.backend.tutor.tutorApi.model.TutorProfileVer1;
+import com.learncity.backend.tutorApi.model.DurationVer1;
+import com.learncity.backend.tutorApi.model.EducationalQualificationVer1;
+import com.learncity.backend.tutorApi.model.OccupationVer1;
+import com.learncity.backend.tutorApi.model.TutorProfileVer1;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.tutor.account.profile.model.occupation.Occupation;
 import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualification;
@@ -481,9 +481,9 @@ public class TutorProfile extends GenericLearnerProfile {
         if(profileEntity == null){
             profileEntity = new TutorProfileVer1();
         }
-        com.learncity.backend.tutor.tutorApi.model.LatLng ll = null;
+        com.learncity.backend.tutorApi.model.LatLng ll = null;
         if(profile.getLastKnownGeoCoordinates() != null){
-            ll = new com.learncity.backend.tutor.tutorApi.model.LatLng();
+            ll = new com.learncity.backend.tutorApi.model.LatLng();
             ll.setLatitude(profile.getLastKnownGeoCoordinates().latitude);
             ll.setLongitude( profile.getLastKnownGeoCoordinates().longitude);
         }

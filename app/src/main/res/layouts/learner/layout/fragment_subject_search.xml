@@ -8,7 +8,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/search_by_subject_label"/>
+        android:text="@string/search_by_subject_label"
+        android:textStyle="bold"
+        android:textSize="15sp"/>
 
     <com.learncity.learner.search.SubjectMultiAutoCompleteTextView
         android:id="@+id/subject_multi_auto_complete_view"

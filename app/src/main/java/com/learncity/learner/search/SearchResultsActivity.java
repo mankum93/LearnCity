@@ -130,7 +130,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             String[] tutorTypes1 = account.getProfile().getTutorTypes();
             tutorTypes.setText(tutorTypes1 == null || tutorTypes1.length == 0 ? "" : ArraysUtil.convertArrayToString(account.getProfile().getTutorTypes(), ", "));
 
-            String shortFormattedAddress = account.getLocationInfo().getShortFormattedAddress();
+            String shortFormattedAddress = account.getLocationInfo() == null ? null : account.getLocationInfo().getShortFormattedAddress();
             location.setText(shortFormattedAddress == null || shortFormattedAddress.isEmpty() ? "" : shortFormattedAddress);
 
             int r = account.getProfile().getRating();

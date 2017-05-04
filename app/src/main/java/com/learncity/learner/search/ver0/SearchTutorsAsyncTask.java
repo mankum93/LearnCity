@@ -12,8 +12,8 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.learncity.backend.persistence.tutorProfileVer1Api.model.CollectionResponseTutorProfileVer1;
-import com.learncity.backend.tutor.tutorApi.TutorApi;
-import com.learncity.backend.tutor.tutorApi.model.SearchTutorsQuery;
+import com.learncity.backend.tutorApi.TutorApi;
+import com.learncity.backend.tutorApi.model.SearchTutorsQuery;
 
 import java.io.IOException;
 import java.util.List;

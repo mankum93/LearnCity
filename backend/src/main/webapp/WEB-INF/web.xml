@@ -18,15 +18,16 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>com.learncity.backend.search.SearchTutorsEndpoint,
-                com.learncity.backend.account.create.endpoints.ver0.GenericLearnerProfilePersistenceEndpoint,
-                com.learncity.backend.account.create.endpoints.ver0.TutorProfilePersistenceEndpoint,
-                com.learncity.backend.account.create.endpoints.ver1.TutorProfileVer1PersistenceEndpoint,
-                com.learncity.backend.account.create.endpoints.ver1.GenericLearnerProfileVer1PersistenceEndpoint,
-                com.learncity.backend.account.login.LoginEndpoint,
-                com.learncity.backend.account.create.endpoints.ver1.LearnerProfileVer1PersistenceEndpoint,
-                com.learncity.backend.account.create.endpoints.LearnerAccountPersistenceEndpoint,
-                com.learncity.backend.account.create.endpoints.TutorAccountPersistenceEndpoint
+            <param-value>com.learncity.backend.tutor.search.SearchTutorsEndpoint,
+                com.learncity.backend.common.account.create.endpoints.ver0.GenericLearnerProfilePersistenceEndpoint,
+                com.learncity.backend.common.account.create.endpoints.ver0.TutorProfilePersistenceEndpoint,
+                com.learncity.backend.common.account.create.endpoints.ver1.TutorProfileVer1PersistenceEndpoint,
+                com.learncity.backend.common.account.create.endpoints.ver1.GenericLearnerProfileVer1PersistenceEndpoint,
+                com.learncity.backend.common.account.login.LoginEndpoint,
+                com.learncity.backend.common.account.create.endpoints.ver1.LearnerProfileVer1PersistenceEndpoint,
+                com.learncity.backend.learner.account.create.endpoints.LearnerAccountPersistenceEndpoint,
+                com.learncity.backend.tutor.account.create.endpoints.TutorAccountPersistenceEndpoint,
+                com.learncity.backend.common.messaging.MessagingEndpoint
             </param-value>
         </init-param>
     </servlet>

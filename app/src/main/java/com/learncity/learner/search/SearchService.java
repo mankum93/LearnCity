@@ -17,10 +17,10 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
-import com.learncity.backend.tutor.tutorApi.TutorApi;
-import com.learncity.backend.tutor.tutorApi.model.CollectionResponseTutorAccount;
-import com.learncity.backend.tutor.tutorApi.model.SearchTutorsQuery;
-import com.learncity.backend.tutor.tutorApi.model.TutorAccount;
+import com.learncity.backend.tutorApi.TutorApi;
+import com.learncity.backend.tutorApi.model.CollectionResponseTutorAccount;
+import com.learncity.backend.tutorApi.model.SearchTutorsQuery;
+import com.learncity.backend.tutorApi.model.TutorAccount;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

@@ -9,8 +9,8 @@ import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.learncity.backend.learner.learnerApi.LearnerApi;
-import com.learncity.backend.tutor.tutorApi.TutorApi;
+import com.learncity.backend.learnerApi.LearnerApi;
+import com.learncity.backend.tutorApi.TutorApi;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.util.account_management.impl.AccountManager;
 

@@ -11,12 +11,11 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.Key;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.learncity.backend.account.create.LatLng;
+import com.learncity.backend.common.account.create.LatLng;
 
 import java.io.BufferedReader;
 import java.io.IOException;

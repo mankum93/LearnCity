@@ -37,12 +37,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.learncity.backend.tutor.tutorApi.model.LocationInfo;
-import com.learncity.backend.tutor.tutorApi.model.SearchTutorsQuery;
-import com.learncity.backend.tutor.tutorApi.model.TutorAccount;
-import com.learncity.backend.tutor.tutorApi.model.TutorAccountResponseView;
-import com.learncity.backend.tutor.tutorApi.model.TutorProfileResponseView;
-import com.learncity.backend.tutor.tutorApi.model.TutorProfileVer1;
+import com.learncity.backend.tutorApi.model.LocationInfo;
+import com.learncity.backend.tutorApi.model.SearchTutorsQuery;
+import com.learncity.backend.tutorApi.model.TutorAccount;
+import com.learncity.backend.tutorApi.model.TutorAccountResponseView;
+import com.learncity.backend.tutorApi.model.TutorProfileResponseView;
+import com.learncity.backend.tutorApi.model.TutorProfileVer1;
 import com.learncity.generic.learner.account.Account;
 import com.learncity.learncity.R;
 
@@ -285,6 +285,9 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
             LocationInfo li = acc.getLocationInfo();
             if(li != null){
                 locationInfos.add(new Account.LocationInfo(li.getShortFormattedAddress()));
+            }
+            else{
+                locationInfos.add(null);
             }
             // We are not putting a null check for this because it is a
             // user identifier and is always expected to accompany user info.

@@ -2,9 +2,9 @@ package com.learncity.backend.util;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import com.learncity.backend.account.create.GenericLearnerProfileVer1;
-import com.learncity.backend.account.create.LearnerProfileVer1;
-import com.learncity.backend.account.create.TutorProfileVer1;
+import com.learncity.backend.common.account.create.GenericLearnerProfileVer1;
+import com.learncity.backend.learner.account.create.LearnerProfileVer1;
+import com.learncity.backend.tutor.account.create.TutorProfileVer1;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

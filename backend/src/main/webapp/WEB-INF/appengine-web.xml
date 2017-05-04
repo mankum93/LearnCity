@@ -7,4 +7,19 @@
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
     </system-properties>
+
+
+    <!--
+    <basic-scaling>
+        <max-instances>11</max-instances>
+        <idle-timeout>10m</idle-timeout>
+    </basic-scaling>
+    -->
+
+    <!--
+    <manual-scaling>
+        <instances>5</instances>
+    </manual-scaling>
+    -->
+
 </appengine-web-app>

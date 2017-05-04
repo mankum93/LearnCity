@@ -6,9 +6,9 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.learncity.loginApi.LoginApi;
-import com.learncity.loginApi.model.GenericLearnerProfileVer1;
-import com.learncity.loginApi.model.LoginDetails;
+import com.learncity.backend.loginApi.LoginApi;
+import com.learncity.backend.loginApi.model.GenericLearnerProfileVer1;
+import com.learncity.backend.loginApi.model.LoginDetails;
 import com.learncity.util.account_management.AbstractTask;
 import com.learncity.util.account_management.Result;
 

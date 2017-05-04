@@ -2,17 +2,17 @@ package com.learncity.backend.setup;
 
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.VoidWork;
-import com.learncity.backend.account.create.LearnerProfileVer1;
-import com.learncity.backend.account.create.endpoints.LearnerAccountPersistenceEndpoint;
-import com.learncity.backend.account.create.TutorProfileVer1;
-import com.learncity.backend.account.create.endpoints.TutorAccountPersistenceEndpoint;
+import com.learncity.backend.learner.account.create.LearnerProfileVer1;
+import com.learncity.backend.learner.account.create.endpoints.LearnerAccountPersistenceEndpoint;
+import com.learncity.backend.tutor.account.create.TutorProfileVer1;
+import com.learncity.backend.tutor.account.create.endpoints.TutorAccountPersistenceEndpoint;
 import com.learncity.backend.util.ProfileUtils;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import static com.learncity.backend.account.create.GenericLearnerProfileVer1.STATUS_LEARNER;
-import static com.learncity.backend.account.create.GenericLearnerProfileVer1.STATUS_TUTOR;
+import static com.learncity.backend.common.account.create.GenericLearnerProfileVer1.STATUS_LEARNER;
+import static com.learncity.backend.common.account.create.GenericLearnerProfileVer1.STATUS_TUTOR;
 
 /**
  * Created by DJ on 2/28/2017.

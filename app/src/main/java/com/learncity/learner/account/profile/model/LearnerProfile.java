@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import com.learncity.backend.learner.learnerApi.model.LearnerProfileVer1;
+import com.learncity.backend.learnerApi.model.LearnerProfileVer1;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 
 /**
@@ -185,9 +185,9 @@ public class LearnerProfile extends GenericLearnerProfile {
         if(profileEntity == null){
             profileEntity = new LearnerProfileVer1();
         }
-        com.learncity.backend.learner.learnerApi.model.LatLng ll = null;
+        com.learncity.backend.learnerApi.model.LatLng ll = null;
         if(profile.getLastKnownGeoCoordinates() != null){
-            ll = new com.learncity.backend.learner.learnerApi.model.LatLng();
+            ll = new com.learncity.backend.learnerApi.model.LatLng();
             ll.setLatitude(profile.getLastKnownGeoCoordinates().latitude);
             ll.setLongitude( profile.getLastKnownGeoCoordinates().longitude);
         }

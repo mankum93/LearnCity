@@ -7,8 +7,8 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
-import com.learncity.backend.learner.learnerApi.LearnerApi;
-import com.learncity.backend.learner.learnerApi.model.LearnerProfileVer1;
+import com.learncity.backend.learnerApi.LearnerApi;
+import com.learncity.backend.learnerApi.model.LearnerProfileVer1;
 
 import com.learncity.util.account_management.AccountCreationClient;
 
