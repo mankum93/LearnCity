@@ -94,7 +94,7 @@ public class TutorAccountPersistenceEndpoint extends BaseLearnerEndpoint {
 
         logger.log(Level.INFO, tutorProfileVer1 + "");
         ofy().save().entity(acc).now();
-        logger.info("Created GenericLearnerProfileVer1.");
+        logger.info("Created Tutor Profile.");
 
         //Schedule an updateAccount with location info. with the given coordinates
         //scheduleLocationInfoUpdation(acc, acc.getProfile().getLastKnownGeoCoordinates());

@@ -24,6 +24,11 @@ public class TeachingCredits implements Serializable{
 
     }
 
+    public TeachingCredits(Long id, Date mDateOfExpiryOfCredits) {
+        this.id = id;
+        this.mDateOfExpiryOfCredits = mDateOfExpiryOfCredits;
+    }
+
     public long getAvailableCredits() {
         return mAvailableCredits;
     }

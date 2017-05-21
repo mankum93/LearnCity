@@ -135,7 +135,7 @@ public class TutorProfileVer1 extends GenericLearnerProfileVer1 implements Seria
 
             Integer i = super.getNil();
             if(i != null){
-                if(i.intValue() == 1){
+                if(i == 1){
                     return null;
                 }
             }
@@ -226,7 +226,7 @@ public class TutorProfileVer1 extends GenericLearnerProfileVer1 implements Seria
             logger.info("Response spec: " + responseSpec);
             Integer i = responseSpec.getNil();
             if(i != null){
-                if(i.intValue() == 1){
+                if(i == 1){
                     return null;
                 }
             }

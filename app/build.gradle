@@ -69,6 +69,7 @@ dependencies {
     compile 'com.google.http-client:google-http-client-android:1.22.0'
     compile 'com.android.support:design:25.3.0'
     compile 'com.evernote:android-job:1.1.8'
+    compile 'com.fasterxml.uuid:java-uuid-generator:3.1.4'
 }
 
 apply plugin: 'com.google.gms.google-services'

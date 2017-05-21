@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.learncity.generic.learner.account.profile.model.ver0.GenericLearnerProfileParcelable;
-import com.learncity.tutor.account.profile.model.Credits;
+import com.learncity.tutor.account.profile.model.TeachingCredits;
 import com.learncity.tutor.account.profile.model.occupation.Occupation;
 import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualification;
 
@@ -35,7 +35,7 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
      * NOTE: In case of rating 0, status should be reflected as "Unrated"*/
     private int rating = 0;     //Initial: Unrated
 
-    private Credits teachingCredits;
+    private TeachingCredits teachingTeachingCredits;
 
 
     //Getters and Setters-----------------------------------------------------------------------------------------
@@ -80,12 +80,12 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
         this.rating = rating;
     }
 
-    public Credits getTeachingCredits() {
-        return teachingCredits;
+    public TeachingCredits getTeachingTeachingCredits() {
+        return teachingTeachingCredits;
     }
 
-    public void setTeachingCredits(Credits teachingCredits) {
-        this.teachingCredits = teachingCredits;
+    public void setTeachingTeachingCredits(TeachingCredits teachingTeachingCredits) {
+        this.teachingTeachingCredits = teachingTeachingCredits;
     }
 
     //Start of Constructors----------------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
         this.disciplines = (String[])in.readArray(String.class.getClassLoader());
         this.occupation = in.readParcelable(Occupation.class.getClassLoader());
         this.rating = in.readInt();
-        this.teachingCredits = in.readParcelable(Credits.class.getClassLoader());
+        this.teachingTeachingCredits = in.readParcelable(TeachingCredits.class.getClassLoader());
     }
 
     @Override
@@ -151,7 +151,7 @@ public class TutorProfileParcelable extends GenericLearnerProfileParcelable {
         dest.writeStringArray(disciplines);
         dest.writeValue(occupation);
         dest.writeInt(rating);
-        dest.writeValue(teachingCredits);
+        dest.writeValue(teachingTeachingCredits);
     }
 
     @SuppressWarnings("unused")

@@ -5,14 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseLockedException;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learner.account.profile.model.LearnerProfile;
-import com.learncity.tutor.account.profile.model.Credits;
+import com.learncity.tutor.account.profile.model.TeachingCredits;
 import com.learncity.tutor.account.profile.model.Duration;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.tutor.account.profile.model.occupation.Occupation;
@@ -139,7 +138,7 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
                     ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.AVAILABLE_CREDITS + "," +
                     ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.DATE_OF_EXPIRY + ")"
             );
-            Log.d(TAG, "8. Teaching Credits table creation complete");
+            Log.d(TAG, "8. Teaching TeachingCredits table creation complete");
         }
         else{
             throw new IllegalStateException("User status is undefined. Unable to create Profile tables");
@@ -257,16 +256,16 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
 
         return values;
     }
-    /**@param teachingCredits The credits as per the credits model
+    /**@param teachingTeachingCredits The credits as per the credits model
      * @param KEY_emailId This is the foreign key
      * @return Returns a content value representing the teaching credits
      * */
-    private static ContentValues getContentValues(Credits teachingCredits, String KEY_emailId){
+    private static ContentValues getContentValues(TeachingCredits teachingTeachingCredits, String KEY_emailId){
 
         ContentValues values = new ContentValues();
         values.put(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.EMAIL_ID, KEY_emailId);
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.AVAILABLE_CREDITS, teachingCredits.getAvailableCredits());
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.DATE_OF_EXPIRY, teachingCredits.getDateOfExpiryOfCredits().getTime());
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.AVAILABLE_CREDITS, teachingTeachingCredits.getAvailableCredits());
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.DATE_OF_EXPIRY, teachingTeachingCredits.getDateOfExpiryOfCredits().getTime());
         return values;
     }
     /**@param lastKnownLocation The last known  location(latitude & longitude) of the user
@@ -324,8 +323,8 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
 
 
             //The teaching credits for the Tutor
-            if(tutorProfile.getTeachingCredits() != null){
-                ContentValues teachingCredits = getContentValues(tutorProfile.getTeachingCredits(), tutorProfile.getEmailID());
+            if(tutorProfile.getTeachingTeachingCredits() != null){
+                ContentValues teachingCredits = getContentValues(tutorProfile.getTeachingTeachingCredits(), tutorProfile.getEmailID());
                 database.insertOrThrow(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.NAME, null, teachingCredits);
             }
 
@@ -507,7 +506,7 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
 
             c = db.rawQuery("SELECT * FROM " + ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.NAME, null);
             if(c .moveToFirst()){
-                builder.withTeachingCredits(new Credits(
+                builder.withTeachingCredits(new TeachingCredits(
                         Long.parseLong(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.AVAILABLE_CREDITS))),
                         new Date(Long.parseLong(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.TeachingCreditsTable.cols.DATE_OF_EXPIRY))))
                 ));

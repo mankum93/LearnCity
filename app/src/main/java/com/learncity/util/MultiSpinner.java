@@ -8,6 +8,7 @@ import com.learncity.learncity.R;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public class MultiSpinner<T> extends com.thomashaertel.widget.MultiSpinner {
         boolean selectedItems[] = getSelected();
 
         for(boolean b: selectedItems){
-            if(b == true){
+            if(b){
                 selectedItemsCount++;
             }
         }
@@ -51,28 +52,29 @@ public class MultiSpinner<T> extends com.thomashaertel.widget.MultiSpinner {
     @SuppressWarnings({"unchecked"})
     public T[] getSelectedItemsArray(Class<T> type){
 
-        //Without Adapter, there would be no source of data available, would there?
+        // Without Adapter, there would be no source of data available, would there?
         if(getAdapter() == null){
-            throw new RuntimeException("No data to retrieve", new RuntimeException("Adapter has not been set"));
+            throw new RuntimeException("No data to retrieve. Adapter has not been set.");
         }
+        List<T> items = new LinkedList<>();
         SpinnerAdapter adapter = getAdapter();
         boolean selectedItems[] = getSelected();
 
         this.type = type;
-        selectedItemsArray = (T[])Array.newInstance(type, selectedItems.length);
+        selectedItemsArray = (T[])Array.newInstance(type, 1);
 
-        for(int i=0; i<selectedItems.length; i++){
-            if(selectedItems[i] == true){
-                selectedItemsArray[i] = (T)adapter.getItem(i);
+        for(int i = 0; i < selectedItems.length; i++){
+            if(selectedItems[i]){
+                items.add((T)adapter.getItem(i));
             }
         }
-        return selectedItemsArray;
+        return selectedItemsArray = (T[])items.toArray(selectedItemsArray);
     }
 
     public void setInitialDisplayText(String initialDisplayText){
         //Initialization of the boolean state array depends on the adapter being set or not
         if(getAdapter() == null){
-            throw new RuntimeException("Initial state boolean array is uninitialized", new RuntimeException("Adapter has not been set"));
+            throw new RuntimeException("Initial state boolean array is uninitialized. Adapter has not been set");
         }
         boolean initialUntouchedState[] = getSelected();
         setDefaultText(initialDisplayText);

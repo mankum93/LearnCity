@@ -15,6 +15,7 @@ import com.learncity.backend.common.BaseConfigEndpoint;
 import com.learncity.backend.common.account.create.Account;
 import com.learncity.backend.common.account.create.GenericLearnerProfileVer1;
 import com.learncity.backend.tutor.account.create.TutorAccount;
+import com.learncity.backend.tutor.account.create.TutorProfileVer1;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,8 +49,8 @@ public class SearchTutorsEndpoint {
         ObjectifyService.register(Account.class);
     }
 
-    private QueryResultIterator<Account> bufferQueryIterator;
-    private QueryResultIterator<Account> queryIterator;
+    private QueryResultIterator < Account > bufferQueryIterator;
+    private QueryResultIterator < Account > queryIterator;
 
     /**
      * List all entities as per the query.
@@ -57,88 +58,113 @@ public class SearchTutorsEndpoint {
      */
     @ApiMethod(name = "searchTutors",
             httpMethod = ApiMethod.HttpMethod.POST)
-    public CollectionResponse<TutorAccount> searchTutors(SearchTutorsQuery searchTutorsQuery, @Nullable @Named("cursor") String cursor, @Nullable @Named("limit") Integer limit) {
+    public CollectionResponse < TutorAccount > searchTutors(SearchTutorsQuery searchTutorsQuery, @Nullable @Named("cursor") String cursor, @Nullable @Named("limit") Integer limit) {
 
         logger.info("Search Query: " + searchTutorsQuery);
 
-        List<TutorAccount> tutorAccounts = new ArrayList<TutorAccount>(50);
+        List < TutorAccount > tutorAccounts = new ArrayList < TutorAccount > (50);
 
-        int noOfAccountsChecked = 0;
-        int resultAccounts = 0;
+        long noOfAccountsChecked = 0;
+        long totalNoOfAccountsSearched = 0;
+        long resultAccounts = 0;
         boolean stop = false;
+        boolean shouldSkip = false;
 
         //Load the profiles initially
         queryIterator = loadTutorAccounts(cursor, 100);
 
-        while(resultAccounts < 20){
-            while(noOfAccountsChecked != 100){
-                if(queryIterator.hasNext()){
-                    TutorAccount account = (TutorAccount) queryIterator.next();
+        // We aim to just return minimum 30 and max 100 profiles for a single query.
+        while (resultAccounts <= 30 && queryIterator.hasNext()) {
+            shouldSkip = false;
+            TutorAccount account = (TutorAccount) queryIterator.next();
 
-                    List<String> tutorTypes = Arrays.asList(account.getProfile().getTutorTypes());
-                    List<String> disciplines = Arrays.asList(account.getProfile().getDisciplines());
-                    for(String sub : searchTutorsQuery.getSubjects()){
-                        if(disciplines.contains(sub)){
-                            for(String type : searchTutorsQuery.getTutorTypes()){
-                                if(tutorTypes.contains(type)){
-                                    account = TutorAccount.TutorAccountResponseView.normalize(searchTutorsQuery.getAccountResponseView(), account);
-                                    tutorAccounts.add(account);
-                                    if(account != null){
-                                        resultAccounts++;
-                                    }
+            TutorProfileVer1 profile = account.getProfile();
+            logger.info("Profile's email ID: " + profile.getEmailID());
+            logger.info("Profile's Status: " + profile.getCurrentStatus());
+            List < String > tutorTypes = null;
+            List < String > disciplines = null;
+            if (profile == null) {
+                // Severe problem. AN ACCOUNT EXISTS WITHOUT A VALID PROFILE!!!
+                logger.severe("AN ACCOUNT EXISTS WITHOUT A VALID PROFILE!!!");
+                shouldSkip = true;
+            } else {
+                String[] p;
+                if ((p = profile.getTutorTypes()) == null) {
+                    // This profile is useless without valid Tutor types. SKIP.
+                    logger.warning("This Tutor Account exists without Tutor Types: \n" + profile.toString());
+                    shouldSkip = true;
+                } else {
+                    tutorTypes = Arrays.asList(p);
+                }
+                String[] d;
+                if ((d = profile.getDisciplines()) == null) {
+                    // This profile is useless without valid Disciplines. SKIP.
+                    logger.warning("This Tutor Account exists without any Disciplines to teach: \n" + profile.toString());
+                    shouldSkip = true;
+                } else {
+                    disciplines = Arrays.asList(d);
+                }
+            }
+            boolean done = false;
+            if (!shouldSkip) {
+                for (String sub: searchTutorsQuery.getSubjects()) {
+                    if (disciplines.contains(sub)) {
+                        for (String type: searchTutorsQuery.getTutorTypes()) {
+                            if (tutorTypes.contains(type)) {
+                                logger.info("HELLO");
+                                account = TutorAccount.TutorAccountResponseView.normalize(searchTutorsQuery.getAccountResponseView(), account);
+                                tutorAccounts.add(account);
+                                if (account != null) {
+                                    resultAccounts++;
                                 }
+                                done = true;
+                                break;
                             }
                         }
                     }
-                    noOfAccountsChecked++;
-                }
-                else{
-                    stop = true;
-                    logger.info("No of Profiles checked(no more items): " + noOfAccountsChecked);
-                    //There are no more items to iterate over - break away
-                    break;
-                }
-                if(noOfAccountsChecked == 50){
-                    logger.info("No of Profiles checked(=50): " + noOfAccountsChecked);
-                    break;
+                    if(done){
+                        break;
+                    }
+
                 }
             }
-            //If we are out without being able to check 50 profiles then its the end of the list
-            if(noOfAccountsChecked < 50){
-                logger.info("No of Profiles checked(<50): " + noOfAccountsChecked);
-                //Return whatever we have
+            noOfAccountsChecked++;
+            totalNoOfAccountsSearched++;
+
+            // Have we gotten >= 30 results
+            if (resultAccounts >= 30) {
+                // TODO: Save the rest of results into Session for retrieval later.
                 break;
-            }
-            else if(noOfAccountsChecked == 100){
-                logger.info("No of Profiles checked(=100): " + noOfAccountsChecked);
-                //Reset the count
-                noOfAccountsChecked = 0;
-                queryIterator = bufferQueryIterator;
-            }
-            else if(stop == true){
-                break;
-            }
-            //Load the next 100 profiles in advance if 20 profiles haven't found still
-            if(resultAccounts < 20){
-                bufferQueryIterator = loadTutorAccounts(queryIterator.getCursor().toWebSafeString(), 100);
-                if(!bufferQueryIterator.hasNext()){
-                    break;
-                }
             }
 
+            // If we have checked 50 accounts, load more in advanced
+            //                if(noOfAccountsChecked == 50){
+            //                    bufferQueryIterator = loadTutorAccounts(queryIterator.getCursor().toWebSafeString(), 100);
+            //                }
+            // The profiles provided have been checked and we still haven't
+            // gotten >=30 results.
+            if (!queryIterator.hasNext()) {
+                // But, if we did check 50 accounts, we must have loaded more
+                // accounts. Time to check them.
+                //                queryIterator = bufferQueryIterator;
+                queryIterator = loadTutorAccounts(queryIterator.getCursor().toWebSafeString(), 100);
+                noOfAccountsChecked = 0;
+            }
         }
+
+        logger.info("Total No of Accounts searched: " + totalNoOfAccountsSearched);
         logger.info("No of Profile results: " + resultAccounts);
 
         //Log the list
-        logger.info("Profiles searched: " + tutorAccounts + "");
-        return CollectionResponse.<TutorAccount>builder().setItems(tutorAccounts).setNextPageToken(queryIterator.getCursor().toWebSafeString()).build();
+        logger.info("Profiles results: " + tutorAccounts + "");
+        return CollectionResponse. < TutorAccount > builder().setItems(tutorAccounts).setNextPageToken(queryIterator.getCursor().toWebSafeString()).build();
     }
 
-    private QueryResultIterator<Account> loadTutorAccounts(@Nullable String cursor, @Nullable Integer limit){
+    private QueryResultIterator < Account > loadTutorAccounts(@Nullable String cursor, @Nullable Integer limit) {
 
         limit = limit == null ? DEFAULT_LIST_LIMIT : limit;
 
-        Query<Account> query = ofy().load()
+        Query < Account > query = ofy().load()
                 .type(Account.class)
                 .filter("accountStatus", GenericLearnerProfileVer1.STATUS_TUTOR)
                 .limit(limit);

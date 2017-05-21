@@ -50,14 +50,16 @@ public class SearchService extends Service {
 
     private final HandlerThread thread = new HandlerThread("Search");
 
-    {
-        Log.d(TAG, "Starting the search handler thread during Service instance creation...");
-        thread.start();
-    }
-
-    private final Messenger receiver = new Messenger(new SearchHandler(thread.getLooper()));
+    private final Messenger receiver;
 
     private static final String TAG = SearchService.class.getSimpleName();
+
+    public SearchService() {
+        Log.d(TAG, "Starting the search handler thread during Service instance creation...");
+        thread.start();
+        // Thread is alive now. Safe to get the Looper.
+        receiver = new Messenger(new SearchHandler(thread.getLooper()));
+    }
 
     @Nullable
     @Override
@@ -107,6 +109,7 @@ public class SearchService extends Service {
 
                     catch(IOException ioe){
                         Log.e(TAG, "IO Exception while performing the datastore transaction");
+                        ioe.printStackTrace();
                         searchEvent = new SearchEvent(ioe);
                     }
                     finally{

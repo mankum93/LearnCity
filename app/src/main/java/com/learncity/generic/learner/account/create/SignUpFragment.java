@@ -26,6 +26,7 @@ import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile
 import com.learncity.learncity.R;
 import com.learncity.learner.account.profile.model.LearnerProfile;
 import com.learncity.learner.main.LearnerHomeActivity;
+import com.learncity.tutor.account.profile.model.TeachingCredits;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.tutor.main.TutorHomeActivity;
 import com.learncity.util.MultiSpinner;
@@ -240,6 +241,7 @@ public abstract class SignUpFragment extends Fragment {
                     password.getText().toString())
                     .withTutorTypes(tutorTypes)
                     .withDisciplines(subjects)
+                    .withTeachingCredits(TeachingCredits.assignInitialCredits())
                     .build();
         }
     }

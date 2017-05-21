@@ -2,18 +2,22 @@ package com.learncity.tutor.account.profile.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.SystemClock;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by DJ on 2/2/2017.
  *
- * Credits reflect a numerical score/points system that determines the ability to get contact details of a student
+ * TeachingCredits reflect a numerical score/points system that determines the ability to get contact details of a student
  * with a certain(there is no absolutely certain value) number available/associated with a Tutor's account
  */
-public class Credits implements Parcelable {
+public class TeachingCredits implements Parcelable {
 
     private static final long CREDIT_INR_EQV = 10L;
+    public static final long INITIAL_TEACHING_CREDITS = 100L;
 
     /*Minimum credits possible: 0; Negative credits don't make sense in the current credits model*/
     private long mAvailableCredits = 0L;     //Initial credits: 0
@@ -35,12 +39,12 @@ public class Credits implements Parcelable {
         this.mDateOfExpiryOfCredits = mDateOfExpiryOfCredits;
     }
 
-    public Credits(long mAvailableCredits, Date mDateOfExpiryOfCredits) {
+    public TeachingCredits(long mAvailableCredits, Date mDateOfExpiryOfCredits) {
         this.mAvailableCredits = mAvailableCredits;
         this.mDateOfExpiryOfCredits = mDateOfExpiryOfCredits;
     }
 
-    protected Credits(Parcel in) {
+    protected TeachingCredits(Parcel in) {
         mAvailableCredits = in.readLong();
         mDateOfExpiryOfCredits = new Date(in.readLong());
     }
@@ -57,17 +61,29 @@ public class Credits implements Parcelable {
     }
 
     @SuppressWarnings("unused")
-    public static final Parcelable.Creator<Credits> CREATOR = new Parcelable.Creator<Credits>() {
+    public static final Parcelable.Creator<TeachingCredits> CREATOR = new Parcelable.Creator<TeachingCredits>() {
         @Override
-        public Credits createFromParcel(Parcel in) {
-            return new Credits(in);
+        public TeachingCredits createFromParcel(Parcel in) {
+            return new TeachingCredits(in);
         }
 
         @Override
-        public Credits[] newArray(int size) {
-            return new Credits[size];
+        public TeachingCredits[] newArray(int size) {
+            return new TeachingCredits[size];
         }
     };
+
+    // Utility methods----------------------------------------------------------------------------------------------------
+
+    public static TeachingCredits assignInitialCredits(){
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Calcutta"));
+        cal.add(Calendar.MONTH, 1); // to get previous year add -1
+        Date trialExpireDate = cal.getTime();
+        TeachingCredits initialCredits = new TeachingCredits(INITIAL_TEACHING_CREDITS, trialExpireDate);
+
+        return initialCredits;
+    }
+
     //--------------------------------------------------------------------------------------------------------------------
 
     public static class CreditsResponseView{

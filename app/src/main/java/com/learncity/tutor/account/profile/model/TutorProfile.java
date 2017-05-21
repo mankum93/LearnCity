@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.api.client.util.DateTime;
 import com.learncity.backend.tutorApi.model.DurationVer1;
 import com.learncity.backend.tutorApi.model.EducationalQualificationVer1;
 import com.learncity.backend.tutorApi.model.OccupationVer1;
@@ -18,6 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,44 +27,58 @@ import java.util.List;
  */
 
 public class TutorProfile extends GenericLearnerProfile {
-    
+
     private static final String TAG = TutorProfile.class.getSimpleName();
 
-    /**Null object pattern for Tutor Types */
+    /**
+     * Null object pattern for Tutor Types
+     */
     public static final String[] TUTOR_TYPES_NULL = {"TUTOR_TYPES_NULL"};
 
-    /**Null object pattern for Disciplines */
+    /**
+     * Null object pattern for Disciplines
+     */
     public static final String[] DISCIPLINES_NULL = {"DISCIPLINES_NULL"};
 
 
-    /** Educational qualification proof compulsory before start of teaching */
+    /**
+     * Educational qualification proof compulsory before start of teaching
+     */
     private EducationalQualification[] educationalQualifications;
 
-    /** Optional requirement */
+    /**
+     * Optional requirement
+     */
     private Occupation occupation;
 
-    /**Type of Tutor that I am; Ex: College Professor, School Teacher, Undergraduate, etc.*/
+    /**
+     * Type of Tutor that I am; Ex: College Professor, School Teacher, Undergraduate, etc.
+     */
     //List of all available types: R.array.type_of_tutor
     private String[] tutorTypes;
 
-    /**The _3/subjects that the tutor can teach*/
+    /**
+     * The _3/subjects that the tutor can teach
+     */
     //List of all available _3/subjects: R.array.list_of_disciplines
     private String[] disciplines;
 
-    /**Rating is a average of all 5 point scale scores given by the students
+    /**
+     * Rating is a average of all 5 point scale scores given by the students
      * Minimum _4 available: 1
      * Maximum _4 available: 5
      * Initial _4(unrated): 0
-     * NOTE: In case of _4 0, status should be reflected as "Unrated"*/
+     * NOTE: In case of _4 0, status should be reflected as "Unrated"
+     */
     private int rating = 0;     //Initial: Unrated
 
-    private Credits teachingCredits;
+    private TeachingCredits teachingTeachingCredits;
 
     private Builder builder;
 
 
     @Override
-    public String toString(){
+    public String toString() {
         return new StringBuilder(super.toString())
                 .append("Educational Qualifications: ")
                 .append(educationalQualifications).append("\n")
@@ -75,7 +91,7 @@ public class TutorProfile extends GenericLearnerProfile {
                 .append("Rating: ")
                 .append(rating).append("\n")
                 .append("Teaching credits")
-                .append(teachingCredits).append("\n")
+                .append(teachingTeachingCredits).append("\n")
                 .toString();
     }
 
@@ -102,7 +118,7 @@ public class TutorProfile extends GenericLearnerProfile {
     }
 
     public void setTutorTypes(String[] tutorTypes) {
-        if(tutorTypes == null){
+        if (tutorTypes == null) {
             throw new IllegalStateException("Tutor Types are null");
         }
         this.tutorTypes = tutorTypes;
@@ -113,7 +129,7 @@ public class TutorProfile extends GenericLearnerProfile {
     }
 
     public void setDisciplines(String[] disciplines) {
-        if(disciplines == null){
+        if (disciplines == null) {
             throw new IllegalStateException("Disciplines are null");
         }
         this.disciplines = disciplines;
@@ -127,12 +143,12 @@ public class TutorProfile extends GenericLearnerProfile {
         this.rating = rating;
     }
 
-    public Credits getTeachingCredits() {
-        return teachingCredits;
+    public TeachingCredits getTeachingTeachingCredits() {
+        return teachingTeachingCredits;
     }
 
-    public void setTeachingCredits(Credits teachingCredits) {
-        this.teachingCredits = teachingCredits;
+    public void setTeachingTeachingCredits(TeachingCredits teachingTeachingCredits) {
+        this.teachingTeachingCredits = teachingTeachingCredits;
     }
 
     /**
@@ -140,10 +156,10 @@ public class TutorProfile extends GenericLearnerProfile {
      * If there is a valid builder already used in construction of this object, return it.
      * Or, if the builder is null which implies the object was first constructed from Parcel
      * or single constructor in which case, a new builder shall be created and returned.
-     * */
-    public Builder getTutorProfileBuilder(){
+     */
+    public Builder getTutorProfileBuilder() {
         //Object was initially constructed from Parcel or the single public constructor
-        if(builder == null){
+        if (builder == null) {
             return new Builder(getName(), getEmailID(), getPhoneNo(), getCurrentStatus(), getPassword());
         }
         return builder;
@@ -165,9 +181,9 @@ public class TutorProfile extends GenericLearnerProfile {
         private String[] tutorTypes;
         private String[] disciplines;
         private int rating = 0;
-        private Credits teachingCredits;
+        private TeachingCredits teachingTeachingCredits;
 
-        public Builder(String name, String emailID, String phoneNo, int currentStatus, String password){
+        public Builder(String name, String emailID, String phoneNo, int currentStatus, String password) {
             this.name = name;
             this.emailID = emailID;
             this.phoneNo = phoneNo;
@@ -215,23 +231,23 @@ public class TutorProfile extends GenericLearnerProfile {
             return this;
         }
 
-        public Builder withTutorTypes(String[] tutorTypes){
+        public Builder withTutorTypes(String[] tutorTypes) {
             this.tutorTypes = tutorTypes;
             return this;
         }
 
-        public Builder withDisciplines(String[] disciplines){
+        public Builder withDisciplines(String[] disciplines) {
             this.disciplines = disciplines;
             return this;
         }
 
-        public Builder withRating(int rating){
+        public Builder withRating(int rating) {
             this.rating = rating;
             return this;
         }
 
-        public Builder withTeachingCredits(Credits credits){
-            this.teachingCredits = credits;
+        public Builder withTeachingCredits(TeachingCredits teachingCredits) {
+            this.teachingTeachingCredits = teachingCredits;
             return this;
         }
 
@@ -243,21 +259,21 @@ public class TutorProfile extends GenericLearnerProfile {
         public TutorProfile build() {
             //First, check if there is an already existing instance built through this Builder
             //If there is, then continue construction of "that" object
-            if(tutorProfile != null){
+            if (tutorProfile != null) {
                 return tutorProfile.setState(name, emailID, phoneNo,
                         currentStatus, password, imagePath, lastKnownGeoCoordinates, educationalQualifications,
-                        occupation, tutorTypes, disciplines, rating, teachingCredits);
+                        occupation, tutorTypes, disciplines, rating, teachingTeachingCredits);
             }
             tutorProfile = new TutorProfile(name, emailID, phoneNo,
                     currentStatus, password, imagePath, lastKnownGeoCoordinates, educationalQualifications,
-                    occupation, tutorTypes, disciplines, rating, teachingCredits);
+                    occupation, tutorTypes, disciplines, rating, teachingTeachingCredits);
 
             tutorProfile.builder = this;
             return tutorProfile;
         }
 
-        public TutorProfile getBuiltObject(){
-            if(tutorProfile == null){
+        public TutorProfile getBuiltObject() {
+            if (tutorProfile == null) {
                 throw new RuntimeException("Object has not been built; call Builder.build() to build the object");
             }
             return tutorProfile;
@@ -276,15 +292,15 @@ public class TutorProfile extends GenericLearnerProfile {
                                  String[] tutorTypes,
                                  String[] disciplines,
                                  int rating,
-                                 Credits credits) {
+                                 TeachingCredits teachingCredits) {
         super.setState(name, emailID, phoneNo, currentStatus, password, imagePath, lastKnownGeoCoordinates);
         validateInput(tutorTypes, disciplines);
         this.educationalQualifications = educationalQualifications;
         this.occupation = occupation;
-        this. tutorTypes = tutorTypes;
+        this.tutorTypes = tutorTypes;
         this.disciplines = disciplines;
         this.rating = rating;
-        this.teachingCredits = credits;
+        this.teachingTeachingCredits = teachingCredits;
         return this;
     }
 
@@ -302,15 +318,15 @@ public class TutorProfile extends GenericLearnerProfile {
                         String[] tutorTypes,
                         String[] disciplines,
                         int rating,
-                        Credits credits) {
+                        TeachingCredits teachingCredits) {
         super(name, emailID, phoneNo, currentStatus, password, imagePath, lastKnownGeoCoordinates);
         validateInput(tutorTypes, disciplines);
         this.educationalQualifications = educationalQualifications;
         this.occupation = occupation;
-        this. tutorTypes = tutorTypes;
+        this.tutorTypes = tutorTypes;
         this.disciplines = disciplines;
         this.rating = rating;
-        this.teachingCredits = credits;
+        this.teachingTeachingCredits = teachingCredits;
     }
 
     public TutorProfile(Parcel in) {
@@ -320,7 +336,7 @@ public class TutorProfile extends GenericLearnerProfile {
         this.disciplines = in.createStringArray();
         this.occupation = in.readParcelable(Occupation.class.getClassLoader());
         this.rating = in.readInt();
-        this.teachingCredits = in.readParcelable(Credits.class.getClassLoader());
+        this.teachingTeachingCredits = in.readParcelable(TeachingCredits.class.getClassLoader());
     }
 
     //End of constructors---------------------------------------------------------------------------------------------------
@@ -333,7 +349,7 @@ public class TutorProfile extends GenericLearnerProfile {
         dest.writeStringArray(disciplines);
         dest.writeParcelable(occupation, 0);
         dest.writeInt(rating);
-        dest.writeParcelable(teachingCredits, 0);
+        dest.writeParcelable(teachingTeachingCredits, 0);
     }
 
     @SuppressWarnings("unused")
@@ -350,56 +366,68 @@ public class TutorProfile extends GenericLearnerProfile {
     };
 
     //------------------------------------------------------------------------------------------------------------------
-    /**Method invalidates the compulsory input for a learner profile
-     * @param tutorTypes: For ex, I could be a Freelancer or a Schoolteacher, etc.
+
+    /**
+     * Method invalidates the compulsory input for a learner profile
+     *
+     * @param tutorTypes:  For ex, I could be a Freelancer or a Schoolteacher, etc.
      * @param disciplines: The subjects or _3 that I teach; You can't be a tutor without specifying them
-     * */
+     */
     private void validateInput(String[] tutorTypes,
-                               String[] disciplines){
-        if(tutorTypes == null){
+                               String[] disciplines) {
+        if (tutorTypes == null) {
             throw new IllegalStateException("Tutor Types are null");
         }
-        if(disciplines == null){
+        if (disciplines == null) {
             throw new IllegalStateException("Disciplines are null");
         }
     }
-    /**This method assigns the NULL object for Tutor Types in case it is null*/
-    public static String[] validateTutorTypes(String[] unvalidatedTutorType){
-        if(unvalidatedTutorType == null){
+
+    /**
+     * This method assigns the NULL object for Tutor Types in case it is null
+     */
+    public static String[] validateTutorTypes(String[] unvalidatedTutorType) {
+        if (unvalidatedTutorType == null) {
             return TUTOR_TYPES_NULL;
         }
         return unvalidatedTutorType;
     }
-    /**This method assigns the NULL object for Disciplines in case it is null*/
-    public static String[] validateDisciplines(String[] unvalidatedDisciplines){
-        if(unvalidatedDisciplines == null){
+
+    /**
+     * This method assigns the NULL object for Disciplines in case it is null
+     */
+    public static String[] validateDisciplines(String[] unvalidatedDisciplines) {
+        if (unvalidatedDisciplines == null) {
             return DISCIPLINES_NULL;
         }
         return unvalidatedDisciplines;
     }
-    /**This method validates the Tutor Profile object to check if the necessary fields are NOT the NULL objects*/
-    public static TutorProfile validateTutorProfile(TutorProfile tutorProfile){
+
+    /**
+     * This method validates the Tutor Profile object to check if the necessary fields are NOT the NULL objects
+     */
+    public static TutorProfile validateTutorProfile(TutorProfile tutorProfile) {
         //The base class fields shall be checked before the current one
         tutorProfile = (TutorProfile) GenericLearnerProfile.validateGenericLearnerProfile(tutorProfile);
 
-        if(tutorProfile.getTutorTypes() == TUTOR_TYPES_NULL){
+        if (tutorProfile.getTutorTypes() == TUTOR_TYPES_NULL) {
             throw new IllegalStateException("A Tutor can not NOT have even a single TYPE");
         }
-        if(tutorProfile.getDisciplines() == DISCIPLINES_NULL){
+        if (tutorProfile.getDisciplines() == DISCIPLINES_NULL) {
             throw new IllegalStateException("A Tutor can not NOT have even a single Subject that he or she is able to teach");
         }
         return tutorProfile;
     }
     //-----------------------------------------------------------------------------------------------------------------
 
-    public static class TutorProfileResponseView extends GenericLearnerProfileResponseView{
+    public static class TutorProfileResponseView extends GenericLearnerProfileResponseView {
 
         private EducationalQualification.EducationalQualificationResponseView[] _0;
         private Occupation.OccupationResponseView _1;
         private Integer _2;
         private Integer _3;
         private Integer _4;
-        private Credits.CreditsResponseView _5;
+        private TeachingCredits.CreditsResponseView _5;
 
         private Integer g;
 
@@ -411,7 +439,7 @@ public class TutorProfile extends GenericLearnerProfile {
             this.g = global;
         }
 
-        public TutorProfileResponseView(Integer mName, Integer mEmailID, Integer mPhoneNo, Integer mDisplayPicturePath, Integer mCurrentStatus, Integer mPassword, LatLngResponseView mLastKnownGeoCoordinates, EducationalQualification.EducationalQualificationResponseView[] educationalQualifications, Occupation.OccupationResponseView occupation, Integer tutorTypes, Integer disciplines, Integer rating, Credits.CreditsResponseView teachingCredits) {
+        public TutorProfileResponseView(Integer mName, Integer mEmailID, Integer mPhoneNo, Integer mDisplayPicturePath, Integer mCurrentStatus, Integer mPassword, LatLngResponseView mLastKnownGeoCoordinates, EducationalQualification.EducationalQualificationResponseView[] educationalQualifications, Occupation.OccupationResponseView occupation, Integer tutorTypes, Integer disciplines, Integer rating, TeachingCredits.CreditsResponseView teachingCredits) {
             super(mName, mEmailID, mPhoneNo, mDisplayPicturePath, mCurrentStatus, mPassword, mLastKnownGeoCoordinates);
             this._0 = educationalQualifications;
             this._1 = occupation;
@@ -461,60 +489,88 @@ public class TutorProfile extends GenericLearnerProfile {
             this._4 = rating;
         }
 
-        public Credits.CreditsResponseView getTeachingCredits() {
+        public TeachingCredits.CreditsResponseView getTeachingCredits() {
             return _5;
         }
 
-        public void setTeachingCredits(Credits.CreditsResponseView teachingCredits) {
+        public void setTeachingCredits(TeachingCredits.CreditsResponseView teachingCredits) {
             this._5 = teachingCredits;
         }
     }
 
     //-----------------------------------------------------------------------------------------------------------------------
-    public static TutorProfileVer1 populateProfileEntity(@NonNull TutorProfile profile, @Nullable TutorProfileVer1 profileEntity){
+    public static TutorProfileVer1 populateProfileEntity(@NonNull TutorProfile profile, @Nullable TutorProfileVer1 profileEntity) {
         //Populate the entity object with the profile info.
 
-        if(profile == null){
+        if (profile == null) {
             Log.d(TAG, "There is no profile to populate the entity.");
             return null;
         }
-        if(profileEntity == null){
+        if (profileEntity == null) {
             profileEntity = new TutorProfileVer1();
         }
         com.learncity.backend.tutorApi.model.LatLng ll = null;
-        if(profile.getLastKnownGeoCoordinates() != null){
+        if (profile.getLastKnownGeoCoordinates() != null) {
             ll = new com.learncity.backend.tutorApi.model.LatLng();
             ll.setLatitude(profile.getLastKnownGeoCoordinates().latitude);
-            ll.setLongitude( profile.getLastKnownGeoCoordinates().longitude);
+            ll.setLongitude(profile.getLastKnownGeoCoordinates().longitude);
         }
 
-        EducationalQualificationVer1[] ed1 = new EducationalQualificationVer1[profile.getEducationalQualifications().length];
-        int i = 0;
-        for(EducationalQualification ed : profile.getEducationalQualifications()){
-            Duration d = ed.getDuration();
+        if (profile.getEducationalQualifications() != null) {
+            EducationalQualificationVer1[] ed1 = new EducationalQualificationVer1[profile.getEducationalQualifications().length];
+            int i = 0;
+            for (EducationalQualification ed : profile.getEducationalQualifications()) {
+                Duration d = ed.getDuration();
+                DurationVer1 d1 = new DurationVer1();
+                d1.setNoOfYears(d.getNoOfYears());
+                d1.setNoOfMonths(d.getNoOfMonths());
+                d1.setNoOfDays(d.getNoOfDays());
+
+                ed1[i] = new EducationalQualificationVer1();
+                ed1[i].setInstitution(ed.getInstitution());
+                ed1[i].setQualificationName(ed.getmQualificationName());
+                ed1[i].setDuration(d1);
+                ed1[i].setYearOfPassing(ed.getYearOfPassing());
+            }
+            profileEntity.setEducationalQualifications(Arrays.asList(ed1));
+        }
+
+        // Occupation
+        if (profile.getOccupation() != null) {
+            OccupationVer1 o = new OccupationVer1();
+            Duration d = profile.getOccupation().getCurrentExperience();
             DurationVer1 d1 = new DurationVer1();
             d1.setNoOfYears(d.getNoOfYears());
             d1.setNoOfMonths(d.getNoOfMonths());
             d1.setNoOfDays(d.getNoOfDays());
 
-            ed1[i] = new EducationalQualificationVer1();
-            ed1[i].setInstitution(ed.getInstitution());
-            ed1[i].setQualificationName(ed.getmQualificationName());
-            ed1[i].setDuration(d1);
-            ed1[i].setYearOfPassing(ed.getYearOfPassing());
+            o.setCurrentDesignation(profile.getOccupation().getCurrentDesignation());
+            o.setCurrentOrganization(profile.getOccupation().getCurrentOrganization());
+            o.setCurrentExperience(d1);
+
+            profileEntity.setOccupation(o);
         }
 
-        // Occupation
-        OccupationVer1 o = new OccupationVer1();
-        Duration d = profile.getOccupation().getCurrentExperience();
-        DurationVer1 d1 = new DurationVer1();
-        d1.setNoOfYears(d.getNoOfYears());
-        d1.setNoOfMonths(d.getNoOfMonths());
-        d1.setNoOfDays(d.getNoOfDays());
+        // Tutor types
+        String[] tutorTypes = profile.getTutorTypes();
+        if (tutorTypes != null) {
+            profileEntity.setTutorTypes(Arrays.asList(tutorTypes));
+        }
 
-        o.setCurrentDesignation(profile.getOccupation().getCurrentDesignation());
-        o.setCurrentOrganization(profile.getOccupation().getCurrentOrganization());
-        o.setCurrentExperience(d1);
+        // Disciplines
+        String[] disciplines = profile.getDisciplines();
+        if (disciplines != null) {
+            profileEntity.setDisciplines(Arrays.asList(disciplines));
+        }
+
+        // Teaching credits
+        // NOTE: Won't be null because of being set explicitly.
+        TeachingCredits c = profile.getTeachingTeachingCredits();
+        // Entity
+        com.learncity.backend.tutorApi.model.TeachingCredits teachingCredits = new com.learncity.backend.tutorApi.model.TeachingCredits();
+        teachingCredits.setAvailableCredits(c.getAvailableCredits());
+        teachingCredits.setDateOfExpiryOfCredits(new DateTime(c.getDateOfExpiryOfCredits()));
+        profileEntity.setTeachingCredits(teachingCredits);
 
         profileEntity.setName(profile.getName());
         profileEntity.setEmailID(profile.getEmailID());
@@ -523,36 +579,35 @@ public class TutorProfile extends GenericLearnerProfile {
         profileEntity.setCurrentStatus(profile.getCurrentStatus());
         profileEntity.setLastKnownGeoCoordinates(ll);
         profileEntity.setDisplayPicturePath(profile.getDisplayPicturePath());
-        profileEntity.setEducationalQualifications(Arrays.asList(ed1));
-        profileEntity.setOccupation(o);
+
         return profileEntity;
     }
 
-    public static List<TutorProfile> populateProfilesFromEntities(List<TutorProfileVer1> profiles){
+    public static List<TutorProfile> populateProfilesFromEntities(List<TutorProfileVer1> profiles) {
         List<TutorProfile> pi = new ArrayList<TutorProfile>(20);
-        for(TutorProfileVer1 p : profiles){
+        for (TutorProfileVer1 p : profiles) {
             pi.add(populateProfileFromEntity(null, p));
         }
         return pi;
     }
 
-    public static TutorProfile populateProfileFromEntity(@Nullable TutorProfile profile, @NonNull TutorProfileVer1 profileEntity){
+    public static TutorProfile populateProfileFromEntity(@Nullable TutorProfile profile, @NonNull TutorProfileVer1 profileEntity) {
 
-        if(profileEntity == null){
+        if (profileEntity == null) {
             Log.d(TAG, "There is no profile entity to populate the profile.");
             return null;
         }
-        if(profile == null){
+        if (profile == null) {
             // Extracting educational qualifications
             EducationalQualification[] ed1 = null;
-            if(profileEntity.getEducationalQualifications() != null){
+            if (profileEntity.getEducationalQualifications() != null) {
                 ed1 = new EducationalQualification[profileEntity.getEducationalQualifications().size()];
 
                 int i = 0;
-                for(EducationalQualificationVer1 ed : profileEntity.getEducationalQualifications()){
+                for (EducationalQualificationVer1 ed : profileEntity.getEducationalQualifications()) {
                     DurationVer1 d1 = ed.getDuration();
                     Duration d = null;
-                    if(d1 != null){
+                    if (d1 != null) {
                         d = new Duration(d1.getNoOfYears(), d1.getNoOfMonths(), d1.getNoOfDays());
                     }
 
@@ -564,10 +619,10 @@ public class TutorProfile extends GenericLearnerProfile {
 
             // Extracting Occupation
             Occupation o = null;
-            if(profileEntity.getOccupation() != null){
+            if (profileEntity.getOccupation() != null) {
                 DurationVer1 d2 = profileEntity.getOccupation().getCurrentExperience();
                 Duration d3 = null;
-                if(d2 != null){
+                if (d2 != null) {
                     d3 = new Duration(d2.getNoOfYears(), d2.getNoOfMonths(), d2.getNoOfDays());
                 }
 
@@ -576,18 +631,18 @@ public class TutorProfile extends GenericLearnerProfile {
             }
 
             LatLng l = null;
-            if((profileEntity.getLastKnownGeoCoordinates() != null)){
+            if ((profileEntity.getLastKnownGeoCoordinates() != null)) {
                 l = new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
                         , profileEntity.getLastKnownGeoCoordinates().getLongitude());
             }
 
-            Credits c = null;
-            if(profileEntity.getTeachingCredits() != null){
-                try{
-                    c = new Credits(profileEntity.getTeachingCredits().getAvailableCredits(),
+            TeachingCredits c = null;
+            if (profileEntity.getTeachingCredits() != null) {
+                try {
+                    c = new TeachingCredits(profileEntity.getTeachingCredits().getAvailableCredits(),
                             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                                     .parse(profileEntity.getTeachingCredits().getDateOfExpiryOfCredits().toStringRfc3339()));
-                }catch(ParseException p){
+                } catch (ParseException p) {
                     throw new RuntimeException("Date format parse error");
                 }
             }
@@ -611,18 +666,17 @@ public class TutorProfile extends GenericLearnerProfile {
                     .withTeachingCredits(c)
                     .withRating(r <= 0 ? 0 : r >= 5 ? 5 : r)
                     .build();
-        }
-        else{
+        } else {
             // Extracting educational qualifications
             EducationalQualification[] ed1 = null;
-            if(profileEntity.getEducationalQualifications() != null){
+            if (profileEntity.getEducationalQualifications() != null) {
                 ed1 = new EducationalQualification[profileEntity.getEducationalQualifications().size()];
 
                 int i = 0;
-                for(EducationalQualificationVer1 ed : profileEntity.getEducationalQualifications()){
+                for (EducationalQualificationVer1 ed : profileEntity.getEducationalQualifications()) {
                     DurationVer1 d1 = ed.getDuration();
                     Duration d = null;
-                    if(d1 != null){
+                    if (d1 != null) {
                         d = new Duration(d1.getNoOfYears(), d1.getNoOfMonths(), d1.getNoOfDays());
                     }
 
@@ -634,10 +688,10 @@ public class TutorProfile extends GenericLearnerProfile {
 
             // Extracting Occupation
             Occupation o = null;
-            if(profileEntity.getOccupation() != null){
+            if (profileEntity.getOccupation() != null) {
                 DurationVer1 d2 = profileEntity.getOccupation().getCurrentExperience();
                 Duration d3 = null;
-                if(d2 != null){
+                if (d2 != null) {
                     d3 = new Duration(d2.getNoOfYears(), d2.getNoOfMonths(), d2.getNoOfDays());
                 }
 
@@ -646,18 +700,18 @@ public class TutorProfile extends GenericLearnerProfile {
             }
 
             LatLng l = null;
-            if((profileEntity.getLastKnownGeoCoordinates() == null)){
+            if ((profileEntity.getLastKnownGeoCoordinates() == null)) {
                 l = new LatLng(profileEntity.getLastKnownGeoCoordinates().getLatitude()
                         , profileEntity.getLastKnownGeoCoordinates().getLongitude());
             }
 
-            Credits c = null;
-            if(profileEntity.getTeachingCredits() != null){
-                try{
-                    c = new Credits(profileEntity.getTeachingCredits().getAvailableCredits(),
+            TeachingCredits c = null;
+            if (profileEntity.getTeachingCredits() != null) {
+                try {
+                    c = new TeachingCredits(profileEntity.getTeachingCredits().getAvailableCredits(),
                             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
                                     .parse(profileEntity.getTeachingCredits().getDateOfExpiryOfCredits().toStringRfc3339()));
-                }catch(ParseException p){
+                } catch (ParseException p) {
                     throw new RuntimeException("Date format parse error");
                 }
             }

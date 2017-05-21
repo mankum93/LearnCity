@@ -7,13 +7,20 @@ package com.learncity.generic.learner.account;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import com.fasterxml.uuid.UUIDType;
+import com.fasterxml.uuid.impl.NameBasedGenerator;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 /**Class encapsulating Profile, and other details/computations of/from the fields*/
 public class Account implements Parcelable {
+
+    private static final String TAG = Account.class.getSimpleName();
 
     /**Email Id of the User */
     private String mEmailID;
@@ -163,4 +170,24 @@ public class Account implements Parcelable {
             return new Account[size];
         }
     };
+
+    // Utility methods-------------------------------------------------------------------------------------------------
+    // Completely thread safe, name based, UUID generator singleton instance
+    private static NameBasedGenerator nameBasedUUIDGenerator;
+
+    static {
+        try{
+            nameBasedUUIDGenerator = new NameBasedGenerator(NameBasedGenerator.NAMESPACE_OID,
+                    MessageDigest.getInstance("SHA-1"), UUIDType.NAME_BASED_SHA1);
+        }
+        catch(NoSuchAlgorithmException nse){
+            Log.d(TAG, "Check the algorithm used for generation of MessageDigest from the list" +
+                    "of valid ones.");
+            nse.printStackTrace();
+        }
+    }
+
+    public static UUID generateType5UUID(String emailID){
+        return nameBasedUUIDGenerator.generate(emailID);
+    }
 }
