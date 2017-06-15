@@ -155,7 +155,7 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
         final QualificationSearchFragment qualificationSearchFragment = (QualificationSearchFragment) getSupportFragmentManager().findFragmentById(R.id.qualification_search_fragment);
 
 
-        //Lets handle the click of the floating search button
+        // Lets handle the click of the floating search button
         Button searchButton = (Button) findViewById(R.id.search_button);
 
         searchButton.setOnClickListener(new View.OnClickListener(){
