@@ -584,7 +584,7 @@ public class TutorProfile extends GenericLearnerProfile {
     }
 
     public static List<TutorProfile> populateProfilesFromEntities(List<TutorProfileVer1> profiles) {
-        List<TutorProfile> pi = new ArrayList<TutorProfile>(20);
+        List<TutorProfile> pi = new ArrayList<TutorProfile>(profiles.size());
         for (TutorProfileVer1 p : profiles) {
             pi.add(populateProfileFromEntity(null, p));
         }

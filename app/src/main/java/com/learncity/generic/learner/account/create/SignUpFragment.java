@@ -29,6 +29,8 @@ import com.learncity.learner.main.LearnerHomeActivity;
 import com.learncity.tutor.account.profile.model.TeachingCredits;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.tutor.main.TutorHomeActivity;
+import com.learncity.util.AbstractTextValidator;
+import com.learncity.util.InputValidationHelper;
 import com.learncity.util.MultiSpinner;
 import com.learncity.util.account_management.impl.AccountCreationService;
 import com.learncity.util.account_management.impl.AccountManager;
@@ -74,9 +76,18 @@ public abstract class SignUpFragment extends Fragment {
 
     private AccountCreationService accountCreationService;
 
+    private boolean invalidInput;
+    private boolean invalidPhoneNo;
+    private boolean invalidPwd;
+    private String INVALID_INPUT_ERROR_MSG_PREFIX = "";
+    StringBuilder invalidInputText = new StringBuilder(INVALID_INPUT_ERROR_MSG_PREFIX);
+    private AlertDialog invalidInputAlertDialog;
+    private boolean invalidStatus;
+    private boolean invalidSubjects;
+
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //Fetch the AC creation service
@@ -89,45 +100,6 @@ public abstract class SignUpFragment extends Fragment {
         setACCreationProgressDialog();
     }
 
-    private void setACCreationRetryDialog() {
-        accountCreationService.setACCreationRetryAlertDialog(new AlertDialog.Builder(getActivity())
-                .setTitle("Account Creation Failed")
-                .setMessage("There was a problem creating the Account")
-                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "TaskProcessor.showRetryDialog(): " + "\n" + "MESSAGE: RETRY button clicked..." +
-                                "\n" +"Thread ID: " + Thread.currentThread().getId());
-                        accountCreationService.retryOnFailedAccountCreation();
-                        dialog.cancel();
-
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "TaskProcessor.showRetryDialog(): " + "\n" + "MESSAGE: CANCEL button clicked..." +
-                                "\n" +"Thread ID: " + Thread.currentThread().getId());
-                        accountCreationService.cancelOnFailedAccountCreation();
-                        dialog.cancel();
-
-                    }
-                })
-                .setCancelable(false)
-                .create());
-    }
-
-    private void setACCreationProgressDialog() {
-
-        ProgressDialog taskProcessingProgressDialog = new ProgressDialog(getActivity());
-        taskProcessingProgressDialog.setIndeterminate(true);
-        taskProcessingProgressDialog.setTitle("Creating Account...");
-        taskProcessingProgressDialog.setCancelable(true);
-        taskProcessingProgressDialog.setCanceledOnTouchOutside(false);
-
-        accountCreationService.setAccountCreationProgressDialog(taskProcessingProgressDialog);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -138,9 +110,35 @@ public abstract class SignUpFragment extends Fragment {
         rootView = (ViewGroup) inflateLayout(inflater, container, savedInstanceState);
 
         phoneNo = (EditText) rootView.findViewById(R.id.person_phoneNo);
-        //TODO: Validate the Password/Retyped Password field
+        //Add a PhoneNumberFormattingTextWatcher to format as a Phone Number.
+        phoneNo.addTextChangedListener(new AbstractTextValidator(phoneNo) {
+            @Override
+            public void validate(View view, String text) {
+                // If not a valid phone number, set error.
+                if (!InputValidationHelper.isValidIndianMobileNo(phoneNo.getText().toString())) {
+                    phoneNo.setError("Phone No must start with 6, 7, 8 or 9 only and must be of 10 digits.");
+                }
+            }
+        });
+
         password = (EditText) rootView.findViewById(R.id.password);
+        password.addTextChangedListener(new AbstractTextValidator(password) {
+            @Override
+            public void validate(View view, String text) {
+                if (!InputValidationHelper.isValidPassword(text)) {
+                    password.setError(InputValidationHelper.PWD_ERROR_TEXT);
+                }
+            }
+        });
         retypedPassword = (EditText) rootView.findViewById(R.id.retype_password);
+        retypedPassword.addTextChangedListener(new AbstractTextValidator(retypedPassword) {
+            @Override
+            public void validate(View view, String text) {
+                if (!InputValidationHelper.isValidPassword(text)) {
+                    retypedPassword.setError(InputValidationHelper.PWD_ERROR_TEXT);
+                }
+            }
+        });
 
         spinner = (Spinner) rootView.findViewById(R.id.learner_tutor_status_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -154,15 +152,14 @@ public abstract class SignUpFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedStatus = (String) parent.getSelectedItem();
-                if(selectedStatus.equals("Teach")){
+                if (selectedStatus.equals("Teach")) {
                     //Show the UI conditional to being a tutor IF not already visible
-                    if(!isConditionalTutorUIVisible()){
+                    if (!isConditionalTutorUIVisible()) {
                         showConditionalTutorUI();
                     }
-                }
-                else if(selectedStatus.equals("Learn")){
+                } else if (selectedStatus.equals("Learn")) {
                     //If the UI conditional to being a tutor is visible, disable it
-                    if(isConditionalTutorUIVisible()){
+                    if (isConditionalTutorUIVisible()) {
                         disableConditionalTutorUI();
                     }
                 }
@@ -175,31 +172,34 @@ public abstract class SignUpFragment extends Fragment {
         });
 
         createAccountButton = (Button) rootView.findViewById(R.id.create_account);
-        createAccountButton.setOnClickListener(new View.OnClickListener(){
+        createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
 
-                //TODO: First and Foremost - Validate the input
+                // Validate the user input first.
                 validateSubmittedInput();
-                if(isConditionalTutorUIVisible){
+                if (isConditionalTutorUIVisible) {
                     validateConditionalTutorInput();
                 }
-
-                //First: We need to start an async newAccountCreateOnServerAsyncTask to push the profile info. to local DB
-                //Second: We need to again start an async newAccountCreateOnServerAsyncTask for creation of account on the server
-                //Third: We need to create an account on the server
+                if (invalidInput) {
+                    // Show an Alert Dialog regarding invalid input.
+                    showInvalidInputAlertDialog();
+                    // Reset the Invalid input error message(StringBuilder)
+                    invalidInputText.setLength(0);
+                    invalidInputText.append(INVALID_INPUT_ERROR_MSG_PREFIX);
+                    return;
+                }
 
                 //Important: Remember to validate the entity before stashing it
                 String selectedStatus = spinner.getSelectedItem().toString();
                 profile = buildProfile(selectedStatus);
 
-                if(selectedStatus.equals("Learn")){
+                if (selectedStatus.equals("Learn")) {
                     Log.i(TAG, "User is a Learner");
 
                     //Now, before getting onto finalizing the profile, make a final validation
                     profile = GenericLearnerProfile.validateGenericLearnerProfile(profile);
-                }
-                else{
+                } else {
                     Log.i(TAG, "User is a Tutor");
 
                     profile = TutorProfile.validateTutorProfile((TutorProfile) profile);
@@ -222,8 +222,8 @@ public abstract class SignUpFragment extends Fragment {
 
     protected abstract View inflateLayout(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
 
-    protected GenericLearnerProfile buildProfile(String status){
-        if(status.equals("Learn")){
+    protected GenericLearnerProfile buildProfile(String status) {
+        if (status.equals("Learn")) {
             return new LearnerProfile.Builder(
                     GenericLearnerProfile.NAME_NULL,
                     GenericLearnerProfile.EMAIL_NULL,
@@ -231,8 +231,7 @@ public abstract class SignUpFragment extends Fragment {
                     GenericLearnerProfile.STATUS_LEARNER,
                     password.getText().toString()
             ).build();
-        }
-        else{
+        } else {
             return new TutorProfile.Builder(
                     GenericLearnerProfile.NAME_NULL,
                     GenericLearnerProfile.EMAIL_NULL,
@@ -246,7 +245,7 @@ public abstract class SignUpFragment extends Fragment {
         }
     }
 
-    void setACCreationServiceListener(){
+    void setACCreationServiceListener() {
         accountCreationService.setAccountCreationListener(new AccountCreationService.AccountCreationListener() {
             @Override
             public void onAccountCreated() {
@@ -255,20 +254,19 @@ public abstract class SignUpFragment extends Fragment {
                 // If Firebase token stash is pending, stash it
                 boolean isFirebaseTokenStashPending = getActivity().getSharedPreferences("MISC", 0)
                         .getBoolean(IS_FIREBASE_TOKEN_STASH_PENDING, false);
-                if(isFirebaseTokenStashPending){
+                if (isFirebaseTokenStashPending) {
                     String token = getActivity().getSharedPreferences("MISC", 0).getString(FIREBASE_TOKEN, null);
-                    if(token == null){
+                    if (token == null) {
                         // Even though the Stash is pending, token is null
                         Log.e(TAG, "Firebase token is scheduled to be stashed but is null. Check the token" +
                                 "generation process");
-                    }
-                    else{
+                    } else {
                         // TODO: Stash the token locally
                         Log.d(TAG, "Sending the request for stashing the Firebase token to the server...\n"
-                        + "Email ID: " + profile.getEmailID() + "\n" +
-                        "Token: " + token);
+                                + "Email ID: " + profile.getEmailID() + "\n" +
+                                "Token: " + token);
                         // Stash the token to the server
-                        if(profile.getCurrentStatus() == GenericLearnerProfile.STATUS_LEARNER){
+                        if (profile.getCurrentStatus() == GenericLearnerProfile.STATUS_LEARNER) {
                             LearnerApi myApiService = new LearnerApi.Builder(AndroidHttp.newCompatibleTransport(),
                                     new AndroidJsonFactory(), null)
                                     .setRootUrl(BACKEND_ROOT_URL)
@@ -279,14 +277,13 @@ public abstract class SignUpFragment extends Fragment {
                                             abstractGoogleClientRequest.setDisableGZipContent(true);
                                         }
                                     }).build();
-                            try{
+                            try {
                                 myApiService.updateWithFirebaseToken(token, profile.getEmailID()).execute();
-                            }catch(IOException e){
+                            } catch (IOException e) {
                                 Log.e(TAG, "Account couldn't be updated with Firebase token: IO Exception while performing the data-store transaction");
                                 e.printStackTrace();
                             }
-                        }
-                        else if(profile.getCurrentStatus() == GenericLearnerProfile.STATUS_TUTOR){
+                        } else if (profile.getCurrentStatus() == GenericLearnerProfile.STATUS_TUTOR) {
                             Log.d(TAG, "Sending the request for stashing the Firebase token to the server...\n"
                                     + "Email ID: " + profile.getEmailID() + "\n" +
                                     "Token: " + token);
@@ -300,30 +297,27 @@ public abstract class SignUpFragment extends Fragment {
                                             abstractGoogleClientRequest.setDisableGZipContent(true);
                                         }
                                     }).build();
-                            try{
+                            try {
                                 myApiService.updateWithFirebaseToken(token, profile.getEmailID()).execute();
-                            }catch(IOException e){
+                            } catch (IOException e) {
                                 Log.e(TAG, "Account couldn't be updated with Firebase token: IO Exception while performing the data-store transaction");
                                 e.printStackTrace();
                             }
-                        }
-                        else{
+                        } else {
                             Log.wtf(TAG, "User data locally found corrupt with symptom:\n" + "USER STATUS: " + profile.getCurrentStatus());
                             // TODO: Refresh profile from the server as and when appropriate and/or investigate the issue
                         }
                     }
-                }
-                else{
+                } else {
                     Log.i(TAG, "Firebase token has already been stashed!");
                 }
 
-                if(profile.getCurrentStatus() == GenericLearnerProfile.STATUS_LEARNER){
+                if (profile.getCurrentStatus() == GenericLearnerProfile.STATUS_LEARNER) {
                     startActivity(
                             new Intent(getActivity(), LearnerHomeActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     );
-                }
-                else{
+                } else {
                     startActivity(
                             new Intent(getActivity(), TutorHomeActivity.class)
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -353,14 +347,18 @@ public abstract class SignUpFragment extends Fragment {
 
     void showConditionalTutorUI() {
         // Initialize the first time
-        if(typeOfTutorMultiSpinner == null && subjectsICanTeachMultiSpinner == null){
-            profileFieldsContainer = (ViewGroup)rootView.findViewById(R.id.profile_fields_container);
-            rootTutorConditionalLayout = layoutInflater.inflate(
-                    R.layout.layout_conditional_tutor_ui,
-                    profileFieldsContainer,
-                    false);
+        if (typeOfTutorMultiSpinner == null && subjectsICanTeachMultiSpinner == null) {
+            if (profileFieldsContainer == null) {
+                profileFieldsContainer = (ViewGroup) rootView.findViewById(R.id.profile_fields_container);
+            }
+            if (rootTutorConditionalLayout == null) {
+                rootTutorConditionalLayout = layoutInflater.inflate(
+                        R.layout.layout_conditional_tutor_ui,
+                        profileFieldsContainer,
+                        false);
+            }
             // Add the inflated layout to the second last of the container
-            profileFieldsContainer.addView(rootTutorConditionalLayout, profileFieldsContainer.getChildCount()-2);
+            profileFieldsContainer.addView(rootTutorConditionalLayout, profileFieldsContainer.getChildCount());
             typeOfTutorMultiSpinner = (MultiSpinner) rootTutorConditionalLayout.findViewById(R.id.type_of_tutor_spinner);
             subjectsICanTeachMultiSpinner = (MultiSpinner) rootTutorConditionalLayout.findViewById(R.id.subjects_taught_spinner);
 
@@ -387,10 +385,9 @@ public abstract class SignUpFragment extends Fragment {
                     subjects = subjectsICanTeachMultiSpinner.getSelectedItemsArray(String.class);
                 }
             });
-            typeOfTutorMultiSpinner.setInitialDisplayText("Select status");
-            subjectsICanTeachMultiSpinner.setInitialDisplayText("Select subjects");
-        }
-        else{
+            typeOfTutorMultiSpinner.setInitialDisplayText("Select status...");
+            subjectsICanTeachMultiSpinner.setInitialDisplayText("Select subjects...");
+        } else {
             // Initialized but not visible
             rootTutorConditionalLayout.setVisibility(View.VISIBLE);
         }
@@ -402,61 +399,164 @@ public abstract class SignUpFragment extends Fragment {
         isConditionalTutorUIVisible = false;
     }
 
-    void validateConditionalTutorInput(){
-        if(typeOfTutorMultiSpinner.getSelectedItemsCount() == 0){
+    void validateConditionalTutorInput() {
+        if (typeOfTutorMultiSpinner.getSelectedItemsCount() == 0) {
             // No item selected
-            Log.e(TAG, "No item selected; can't continue like this");
-            // TODO: Prompt the user in the UI about this
+            Log.w(TAG, "No item selected; can't continue like this");
+            invalidInputText.append("Please select at least one status to continue.").append("\n");
+            invalidStatus = true;
         }
-        if(subjectsICanTeachMultiSpinner.getSelectedItemsCount() == 0){
+        else{
+            invalidStatus = false;
+        }
+        if (subjectsICanTeachMultiSpinner.getSelectedItemsCount() == 0) {
             // No item selected
-            Log.e(TAG, "No item selected; can't continue like this");
-            // TODO: Prompt the user in the UI about this
+            Log.w(TAG, "No item selected; can't continue like this");
+            invalidInputText.append("Please select at least one subject to continue.").append("\n");
+            invalidSubjects = true;
+        }
+        else{
+            invalidSubjects = false;
         }
     }
 
     void validateSubmittedInput() {
-        validatePhoneNo();
-        validatePassword();
-    }
+        // If not a valid phone number typed.
 
-    private void validatePassword() {
-        // Retyped password didn't match the Password
-        if(!password.getText().toString().equals(retypedPassword.getText().toString())){
-            Log.e(TAG, "Retyped password didn't match the typed password");
-            // TODO: Prompt the user in the UI about this
+        validatePhoneNo(phoneNo.getText().toString());
+        validatePwdAndRetypedPwd(password.getText().toString(), retypedPassword.getText().toString());
+
+        if (!isValidInput()) {
+            setValidInputStatus(true);
+        } else {
+            setValidInputStatus(false);
         }
     }
 
-    private void validatePhoneNo() {
+    boolean isValidInput() {
+        if (invalidPwd || invalidPhoneNo || invalidStatus || invalidSubjects) {
+            return false;
+        }
+        return true;
+    }
+
+    void setValidInputStatus(boolean status) {
+        invalidInput = status;
+    }
+
+    private void validatePwdAndRetypedPwd(String pwd, String retypedPwd) {
+        // Is the typed password valid ?
+        if (!InputValidationHelper.isValidPassword(pwd)) {
+            invalidInputText.append("The typed password is invalid.").append("\n");
+            invalidPwd = true;
+        } else {
+            // Typed password is valid but the retyped one doesn't match the typed one.
+            if (!pwd.equals(retypedPwd)) {
+                Log.w(TAG, "The retyped password didn't match the typed password.");
+                invalidInputText.append("The retyped password doesn't match the typed password.").append("\n");
+                invalidPwd = true;
+            } else {
+                invalidPwd = false;
+            }
+        }
+    }
+
+    private void validatePhoneNo(String phoneNo) {
         // Phone No should be 10 digits exactly(Indian mobile numbers)
-        if(phoneNo.length()!=10){
-            Log.e(TAG, "Phone No length is " + phoneNo.length() + "\n"
+        if (!InputValidationHelper.isValidIndianMobileNo(phoneNo)) {
+            Log.w(TAG, "Phone No length is " + phoneNo.length() + "\n"
                     + "It should be 10 characters exactly");
-            // TODO: Prompt the user in the UI about this
+            invalidInputText.append("Phone No is invalid.").append("\n");
+            invalidPhoneNo = true;
+        } else {
+            invalidPhoneNo = false;
+        }
+    }
+
+    private void setACCreationRetryDialog() {
+        accountCreationService.setACCreationRetryAlertDialog(new AlertDialog.Builder(getActivity())
+                .setTitle("Account Creation Failed")
+                .setMessage("There was a problem creating the Account")
+                .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "TaskProcessor.showRetryDialog(): " + "\n" + "MESSAGE: RETRY button clicked..." +
+                                "\n" + "Thread ID: " + Thread.currentThread().getId());
+                        accountCreationService.retryOnFailedAccountCreation();
+                        dialog.cancel();
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "TaskProcessor.showRetryDialog(): " + "\n" + "MESSAGE: CANCEL button clicked..." +
+                                "\n" + "Thread ID: " + Thread.currentThread().getId());
+                        accountCreationService.cancelOnFailedAccountCreation();
+                        dialog.cancel();
+
+                    }
+                })
+                .setCancelable(false)
+                .create());
+    }
+
+    private void setACCreationProgressDialog() {
+
+        ProgressDialog taskProcessingProgressDialog = new ProgressDialog(getActivity());
+        taskProcessingProgressDialog.setIndeterminate(true);
+        taskProcessingProgressDialog.setTitle("Creating Account...");
+        taskProcessingProgressDialog.setCancelable(true);
+        taskProcessingProgressDialog.setCanceledOnTouchOutside(false);
+
+        accountCreationService.setAccountCreationProgressDialog(taskProcessingProgressDialog);
+    }
+
+    private void showInvalidInputAlertDialog() {
+        // Remove a newline from the StringBuilder.
+        invalidInputText.setLength(invalidInputText.length() - 1);
+
+        if (invalidInputAlertDialog == null) {
+            invalidInputAlertDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle("Invalid input.")
+                    .setMessage(invalidInputText.toString())
+                    .setCancelable(true)
+                    .create();
+            invalidInputAlertDialog.show();
+        } else {
+            if (!invalidInputAlertDialog.isShowing()) {
+                // But before showing, update the content to show.
+                invalidInputAlertDialog.setMessage(invalidInputText.toString());
+                invalidInputAlertDialog.show();
+            } else {
+                Log.w(TAG, "Invalid input Alert Dialog already showing and yet has been" +
+                        "asked to show again. This behavior should be checked.");
+            }
         }
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         // TODO: Cancelling the newAccountCreateOnServerAsyncTask of "Account creation". User is gonna have to reenter the info. on opening the App next time
 
         super.onPause();
     }
+
     @Override
-    public void onStop(){
+    public void onStop() {
         // Stop the AC creation service
         super.onStop();
     }
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         // Pressing back button from the home page for the first time will bring back to the
         // A/C creation page if we don't take care of it
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         accountCreationService.shutDown();
         super.onDestroy();
     }

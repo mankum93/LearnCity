@@ -275,10 +275,15 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
     }
 
     private List<com.learncity.tutor.account.TutorAccount> refactorAccountsToList(List<TutorAccount> accounts){
+
+        if(accounts == null || accounts.isEmpty()){
+            return null;
+        }
+
         // Extract the list of accounts from backend
-        List<TutorProfileVer1> profiles = new ArrayList<TutorProfileVer1>(20);
-        List<Account.LocationInfo> locationInfos = new ArrayList<Account.LocationInfo>(20);
-        List<UUID> userUUIDs = new ArrayList<UUID>(20);
+        List<TutorProfileVer1> profiles = new ArrayList<TutorProfileVer1>(accounts.size());
+        List<Account.LocationInfo> locationInfos = new ArrayList<Account.LocationInfo>(accounts.size());
+        List<UUID> userUUIDs = new ArrayList<UUID>(accounts.size());
         for(TutorAccount acc : accounts){
             profiles.add(acc.getProfile());
 
@@ -289,13 +294,12 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
             else{
                 locationInfos.add(null);
             }
-            // We are not putting a null check for this because it is a
-            // user identifier and is always expected to accompany user info.
+
             userUUIDs.add(UUID.fromString(acc.getEmailBasedUUID()));
         }
 
         // Populate with Account fields
-        List<com.learncity.tutor.account.TutorAccount> acc = new ArrayList<com.learncity.tutor.account.TutorAccount>(20);
+        List<com.learncity.tutor.account.TutorAccount> acc = new ArrayList<com.learncity.tutor.account.TutorAccount>(accounts.size());
         List<TutorProfile> refactoredProfiles = TutorProfile.populateProfilesFromEntities(profiles);
         int i = 0;
         for(TutorProfile p : refactoredProfiles){

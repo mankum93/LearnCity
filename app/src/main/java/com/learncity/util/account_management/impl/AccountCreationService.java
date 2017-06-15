@@ -51,13 +51,16 @@ public class AccountCreationService {
      * completed yet, this method facilitates specifying if you
      * want to block the main thread or wait in the background thread to let it finish up.
      * Define the code to be executed on finish up in the AccountCreationListener.onAccountCreationServiceRefresh()
-     * (only in the case you choose to invoke this method in non-blocking mode).
+     * (only in the case you choose to invoke this method in non-blocking mode).<br/>
+     *
      * NOTE: Most probably, you won't feel the need to call this method - you can refrain from calling
      * finishUp() on the service and queue tasks when the need arises again. However, if there is a considerable
      * time interval between the first usage of the service and the consecutive one, you might want to
-     * consider calling this method after you have called finishUp()
+     * consider calling this method after you have called finishUp().
+     *
      * @param context You can optionally pass in the context if it has changed(you are on some other Activity for example)
      * By default, it uses the previously set context
+     *
      * @param shouldBlock Specify if you want to block the main thread until it finishes up refreshing with "true"
      * Or, false will not block but you will have to write the code to be executed on refreshUp in
      * the AccountCreationListener.onAccountCreationServiceRefresh()

@@ -23,8 +23,6 @@ public class SignUpWithGoogleAccountFragmentVer4 extends SignUpFragment{
 
     private GenericLearnerProfile profileFromGoogleAccount;
 
-    private ViewGroup rootView;
-
     public SignUpWithGoogleAccountFragmentVer4 newInstance(){
         return new SignUpWithGoogleAccountFragmentVer4();
     }
@@ -35,16 +33,6 @@ public class SignUpWithGoogleAccountFragmentVer4 extends SignUpFragment{
         super.onCreate(savedInstanceState);
         profileFromGoogleAccount = getActivity().getIntent().getParcelableExtra(SignUpWithGoogleAccountActivityVer1.EXTRAS_GENERIC_PROFILE_INCOMPLETE);
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        super.onCreateView(inflater, container, savedInstanceState);
-
-        rootView = (ViewGroup)super.onCreateView(inflater, container, savedInstanceState);
-
-        return rootView;
     }
 
     @Override

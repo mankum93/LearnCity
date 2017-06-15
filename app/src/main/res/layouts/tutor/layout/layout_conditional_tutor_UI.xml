@@ -3,26 +3,34 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginTop="10dp">
 
     <!--Type of Tutor-->
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/type_of_tutor_label"/>
+        android:text="@string/type_of_tutor_label"
+        android:textStyle="italic"/>
     <com.learncity.util.MultiSpinner
         android:id="@+id/type_of_tutor_spinner"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
 
     <!--Subjects/Disciplines-->
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/disciplines_label"/>
+        android:text="@string/disciplines_label"
+        android:textStyle="italic"
+        android:layout_marginTop="10dp"/>
     <com.learncity.util.MultiSpinner
         android:id="@+id/subjects_taught_spinner"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
 
 </LinearLayout>

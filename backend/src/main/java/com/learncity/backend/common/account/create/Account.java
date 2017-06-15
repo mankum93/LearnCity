@@ -93,7 +93,7 @@ public class Account implements Serializable{
         this.accountStatus = profile.getCurrentStatus();
     }
 
-    public Account(){
+    protected Account(){
 
     }
 
