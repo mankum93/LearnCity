@@ -195,7 +195,7 @@ public class SearchService extends Service {
             response = myApiService.searchTutors(query).execute();
 
             List<TutorAccount> accounts = response.getItems();
-            Log.d(TAG, "No of accounts searched: " + (accounts != null ? accounts.size() : 0) + "\n" + accounts + "\n");
+            Log.d(TAG, "No of tutorRequestRecordList searched: " + (accounts != null ? accounts.size() : 0) + "\n" + accounts + "\n");
 
             return accounts;
         }

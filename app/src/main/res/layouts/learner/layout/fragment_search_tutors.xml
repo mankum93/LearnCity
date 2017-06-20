@@ -58,12 +58,14 @@
                 android:text="@string/search_by_location_label"
                 android:textStyle="bold"
                 android:textSize="15sp"/>
-            <fragment
+
+            <FrameLayout
                 android:id="@+id/map_search_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
-                android:name="com.learncity.learner.search.LocationSearchFragment"
-                android:background="@android:drawable/dialog_holo_light_frame" />
+                android:background="@android:drawable/dialog_holo_light_frame">
+
+            </FrameLayout>
 
         </LinearLayout>
 

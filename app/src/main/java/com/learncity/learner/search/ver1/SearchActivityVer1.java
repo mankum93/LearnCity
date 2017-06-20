@@ -1,4 +1,4 @@
-package com.learncity.learner.search;
+package com.learncity.learner.search.ver1;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -18,9 +18,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatMultiAutoCompleteTextView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -47,6 +49,12 @@ import com.learncity.generic.learner.account.Account;
 import com.learncity.learncity.R;
 
 
+import com.learncity.learner.search.QualificationMultiAutoCompleteTextView;
+import com.learncity.learner.search.QualificationSearchAdapter;
+import com.learncity.learner.search.SearchResultsActivity;
+import com.learncity.learner.search.SearchService;
+import com.learncity.learner.search.SubjectMultiAutoCompleteTextView;
+import com.learncity.learner.search.SubjectSearchAdapter;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.util.ArraysUtil;
 
@@ -114,6 +122,8 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
         }
     };
     private boolean cancelSearch;
+    private MultiAutoCompleteTextView subjectsMultiAutoCompleteTextView;
+    private QualificationMultiAutoCompleteTextView qualificationMultiAutoCompleteTextView;
 
 
     @Override
@@ -150,10 +160,32 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
                 .findFragmentById(R.id.map_search_fragment);
         mapFragment.getMapAsync(this);
 
-        final SubjectSearchFragment subjectSearchFragment = (SubjectSearchFragment) getSupportFragmentManager().findFragmentById(R.id.subject_search_fragment);
 
-        final QualificationSearchFragment qualificationSearchFragment = (QualificationSearchFragment) getSupportFragmentManager().findFragmentById(R.id.qualification_search_fragment);
+        // Obtain the Multi Auto Complete Text Views------------------------------------------------------------------
 
+        subjectsMultiAutoCompleteTextView = (SubjectMultiAutoCompleteTextView)findViewById(R.id.subject_multi_auto_complete_view);
+
+        // Initialize the adapter with dummy data and set it up
+        subjectsMultiAutoCompleteTextView.setAdapter(new SubjectSearchAdapter(this,
+                R.layout.search_by_subject_list_item_1,
+                getResources().getStringArray(R.array.list_of_disciplines)));
+
+        // NOTE: Don't forget to set the Tokenizer. The suggestions won't show without it.
+        subjectsMultiAutoCompleteTextView.setTokenizer(new AppCompatMultiAutoCompleteTextView.CommaTokenizer());
+
+        // Now, the Qualifications one,
+
+        qualificationMultiAutoCompleteTextView = (QualificationMultiAutoCompleteTextView)findViewById(R.id.qualification_multi_auto_complete_view);
+
+        //Initialize the adapter with dummy data and set it up
+        qualificationMultiAutoCompleteTextView.setAdapter(new QualificationSearchAdapter(this,
+                R.layout.search_by_qualification_list_item_1,
+                getResources().getStringArray(R.array.type_of_tutor)));
+
+        // NOTE: Don't forget to set the Tokenizer. The suggestions won't show without it.
+        qualificationMultiAutoCompleteTextView.setTokenizer(new AppCompatMultiAutoCompleteTextView.CommaTokenizer());
+
+        //-------------------------------------------------------------------------------------------------------------------
 
         // Lets handle the click of the floating search button
         Button searchButton = (Button) findViewById(R.id.search_button);
@@ -163,12 +195,12 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
             public void onClick(View v){
                 cancelSearch = false;
                 showSearchProgressDialog();
-                //Search the Tutor accounts from the DB.
+                //Search the Tutor tutorRequestRecordList from the DB.
                 //Build and retrieve the search query
-                List<String> subjects = Arrays.asList(ArraysUtil.convertStringToArray(subjectSearchFragment.getCustomMultiAutoCompleteTextView().getText().toString(), ", "));
+                List<String> subjects = Arrays.asList(ArraysUtil.convertStringToArray(subjectsMultiAutoCompleteTextView.getText().toString(), ", "));
                 mSearchQuery.setSubjects(subjects);
                 Log.i(TAG, "Subjects: " + subjects);
-                List<String> tutorTypes = Arrays.asList(ArraysUtil.convertStringToArray(qualificationSearchFragment.getCustomMultiAutoCompleteTextView().getText().toString(), ", "));
+                List<String> tutorTypes = Arrays.asList(ArraysUtil.convertStringToArray(qualificationMultiAutoCompleteTextView.getText().toString(), ", "));
                 Log.i(TAG, "Tutor types: " + tutorTypes);
                 mSearchQuery.setTutorTypes(tutorTypes);
 
@@ -221,11 +253,11 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
                 Toast.makeText(this, "No tutors found. Try with a different query.", Toast.LENGTH_SHORT).show();
             }
             else if(accounts != null){
-                Log.d(TAG, "Searched accounts received: " + accounts);
+                Log.d(TAG, "Searched tutorRequestRecordList received: " + accounts);
                 if(cancelSearch){
                     return;
                 }
-                // Show these accounts in a list view
+                // Show these tutorRequestRecordList in a list view
                 Intent i = new Intent(this, SearchResultsActivity.class);
                 i.putExtra(SEARCHED_ACCOUNTS, refactorAccountsToArray(accounts));
                 startActivity(i);
@@ -280,7 +312,7 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
             return null;
         }
 
-        // Extract the list of accounts from backend
+        // Extract the list of tutorRequestRecordList from backend
         List<TutorProfileVer1> profiles = new ArrayList<TutorProfileVer1>(accounts.size());
         List<Account.LocationInfo> locationInfos = new ArrayList<Account.LocationInfo>(accounts.size());
         List<UUID> userUUIDs = new ArrayList<UUID>(accounts.size());

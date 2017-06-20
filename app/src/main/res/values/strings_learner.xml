@@ -3,4 +3,12 @@
     <string name="search_by_subject_label">Subject</string>
     <string name="search_by_qualification_label">Type of Tutor</string>
     <string name="search_by_location_label">Location</string>
+
+
+    <string name="tutor_name">Tutor Name</string>
+    <string name="tutor_skill_set">Skill Set</string>
+    <string name="tutor_types">Tutor Types</string>
+    <string name="tutor_location">Tutor Location</string>
+    <string name="time_requested"> Requested on %1$s</string>
+
 </resources>

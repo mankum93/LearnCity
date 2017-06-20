@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginEnd="10dp"
+    android:background="@color/lightGrey"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="10dp"
+    android:paddingBottom="10dp"
+    android:elevation="2dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/guideline"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:id="@+id/linearLayout"
+        tools:layout_editor_absoluteY="16dp">
+
+        <TextView
+            android:text="@string/tutor_name"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tutor_name"/>
+
+        <TextView
+            android:text="@string/tutor_skill_set"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:id="@+id/skill_set"/>
+
+        <TextView
+            android:text="@string/tutor_types"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:id="@+id/tutor_types" />
+
+        <TextView
+            android:text="@string/tutor_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/location"
+            android:layout_marginTop="12dp" />
+
+    </LinearLayout>
+
+
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        app:srcCompat="@android:color/holo_blue_light"
+        android:id="@+id/display_pic"
+        android:adjustViewBounds="false"
+        android:scaleType="centerCrop"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline"
+        app:layout_constraintHorizontal_bias="1.0" />
+
+    <com.iarcuschin.simpleratingbar.SimpleRatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tutor_rating"
+        android:layout_below="@+id/display_pic"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        app:srb_starSize="13dp"
+        app:srb_numberOfStars="5"
+        app:srb_borderColor="@color/blue"
+        app:srb_fillColor="@color/blue"
+        app:srb_starBorderWidth="1"
+        app:srb_isIndicator="true"
+        android:layout_marginRight="0dp"
+        app:layout_constraintRight_toRightOf="@+id/display_pic"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/display_pic"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline"
+        app:layout_constraintHorizontal_bias="1.0" />
+
+    <TextView
+        android:id="@+id/tutor_requested_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:text="Requested time"
+        android:textStyle="italic"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@+id/tutor_rating"
+        app:layout_constraintRight_toLeftOf="@+id/guideline"
+        android:layout_marginRight="8dp"
+        app:layout_constraintLeft_toLeftOf="@+id/linearLayout"
+        app:layout_constraintHorizontal_bias="0.0" />
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6796875" />
+
+
+</android.support.constraint.ConstraintLayout>

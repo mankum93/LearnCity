@@ -1,6 +1,4 @@
-package com.learncity.learner.search.model;
-
-import com.learncity.learner.search.model.util.MessageUtils;
+package com.learncity.learner.search.model.message;
 
 import java.util.Map;
 

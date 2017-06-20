@@ -1,4 +1,4 @@
-package com.learncity.learner.search.model.util.generator;
+package com.learncity.learner.search.model.message.util.generator;
 
 /**
  * Created by DJ on 5/2/2017.

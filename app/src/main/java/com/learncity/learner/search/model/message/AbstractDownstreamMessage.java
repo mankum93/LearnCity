@@ -1,9 +1,7 @@
-package com.learncity.learner.search.model;
+package com.learncity.learner.search.model.message;
 
-import com.learncity.learner.search.model.util.MessageUtils;
-import com.learncity.learner.search.model.util.generator.Generator;
-
-import java.util.Map;
+import com.learncity.learner.search.model.message.util.MessageUtils;
+import com.learncity.learner.search.model.message.util.generator.Generator;
 
 /**
  * Represents the JSON outgoing message.

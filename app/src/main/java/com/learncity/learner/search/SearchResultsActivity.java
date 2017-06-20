@@ -13,7 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +30,9 @@ import com.learncity.backend.messagingApi.MessagingApi;
 import com.learncity.backend.messagingApi.model.Message;
 import com.learncity.generic.learner.account.Account;
 import com.learncity.learncity.R;
+import com.learncity.learner.Repository;
+import com.learncity.learner.search.database.LearnerDbHelper;
+import com.learncity.learner.search.model.request.TutorRequestRecord;
 import com.learncity.tutor.account.TutorAccount;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.util.ArraysUtil;
@@ -68,6 +71,14 @@ public class SearchResultsActivity extends AppCompatActivity {
         SearchResultsAdapter adapter = new SearchResultsAdapter(list, this);
         searchResultsView.setAdapter(adapter);
         searchResultsView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    protected void onStop() {
+        // If the process is killed then cleanup will happen automatically
+        // that is, classes will get unloaded but if not we do the cleanup here.
+        SearchResultViewHolder.clearStatics();
+        super.onStop();
     }
 
     private static class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultViewHolder>{
@@ -112,16 +123,22 @@ public class SearchResultsActivity extends AppCompatActivity {
         private ImageView displayPic;
         private SimpleRatingBar rating;
 
-        private ImageButton requestTutorButton;
+        private Button requestTutorButton;
 
         private Context context;
 
-        // A Tutor request forwarding client.
-        private static TutoringRequestForwardingClient client = new TutoringRequestForwardingClient();
+        private Repository repo = Repository.getRepository();
 
         private static View.OnClickListener requestTutorsButtonListener;
 
-        public SearchResultViewHolder(Context context, View itemView){
+        private TutorProfile tutorProfile;
+        private TutorAccount tutorAccount;
+
+        static void clearStatics(){
+            profilePicPlaceholderDrawable = null;
+        }
+
+        public SearchResultViewHolder(@NonNull final Context context, @NonNull View itemView){
             super(itemView);
 
             this.context = context;
@@ -136,63 +153,98 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             rating = (SimpleRatingBar) itemView.findViewById(R.id.tutor_rating);
 
-            requestTutorButton = (ImageButton) itemView.findViewById(R.id.request_tutor);
+            requestTutorButton = (Button) itemView.findViewById(R.id.request_tutor);
 
             if(profilePicPlaceholderDrawable == null){
                 profilePicPlaceholderDrawable = ContextCompat.getDrawable(context, R.drawable.user_pic_placeholder);
             }
+
+            if(requestTutorsButtonListener == null){
+                requestTutorsButtonListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "Tutor requested: " + tutorProfile);
+
+                        // Disable this button.
+                        // TODO: When loading search results again, this result
+                        // should be come as already disabled once disabled here
+                        // or not shown at all.
+                        v.setEnabled(false);
+
+                        // Create the message to be sent.
+                        PersistableBundleCompat bundle = new PersistableBundleCompat();
+                        bundle.putString("to", tutorAccount.getEmailBasedUUID().toString());
+                        bundle.putString("from", Account
+                                .generateType5UUID(AccountManager.getAccountDetails(context).getEmailID())
+                                .toString());
+                        bundle.putInt("messageType", com.learncity.learner.search.model.message.Message.TUTORING_REQUEST);
+                        /*Message request = new Message();
+                        request.setTo(tutorAccount.getEmailBasedUUID().toString());
+                        request.setFrom(Account
+                                .generateType5UUID(
+                                AccountManager.getAccountDetails(context).getEmailID())
+                                .toString());
+                        request.setMessageType(com.learncity.learner.search.model.message.Message.TUTORING_REQUEST);*/
+
+                        // Schedule this job now.
+                        TutoringRequestForwardingJob.schedule(bundle);
+
+                        // Assuming that the job request will be sent successfully in
+                        // future(bc of exponential backoff), we can create a record
+                        // of this sent request. Do this here only.
+
+                        // Prepare the Tutor request record to be inserted.
+                        String shortFormattedAddress = tutorAccount.getLocationInfo() == null ? null : tutorAccount.getLocationInfo().getShortFormattedAddress();
+                        TutorRequestRecord record = TutorRequestRecord.Builder.newInstance(
+                                tutorAccount.getEmailBasedUUID(),
+                                System.currentTimeMillis(),
+                                com.learncity.learner.search.model.message.Message.TUTORING_REQUEST,
+                                tutorProfile.getName(),
+                                ArraysUtil.convertArrayToString(tutorProfile.getDisciplines()),
+                                ArraysUtil.convertArrayToString(tutorProfile.getTutorTypes()))
+                                .withTutorRating(tutorProfile.getRating())
+                                .withTutorLocation(shortFormattedAddress)
+                                .build();
+
+                        // Insert this record to Db
+                        LearnerDbHelper.insertTutorRequestRecordToDatabase(repo.db, record);
+
+                        // Update the Repo with this new data.
+                        repo.updateTutorRequestRecords(record);
+                    }
+                };
+            }
+            requestTutorButton.setOnClickListener(requestTutorsButtonListener);
+
+            // Create the table if not already created.
+            // TODO: See that helper as a static instance might not be required.
         }
 
-        public void bindProfileToView(final TutorAccount account){
+        public void bindProfileToView(@NonNull final TutorAccount account){
 
-            final TutorProfile profile = account.getProfile();
+            this.tutorAccount = account;
+            tutorProfile = account.getProfile();
 
             // Now, bind each part
-            tutorName.setText(profile.getName());
+            tutorName.setText(tutorProfile.getName());
 
-            String[] skillSet1 = profile.getDisciplines();
-            skillSet.setText(skillSet1 == null || skillSet1.length == 0 ? "" : ArraysUtil.convertArrayToString(profile.getDisciplines(), ", "));
+            final String[] skillSet1 = tutorProfile.getDisciplines();
 
-            String[] tutorTypes1 = profile.getTutorTypes();
-            tutorTypes.setText(tutorTypes1 == null || tutorTypes1.length == 0 ? "" : ArraysUtil.convertArrayToString(profile.getTutorTypes(), ", "));
+            skillSet.setText(skillSet1 == null || skillSet1.length == 0 ? "" : ArraysUtil.convertArrayToString(skillSet1, ", "));
 
-            String shortFormattedAddress = account.getLocationInfo() == null ? null : account.getLocationInfo().getShortFormattedAddress();
+            final String[] tutorTypes1 = tutorProfile.getTutorTypes();
+            tutorTypes.setText(tutorTypes1 == null || tutorTypes1.length == 0 ? "" : ArraysUtil.convertArrayToString(tutorTypes1, ", "));
+
+            final String shortFormattedAddress = account.getLocationInfo() == null ? null : account.getLocationInfo().getShortFormattedAddress();
             location.setText(shortFormattedAddress == null || shortFormattedAddress.isEmpty() ? "" : shortFormattedAddress);
 
-            int r = profile.getRating();
+            final int r = tutorProfile.getRating();
             rating.setRating(r);
 
             // Binding the placeholder pic
             displayPic.setImageDrawable(profilePicPlaceholderDrawable);
             // TODO: Bind the display pic to actual user DP
 
-            if(requestTutorsButtonListener == null){
-                requestTutorsButtonListener = new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.d(TAG, "Tutor requested: " + profile);
-
-                        // Create the message to be sent.
-                        PersistableBundleCompat bundle = new PersistableBundleCompat();
-                        bundle.putString("to", account.getEmailBasedUUID().toString());
-                        bundle.putString("from", Account
-                                .generateType5UUID(AccountManager.getAccountDetails(context).getEmailID())
-                                .toString());
-                        bundle.putInt("messageType", com.learncity.learner.search.model.Message.TUTORING_REQUEST);
-                        /*Message request = new Message();
-                        request.setTo(account.getEmailBasedUUID().toString());
-                        request.setFrom(Account
-                                .generateType5UUID(
-                                AccountManager.getAccountDetails(context).getEmailID())
-                                .toString());
-                        request.setMessageType(com.learncity.learner.search.model.Message.TUTORING_REQUEST);*/
-
-                        // Schedule this job now.
-                        TutoringRequestForwardingJob.schedule(bundle);
-                    }
-                };
-            }
-            requestTutorButton.setOnClickListener(requestTutorsButtonListener);
         }
     }
 

@@ -1,6 +1,6 @@
-package com.learncity.learner.search.model.util.generator;
+package com.learncity.learner.search.model.message.util.generator;
 
-import com.learncity.learner.search.model.util.MessageUtils;
+import com.learncity.learner.search.model.message.util.MessageUtils;
 
 /**
  * Created by DJ on 5/2/2017.

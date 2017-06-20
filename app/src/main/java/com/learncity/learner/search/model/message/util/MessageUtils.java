@@ -1,4 +1,4 @@
-package com.learncity.learner.search.model.util;
+package com.learncity.learner.search.model.message.util;
 import com.fasterxml.uuid.EthernetAddress;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;

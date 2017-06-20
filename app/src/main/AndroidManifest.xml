@@ -40,7 +40,7 @@
         <activity android:name="com.learncity.generic.learner.account.create.SignUpActivity" />
         <activity android:name="com.learncity.learner.main.LearnerHomeActivity" />
         <activity android:name="com.learncity.tutor.main.TutorHomeActivity" />
-        <activity android:name="com.learncity.learner.search.SearchActivityVer1" />
+        <activity android:name="com.learncity.learner.search.ver1.SearchActivityVer1" />
         <activity android:name="com.learncity.learner.search.SearchResultsActivity" />
         <activity android:name="com.learncity.learner.account.profile.MyProfileActivity" />
         <activity android:name="com.learncity.tutor.account.profile.MyProfileActivity" />

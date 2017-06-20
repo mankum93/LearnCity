@@ -31,11 +31,11 @@ public class HomeActivity extends AppCompatActivity {
     private LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem[] learnerDrawerLayoutItems;
     private AdapterView.OnItemClickListener listener;
 
-    protected void setLearnerDrawerLayoutItems(LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem[] learnerDrawerLayoutItems) {
+    public void setLearnerDrawerLayoutItems(LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem[] learnerDrawerLayoutItems) {
         this.learnerDrawerLayoutItems = learnerDrawerLayoutItems;
     }
 
-    protected void setAdapterViewItemClickListener(AdapterView.OnItemClickListener listener) {
+    public void setAdapterViewItemClickListener(AdapterView.OnItemClickListener listener) {
         this.listener = listener;
     }
 
@@ -49,7 +49,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
 
         mTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.home_drawer_layout);
@@ -58,10 +57,11 @@ public class HomeActivity extends AppCompatActivity {
         // Set the adapter for the list view
         setDrawerViewAdapter();
 
-        /*The v7.app.ActionBarDrawerToggle doesn't let you pass a cutom icon for the drawer indicator.
-        **This is only available in v4 compat lib. v7 provides a default "hamburger" icon in the implementation
-        * TO-TRY: Changing the icon to something custom
-         */
+        /*
+        The v7.app.ActionBarDrawerToggle doesn't let you pass a cutom icon for the drawer indicator.
+        This is only available in v4 compat lib. v7 provides a default "hamburger" icon in the implementation
+        TO-TRY: Changing the icon to something custom
+        */
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,

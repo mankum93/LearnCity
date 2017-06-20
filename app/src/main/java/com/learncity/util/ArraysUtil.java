@@ -33,6 +33,13 @@ public class ArraysUtil {
     }
 
     public static String convertArrayToString(String[] stringArray, String separator) {
+
+        if(stringArray == null || stringArray.length == 0){
+            return null;
+        }
+        if(separator == null || separator.isEmpty()){
+            separator = ARRAY_SEPARATOR;
+        }
         StringBuffer stringBuffer = new StringBuffer();
         for (String str : stringArray) {
             stringBuffer.append(str).append(separator);

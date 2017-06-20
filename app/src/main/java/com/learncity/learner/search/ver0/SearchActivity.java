@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -27,8 +26,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.learncity.backend.tutorApi.model.SearchTutorsQuery;
 import com.learncity.backend.tutorApi.model.TutorProfileResponseView;
 import com.learncity.learncity.R;
-import com.learncity.learner.search.QualificationSearchFragment;
-import com.learncity.learner.search.SubjectSearchFragment;
 import com.learncity.util.ArraysUtil;
 
 import java.util.Arrays;
@@ -100,9 +97,9 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
                 .findFragmentById(R.id.map_search_fragment);
         mapFragment.getMapAsync(this);
 
-        final SubjectSearchFragment subjectSearchFragment = (SubjectSearchFragment) getSupportFragmentManager().findFragmentById(R.id.subject_search_fragment);
+        final SubjectSearchFragment subjectSearchFragment = (SubjectSearchFragment) getSupportFragmentManager().findFragmentById(R.id.subject_multi_auto_complete_view);
 
-        final QualificationSearchFragment qualificationSearchFragment = (QualificationSearchFragment) getSupportFragmentManager().findFragmentById(R.id.qualification_search_fragment);
+        final QualificationSearchFragment qualificationSearchFragment = (QualificationSearchFragment) getSupportFragmentManager().findFragmentById(R.id.qualification_multi_auto_complete_view);
 
 
         //Lets handle the click of the floating search button

@@ -1,4 +1,4 @@
-package com.learncity.learner.search.model;
+package com.learncity.learner.search.model.message;
 
 import java.io.Serializable;
 import java.util.UUID;

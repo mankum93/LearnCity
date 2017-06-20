@@ -15,7 +15,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="10dp"
         android:paddingBottom="10dp"
         android:paddingEnd="10dp"
@@ -35,28 +35,28 @@
             android:layout_marginRight="10dp">
 
             <TextView
-                android:text="TutorName"
+                android:text="@string/tutor_name"
                 android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tutor_name"/>
 
             <TextView
-                android:text="Skill set"
+                android:text="@string/tutor_skill_set"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:id="@+id/skill_set"/>
 
             <TextView
-                android:text="Tutor Type"
+                android:text="@string/tutor_types"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="11dp"
+                android:layout_marginTop="12dp"
                 android:id="@+id/tutor_types" />
 
             <TextView
-                android:text="Location"
+                android:text="@string/tutor_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/location"
@@ -90,15 +90,20 @@
             app:srb_isIndicator="true"
             android:layout_marginTop="2dp" />
 
-        <ImageButton
+        <Button
             android:id="@+id/request_tutor"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_below="@+id/tutor_rating"
             android:layout_marginTop="10dp"
-            android:background="@drawable/drawable_add_new_icon" />
+            android:background="@color/blue"
+            android:minHeight="25dp"
+            android:minWidth="80dp"
+            android:text="Request"
+            android:textAppearance="@style/TextAppearance.AppCompat" />
 
     </RelativeLayout>
 

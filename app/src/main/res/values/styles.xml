@@ -22,4 +22,8 @@
         <item name="colorControlActivated">@color/lightGrey</item>
     </style>
 
+    <style name="PagerTabStripText">
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

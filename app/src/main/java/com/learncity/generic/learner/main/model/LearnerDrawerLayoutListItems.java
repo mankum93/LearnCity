@@ -10,7 +10,6 @@ package com.learncity.generic.learner.main.model;
 public class LearnerDrawerLayoutListItems {
 
     public static final LearnerDrawerLayoutItem[] LEARNER_DRAWER_LAYOUT_ITEMS = new LearnerDrawerLayoutItem[]{
-            new LearnerDrawerLayoutItem("SEARCH TUTORS", "PATH"),
             new LearnerDrawerLayoutItem("MY MATERIAL", "PATH"),
             new LearnerDrawerLayoutItem("MY PROFILE", "PATH"),
             new LearnerDrawerLayoutItem("SETTINGS", "PATH")
