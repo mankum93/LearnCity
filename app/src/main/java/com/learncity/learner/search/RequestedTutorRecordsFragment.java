@@ -23,6 +23,7 @@ import com.learncity.util.ArraysUtil;
 import com.learncity.util.DataSetObserver;
 import com.learncity.util.DateTimeUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ import java.util.List;
 public class RequestedTutorRecordsFragment extends Fragment {
 
     private Repository repo;
-    private DataSetObserver tutorRequestRecordsObserver;
+    private DataSetObserver<TutorRequestRecord> tutorRequestRecordsObserver;
     private TutorRequestsRecyclerViewAdapter adapter;
     private RecyclerView tutorRequestRecords;
 
@@ -75,9 +76,10 @@ public class RequestedTutorRecordsFragment extends Fragment {
 
         if(this.tutorRequestRecordsObserver == null){
             // Register Tutor request records observers with the Repo.
-            tutorRequestRecordsObserver = new DataSetObserver() {
+            tutorRequestRecordsObserver = new DataSetObserver<TutorRequestRecord>() {
                 @Override
-                public void onChanged() {
+                public void onChanged(@NonNull List<TutorRequestRecord> newTutorRequestRecords) {
+                    adapter.setTutorRequestRecordList(newTutorRequestRecords);
                     adapter.notifyDataSetChanged();
                 }
 
@@ -109,6 +111,9 @@ public class RequestedTutorRecordsFragment extends Fragment {
 
             repo.registerTutorRequestRecordsObserver(tutorRequestRecordsObserver);
         }
+        if(repo.getTutorRequestRecords() != null){
+            adapter.setTutorRequestRecordList(repo.getTutorRequestRecords());
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -128,7 +133,7 @@ public class RequestedTutorRecordsFragment extends Fragment {
 
         public TutorRequestsRecyclerViewAdapter(List<TutorRequestRecord> tutorRequestRecordList, @NonNull Context context) {
             if(tutorRequestRecordList == null){
-                this.tutorRequestRecordList = new LinkedList<>();
+                this.tutorRequestRecordList = new ArrayList<>();
             }
             else{
                 this.tutorRequestRecordList = tutorRequestRecordList;
@@ -154,6 +159,15 @@ public class RequestedTutorRecordsFragment extends Fragment {
         @Override
         public int getItemCount() {
             return tutorRequestRecordList.size();
+        }
+
+        public void refreshTutorRequestRecordList(@NonNull List<TutorRequestRecord> tutorRequestRecordList) {
+            this.tutorRequestRecordList.clear();
+            this.tutorRequestRecordList.addAll(tutorRequestRecordList);
+        }
+
+        public void setTutorRequestRecordList(@NonNull List<TutorRequestRecord> tutorRequestRecordList) {
+            this.tutorRequestRecordList = tutorRequestRecordList;
         }
     }
 
@@ -212,7 +226,7 @@ public class RequestedTutorRecordsFragment extends Fragment {
             location.setText(shortFormattedAddress == null || shortFormattedAddress.isEmpty() ? "" : shortFormattedAddress);
 
             timeRequested.setText(context.getResources().getString(R.string.time_requested,
-                    DateTimeUtils.timeMillisToHH_MMFormat(requestRecord.getTimeStamp(), "hh:mm a EEE, MMM d, YYYY")));
+                    DateTimeUtils.timeMillisToHH_MMFormat(requestRecord.getTimeStamp(), "hh:mm a EEE, MMM d, yyyy")));
 
             final float r = requestRecord.getTutorRating();
             rating.setRating(r);

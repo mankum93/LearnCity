@@ -5,7 +5,9 @@
     <color name="colorAccent">#ffa5a7</color>
 
     <color name="golden">#FFD700</color>
+    <color name="lighterGrey">#e7e6e6</color>
     <color name="lightGrey">#D3D3D3</color>
+    <color name="darkGrey">#b9b9b9</color>
     <color name="blue">#00b8ff</color>
     <color name="light_blue">#7fdbff</color>
     <color name="white">#ffffff</color>

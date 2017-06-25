@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.learncity.generic.learner.main.model.LearnerDrawerLayoutListItems;
+import com.learncity.generic.learner.main.model.GenericDrawerLayoutListItems;
 import com.learncity.learncity.R;
 
 public class HomeActivity extends AppCompatActivity {
@@ -28,11 +28,11 @@ public class HomeActivity extends AppCompatActivity {
     //We could also consider going without a member variable to hold the title. Could directly call Activity.getTitle()
     private CharSequence mTitle;
 
-    private LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem[] learnerDrawerLayoutItems;
+    private GenericDrawerLayoutListItems.GenericDrawerLayoutItem[] genericDrawerLayoutItems;
     private AdapterView.OnItemClickListener listener;
 
-    public void setLearnerDrawerLayoutItems(LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem[] learnerDrawerLayoutItems) {
-        this.learnerDrawerLayoutItems = learnerDrawerLayoutItems;
+    public void setGenericDrawerLayoutItems(GenericDrawerLayoutListItems.GenericDrawerLayoutItem[] genericDrawerLayoutItems) {
+        this.genericDrawerLayoutItems = genericDrawerLayoutItems;
     }
 
     public void setAdapterViewItemClickListener(AdapterView.OnItemClickListener listener) {
@@ -103,11 +103,11 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setDrawerViewAdapter() {
-        if(learnerDrawerLayoutItems == null){
+        if(genericDrawerLayoutItems == null){
             throw new NullPointerException("The DrawerLayoutItems Adapter has not been set");
         }
         mDrawerList.setAdapter(new HomeDrawerViewAdapter(this,
-                R.layout.home_drawer_list_item_1, learnerDrawerLayoutItems));
+                R.layout.home_drawer_list_item_1, genericDrawerLayoutItems));
     }
 
     /* Called whenever we call invalidateOptionsMenu() */
@@ -150,16 +150,16 @@ public class HomeActivity extends AppCompatActivity {
 
 }
 
-class HomeDrawerViewAdapter extends ArrayAdapter<LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem> {
+class HomeDrawerViewAdapter extends ArrayAdapter<GenericDrawerLayoutListItems.GenericDrawerLayoutItem> {
 
-        public HomeDrawerViewAdapter(Context context, int listLayoutId, LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem[] learnerDrawerLayoutItems) {
-            super(context, listLayoutId, learnerDrawerLayoutItems);
+        public HomeDrawerViewAdapter(Context context, int listLayoutId, GenericDrawerLayoutListItems.GenericDrawerLayoutItem[] genericDrawerLayoutItems) {
+            super(context, listLayoutId, genericDrawerLayoutItems);
         }
 
         @Override
         public View getView(int position, View recycleView, ViewGroup parent) {
             //Get the feature for this position
-            LearnerDrawerLayoutListItems.LearnerDrawerLayoutItem learnerDrawerLayoutItem = getItem(position);
+            GenericDrawerLayoutListItems.GenericDrawerLayoutItem genericDrawerLayoutItem = getItem(position);
 
             // Check if an existing view is being reused, otherwise inflate the view
             ViewHolder viewHolder; // view lookup cache stored in tag
@@ -175,7 +175,7 @@ class HomeDrawerViewAdapter extends ArrayAdapter<LearnerDrawerLayoutListItems.Le
             else {
                 viewHolder = (ViewHolder) recycleView.getTag();
             }
-            viewHolder.appFeatureName.setText(learnerDrawerLayoutItem.getSearchFeatureName());
+            viewHolder.appFeatureName.setText(genericDrawerLayoutItem.getFeatureName());
 
         return recycleView;
         }

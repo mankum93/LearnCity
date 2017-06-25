@@ -57,4 +57,8 @@
         <item>German</item>
         <item>Japanese</item>
     </string-array>
+
+    <!-- Job Requests-->
+    <string name="name_and_location"> %1$s from %2$s</string>
+
 </resources>

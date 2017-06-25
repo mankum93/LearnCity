@@ -1,6 +1,8 @@
 package com.learncity.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,5 +66,20 @@ public class ArraysUtil {
             array[i] = array[i].trim();
 
         return array;
+    }
+
+    public static <T extends U, U> List<T> toList(List<T> outList, U... items){
+
+        if(items == null || items.length == 0){
+            return null;
+        }
+
+        if(outList == null){
+            outList = new ArrayList<>(items.length);
+        }
+
+        Collections.addAll((List<U>)outList, items);
+
+        return outList;
     }
 }

@@ -1,8 +1,10 @@
 package com.learncity.util;
 
-public interface DataSetObserver {
+import java.util.List;
 
-    public void onChanged();
+public interface DataSetObserver<T> {
+
+    public void onChanged(List<T> newData);
 
     public void onItemRangeChanged(int positionStart, int itemCount);
 

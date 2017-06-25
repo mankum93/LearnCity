@@ -6,10 +6,19 @@
     android:layout_height="match_parent">
 
     <!-- The main content view -->
-    <FrameLayout
-        android:id="@+id/content_frame"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/tutor_home_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.PagerTabStrip
+            android:id="@+id/tutor_jobs_pager_tab_strip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:textAppearance="@style/PagerTabStripText"/>
+
+    </android.support.v4.view.ViewPager>
 
     <!--The navigation drawer -->
     <ListView

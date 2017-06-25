@@ -12,7 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.learncity.generic.learner.main.HomeActivity;
-import com.learncity.generic.learner.main.model.LearnerDrawerLayoutListItems;
+import com.learncity.generic.learner.main.model.GenericDrawerLayoutListItems;
 import com.learncity.learncity.R;
 import com.learncity.learner.account.profile.MyProfileActivity;
 import com.learncity.learner.search.RequestedTutorRecordsFragment;
@@ -29,7 +29,7 @@ public class LearnerHomeActivity extends HomeActivity {
         setContentView(R.layout.activity_learner_home);
 
         // Drawer Layout setup
-        setLearnerDrawerLayoutItems(LearnerDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMS);
+        setGenericDrawerLayoutItems(GenericDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMS);
         setAdapterViewItemClickListener(new DrawerItemClickListener());
 
         super.onCreate(savedInstanceState);
@@ -49,8 +49,8 @@ public class LearnerHomeActivity extends HomeActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            //TEST: Start the Search Activity for the right condition
-            if(LearnerDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMS[position].getSearchFeatureName().equals("MY PROFILE")){
+
+            if(GenericDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMS[position].getFeatureName().equals("MY PROFILE")){
                 startActivity(new Intent(LearnerHomeActivity.this, MyProfileActivity.class));
             }
         }

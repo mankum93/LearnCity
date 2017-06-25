@@ -32,7 +32,8 @@
             android:layout_toLeftOf="@+id/display_pic"
             android:layout_toStartOf="@+id/display_pic"
             android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp">
+            android:layout_marginRight="10dp"
+            android:id="@+id/linearLayout2">
 
             <TextView
                 android:text="@string/tutor_name"
@@ -66,14 +67,14 @@
 
 
         <ImageView
+            android:id="@+id/display_pic"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            app:srcCompat="@android:color/holo_blue_light"
-            android:id="@+id/display_pic"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:adjustViewBounds="false"
             android:scaleType="centerCrop"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            app:srcCompat="@android:color/holo_red_light" />
 
         <com.iarcuschin.simpleratingbar.SimpleRatingBar
             android:layout_width="wrap_content"
@@ -84,22 +85,22 @@
             android:layout_alignParentEnd="true"
             app:srb_starSize="13dp"
             app:srb_numberOfStars="5"
-            app:srb_borderColor="@color/blue"
-            app:srb_fillColor="@color/blue"
+            app:srb_borderColor="@color/colorAccent"
+            app:srb_fillColor="@color/colorPrimary"
             app:srb_starBorderWidth="1"
             app:srb_isIndicator="true"
             android:layout_marginTop="2dp" />
 
         <Button
             android:id="@+id/request_tutor"
-            style="?android:attr/borderlessButtonStyle"
+            style="@android:style/Widget.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/tutor_rating"
-            android:layout_marginTop="10dp"
-            android:background="@color/blue"
+            android:layout_below="@+id/linearLayout2"
+            android:layout_marginTop="14dp"
+            android:background="@color/lighterGrey"
             android:minHeight="25dp"
             android:minWidth="80dp"
             android:text="Request"
