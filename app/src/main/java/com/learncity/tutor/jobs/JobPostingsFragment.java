@@ -14,8 +14,7 @@ import android.widget.TextView;
 
 import com.learncity.learncity.R;
 import com.learncity.tutor.jobs.model.JobPosting;
-import com.learncity.tutor.jobs.model.JobRequest;
-import com.learncity.util.ArraysUtil;
+import com.learncity.util.ArrayUtils;
 import com.learncity.util.DataSetObserver;
 import com.learncity.util.DateTimeUtils;
 
@@ -77,7 +76,7 @@ public class JobPostingsFragment extends Fragment {
 
                 @Override
                 public void onChanged(@NonNull List<JobPosting> newTutorPostingRecords) {
-                    adapter.setTutorJobPostingRecordList(newTutorPostingRecords);
+                    adapter.setJobPostingsList(newTutorPostingRecords);
                     adapter.notifyDataSetChanged();
                 }
 
@@ -110,7 +109,7 @@ public class JobPostingsFragment extends Fragment {
             repo.registerJobPostingsObserver(jobPostingRecordsObserver);
         }
         if(repo.getJobRequests() != null){
-            adapter.setTutorJobPostingRecordList(repo.getJobPostings());
+            adapter.setJobPostingsList(repo.getJobPostings());
         }
         adapter.notifyDataSetChanged();
     }
@@ -159,13 +158,13 @@ public class JobPostingsFragment extends Fragment {
             return jobPostingList.size();
         }
 
-        public void refreshJobPostingRecordList(@NonNull List<JobPosting> jobPostingRecordList) {
+        public void refreshJobPostingsList(@NonNull List<JobPosting> jobPostingsList) {
             this.jobPostingList.clear();
-            this.jobPostingList.addAll(jobPostingRecordList);
+            this.jobPostingList.addAll(jobPostingsList);
         }
 
-        public void setTutorJobPostingRecordList(@NonNull List<JobPosting> jobPostingRecordList) {
-            this.jobPostingList = jobPostingRecordList;
+        public void setJobPostingsList(@NonNull List<JobPosting> jobPostingsList) {
+            this.jobPostingList = jobPostingsList;
         }
     }
 
@@ -200,7 +199,7 @@ public class JobPostingsFragment extends Fragment {
                     shortFormattedAddress == null || shortFormattedAddress.isEmpty() ? "" : shortFormattedAddress));
 
             final String skillSet1 = jobPosting.getSubjects();
-            subjects.setText(ArraysUtil.convertArrayToString(skillSet1.split("__,__"), ", "));
+            subjects.setText(ArrayUtils.convertArrayToString(skillSet1.split("__,__"), ", "));
 
             // TODO: Make this timestamp something like, "Posted x hrs./days ago" as that makes sense
             // as a Job posting.

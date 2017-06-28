@@ -8,9 +8,9 @@ import java.util.logging.Logger;
  * Created by DJ on 2/4/2017.
  */
 
-public class ArraysUtil {
+public class ArrayUtils {
 
-    private static final Logger logger = Logger.getLogger(ArraysUtil.class.getSimpleName());
+    private static final Logger logger = Logger.getLogger(ArrayUtils.class.getSimpleName());
 
     private static String ARRAY_SEPARATOR = "__,__";
 

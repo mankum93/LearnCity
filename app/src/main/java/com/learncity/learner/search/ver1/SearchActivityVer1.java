@@ -56,7 +56,7 @@ import com.learncity.learner.search.SearchService;
 import com.learncity.learner.search.SubjectMultiAutoCompleteTextView;
 import com.learncity.learner.search.SubjectSearchAdapter;
 import com.learncity.tutor.account.profile.model.TutorProfile;
-import com.learncity.util.ArraysUtil;
+import com.learncity.util.ArrayUtils;
 
 
 import org.greenrobot.eventbus.EventBus;
@@ -197,10 +197,10 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
                 showSearchProgressDialog();
                 //Search the Tutor tutorRequestRecordList from the DB.
                 //Build and retrieve the search query
-                List<String> subjects = Arrays.asList(ArraysUtil.convertStringToArray(subjectsMultiAutoCompleteTextView.getText().toString(), ", "));
+                List<String> subjects = Arrays.asList(ArrayUtils.convertStringToArray(subjectsMultiAutoCompleteTextView.getText().toString(), ", "));
                 mSearchQuery.setSubjects(subjects);
                 Log.i(TAG, "Subjects: " + subjects);
-                List<String> tutorTypes = Arrays.asList(ArraysUtil.convertStringToArray(qualificationMultiAutoCompleteTextView.getText().toString(), ", "));
+                List<String> tutorTypes = Arrays.asList(ArrayUtils.convertStringToArray(qualificationMultiAutoCompleteTextView.getText().toString(), ", "));
                 Log.i(TAG, "Tutor types: " + tutorTypes);
                 mSearchQuery.setTutorTypes(tutorTypes);
 

@@ -31,8 +31,11 @@ public class MessagingClient {
     private static final HttpTransport HTTP_TRANSPORT = UrlFetchTransport.getDefaultInstance();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
-    private static final String MESSAGING_SERVICE_URI = "http://127.0.0.1:8090/send";
-    private static final GenericUrl URL = new GenericUrl(MESSAGING_SERVICE_URI);
+    private static final String MESSAGING_SERVICE_URI_TEST = "http://127.0.0.1:8090/send";
+    public static final String MESSAGING_SERVICE_URI_LIVE = "https://healthy-dragon-168416.appspot.com/send";
+    //public static final String MESSAGING_SERVICE_URI_DEFAULT = BACKEND_ROOT_URL_LIVE;
+    public static final String MESSAGING_SERVICE_URI_DEFAULT = MESSAGING_SERVICE_URI_LIVE;
+    private static final GenericUrl URL = new GenericUrl(MESSAGING_SERVICE_URI_DEFAULT);
 
     // Configure a HTTPRequest Factory
     private static final HttpRequestFactory requestFactory =

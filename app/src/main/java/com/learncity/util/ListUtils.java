@@ -7,7 +7,7 @@ import java.util.List;
  * Created by DJ on 2/4/2017.
  */
 
-public class ListUtil {
+public class ListUtils {
 
     private static String LIST_SEPARATOR = "__,__";
 

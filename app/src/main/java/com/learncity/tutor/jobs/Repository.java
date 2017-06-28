@@ -132,7 +132,7 @@ public class Repository {
         }
     }
 
-    public void updateJobRequestRecords(@NonNull JobPosting jobPosting) {
+    public void updateJobPostingRecords(@NonNull JobPosting jobPosting) {
 
         if(this.jobPostings == null){
             jobPostings = new ArrayList<>();

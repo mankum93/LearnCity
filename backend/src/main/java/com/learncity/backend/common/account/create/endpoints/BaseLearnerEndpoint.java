@@ -13,7 +13,7 @@ import com.learncity.backend.common.account.create.Account;
 import com.learncity.backend.common.account.create.GenericLearnerProfileVer1;
 import com.learncity.backend.common.account.create.LatLng;
 
-import com.learncity.backend.util.LocationUtil;
+import com.learncity.backend.util.LocationUtils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -130,10 +130,10 @@ public class BaseLearnerEndpoint {
             String response;
             logger.info("shouldRequestWithoutQuotaConstraint: " + shouldRequestWithoutQuotaConstraint);
             if(shouldRequestWithoutQuotaConstraint){
-                response = LocationUtil.getFormattedAddress(geoCoordinates, null, false);
+                response = LocationUtils.getFormattedAddress(geoCoordinates, null, false);
             }
             else{
-                response = LocationUtil.getFormattedAddress(geoCoordinates);
+                response = LocationUtils.getFormattedAddress(geoCoordinates);
             }
 
             if((response = checkResponseCode(response)) != null){
@@ -158,10 +158,10 @@ public class BaseLearnerEndpoint {
                 // 10 requests haven't been serviced because of the Quota
                 if(request_OVER_QUERY_LIMIT_counter >= 10){
                     shouldRequestWithoutQuotaConstraint = true;
-                    return checkResponseCode(LocationUtil.getFormattedAddress(geoCoordinates, null, false));
+                    return checkResponseCode(LocationUtils.getFormattedAddress(geoCoordinates, null, false));
                 }
                 else{
-                    return checkResponseCode(LocationUtil.getFormattedAddress(geoCoordinates, null));
+                    return checkResponseCode(LocationUtils.getFormattedAddress(geoCoordinates, null));
                 }
             }
             else if(response.equals("REQUEST_DENIED")){

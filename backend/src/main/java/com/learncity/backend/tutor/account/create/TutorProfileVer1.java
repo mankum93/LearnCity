@@ -6,7 +6,7 @@ import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Subclass;
 import com.learncity.backend.common.account.create.GenericLearnerProfileVer1;
 import com.learncity.backend.common.account.create.LatLng;
-import com.learncity.backend.util.ArraysUtil;
+import com.learncity.backend.util.ArrayUtils;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -105,14 +105,14 @@ public class TutorProfileVer1 extends GenericLearnerProfileVer1 implements Seria
         this.teachingCredits = teachingCredits;
     }
     public void ensureTutorTypesArrayUniqueness(){
-        tutorTypes = ArraysUtil.ensureUniqueness(tutorTypes);
+        tutorTypes = ArrayUtils.ensureUniqueness(tutorTypes);
     }
     public void ensureDisciplinesArrayUniqueness(){
-        disciplines = ArraysUtil.ensureUniqueness(disciplines);
+        disciplines = ArrayUtils.ensureUniqueness(disciplines);
     }
     public void refineProfileData(){
-        tutorTypes = ArraysUtil.trimArray(ArraysUtil.ensureUniqueness(tutorTypes));
-        disciplines = ArraysUtil.trimArray(ArraysUtil.ensureUniqueness(disciplines));
+        tutorTypes = ArrayUtils.trimArray(ArrayUtils.ensureUniqueness(tutorTypes));
+        disciplines = ArrayUtils.trimArray(ArrayUtils.ensureUniqueness(disciplines));
     }
 
 

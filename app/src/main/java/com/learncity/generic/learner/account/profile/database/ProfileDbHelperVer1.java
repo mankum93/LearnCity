@@ -18,7 +18,7 @@ import com.learncity.tutor.account.profile.model.occupation.Occupation;
 import com.learncity.tutor.account.profile.model.qualification.educational.EducationalQualification;
 import com.learncity.tutor.account.profile.model.qualification.educational.SecondaryEducationalQualification;
 import com.learncity.tutor.account.profile.model.qualification.educational.SeniorSecondaryEducationalQualification;
-import com.learncity.util.ArraysUtil;
+import com.learncity.util.ArrayUtils;
 
 import java.io.File;
 import java.util.Date;
@@ -179,8 +179,8 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
         ContentValues values = getContentValues((GenericLearnerProfile) myProfile);
         //Add the TutorProfile specific values.
         values.put(ProfileDbSchemaVer1.TutorProfileTable.cols.RATING, myProfile.getRating());
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.cols.TUTOR_TYPES, ArraysUtil.convertArrayToString(myProfile.getTutorTypes()));
-        values.put(ProfileDbSchemaVer1.TutorProfileTable.cols.SUBJECT_TYPES, ArraysUtil.convertArrayToString(myProfile.getDisciplines()));
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.cols.TUTOR_TYPES, ArrayUtils.convertArrayToString(myProfile.getTutorTypes()));
+        values.put(ProfileDbSchemaVer1.TutorProfileTable.cols.SUBJECT_TYPES, ArrayUtils.convertArrayToString(myProfile.getDisciplines()));
         //Add the educational qualification and occupation separately
         return values;
     }
@@ -427,8 +427,8 @@ public class ProfileDbHelperVer1 extends SQLiteOpenHelper {
                     c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.PASSWORD)))
                     .withImagePath(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.LearnerProfileTable.cols.DISPLAY_PIC_URI)))
                     .withRating(Integer.parseInt(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.cols.RATING))))
-                    .withTutorTypes(ArraysUtil.convertStringToArray(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.cols.TUTOR_TYPES))))
-                    .withDisciplines(ArraysUtil.convertStringToArray(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.cols.SUBJECT_TYPES))));
+                    .withTutorTypes(ArrayUtils.convertStringToArray(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.cols.TUTOR_TYPES))))
+                    .withDisciplines(ArrayUtils.convertStringToArray(c.getString(c.getColumnIndex(ProfileDbSchemaVer1.TutorProfileTable.cols.SUBJECT_TYPES))));
             c.close();
 
             SecondaryEducationalQualification seq = null;

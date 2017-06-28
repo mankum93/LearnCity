@@ -9,7 +9,7 @@ import java.util.List;
  * Created by DJ on 2/4/2017.
  */
 
-public class ArraysUtil {
+public class ArrayUtils {
 
     private static String ARRAY_SEPARATOR = "__,__";
 

@@ -31,9 +31,9 @@ import java.util.logging.Logger;
  * Created by DJ on 3/7/2017.
  */
 
-public class LocationUtil {
+public class LocationUtils {
 
-    private static final Logger logger = Logger.getLogger(LocationUtil.class.getName());
+    private static final Logger logger = Logger.getLogger(LocationUtils.class.getName());
 
     private static final String API_KEY = "AIzaSyCSi1Df1lZNv207--_xddTvrpwHiyNXeJk";
 

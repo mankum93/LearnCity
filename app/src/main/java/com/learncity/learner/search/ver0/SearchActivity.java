@@ -26,7 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.learncity.backend.tutorApi.model.SearchTutorsQuery;
 import com.learncity.backend.tutorApi.model.TutorProfileResponseView;
 import com.learncity.learncity.R;
-import com.learncity.util.ArraysUtil;
+import com.learncity.util.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -110,10 +110,10 @@ public class SearchActivity extends AppCompatActivity implements OnMapReadyCallb
             public void onClick(View v){
                 //Search the Tutor profiles from the DB.
                 //Build and retrieve the search query
-                List<String> subjects = Arrays.asList(ArraysUtil.convertStringToArray(subjectSearchFragment.getCustomMultiAutoCompleteTextView().getText().toString(), ", "));
+                List<String> subjects = Arrays.asList(ArrayUtils.convertStringToArray(subjectSearchFragment.getCustomMultiAutoCompleteTextView().getText().toString(), ", "));
                 mSearchQuery.setSubjects(subjects);
                 Log.i(TAG, "Subjects: " + subjects);
-                List<String> tutorTypes = Arrays.asList(ArraysUtil.convertStringToArray(qualificationSearchFragment.getCustomMultiAutoCompleteTextView().getText().toString(), ", "));
+                List<String> tutorTypes = Arrays.asList(ArrayUtils.convertStringToArray(qualificationSearchFragment.getCustomMultiAutoCompleteTextView().getText().toString(), ", "));
                 Log.i(TAG, "Tutor types: " + tutorTypes);
                 mSearchQuery.setTutorTypes(tutorTypes);
 

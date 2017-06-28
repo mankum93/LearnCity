@@ -19,12 +19,11 @@ import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.learncity.learncity.R;
 import com.learncity.learner.Repository;
 import com.learncity.learner.search.model.request.TutorRequestRecord;
-import com.learncity.util.ArraysUtil;
+import com.learncity.util.ArrayUtils;
 import com.learncity.util.DataSetObserver;
 import com.learncity.util.DateTimeUtils;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -217,10 +216,10 @@ public class RequestedTutorRecordsFragment extends Fragment {
             tutorName.setText(requestRecord.getTutorName());
 
             final String skillSet1 = requestRecord.getSubjects();
-            skillSet.setText(skillSet1 == null || skillSet1.isEmpty() ? "" : ArraysUtil.convertArrayToString(skillSet1.split("__,__"), ", "));
+            skillSet.setText(skillSet1 == null || skillSet1.isEmpty() ? "" : ArrayUtils.convertArrayToString(skillSet1.split("__,__"), ", "));
 
             final String tutorTypes1 = requestRecord.getTutorTypes();
-            tutorTypes.setText(tutorTypes1 == null || tutorTypes1.isEmpty() ? "" : ArraysUtil.convertArrayToString(tutorTypes1.split("__,__"), ", "));
+            tutorTypes.setText(tutorTypes1 == null || tutorTypes1.isEmpty() ? "" : ArrayUtils.convertArrayToString(tutorTypes1.split("__,__"), ", "));
 
             final String shortFormattedAddress = requestRecord.getTutorLocation();
             location.setText(shortFormattedAddress == null || shortFormattedAddress.isEmpty() ? "" : shortFormattedAddress);

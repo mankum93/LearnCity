@@ -3,7 +3,6 @@ package com.learncity.learner.search;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -35,11 +34,10 @@ import com.learncity.learner.search.database.LearnerDbHelper;
 import com.learncity.learner.search.model.request.TutorRequestRecord;
 import com.learncity.tutor.account.TutorAccount;
 import com.learncity.tutor.account.profile.model.TutorProfile;
-import com.learncity.util.ArraysUtil;
+import com.learncity.util.ArrayUtils;
 import com.learncity.util.account_management.impl.AccountManager;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.learncity.LearnCityApplication.BACKEND_ROOT_URL;
@@ -65,7 +63,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         // TODO: DON'T retrieve the searched results through deserialization but use cache
         // as search is volatile..quite.
-        List<TutorAccount> list = ArraysUtil.toList(null, getIntent ().getParcelableArrayExtra(SEARCHED_ACCOUNTS));
+        List<TutorAccount> list = ArrayUtils.toList(null, getIntent ().getParcelableArrayExtra(SEARCHED_ACCOUNTS));
 
         //Set the Adapter on this Recycler View
         SearchResultsAdapter adapter = new SearchResultsAdapter(list, this);
@@ -200,8 +198,8 @@ public class SearchResultsActivity extends AppCompatActivity {
                             System.currentTimeMillis(),
                             com.learncity.learner.search.model.message.Message.TUTORING_REQUEST,
                             tutorProfile.getName(),
-                            ArraysUtil.convertArrayToString(tutorProfile.getDisciplines()),
-                            ArraysUtil.convertArrayToString(tutorProfile.getTutorTypes()))
+                            ArrayUtils.convertArrayToString(tutorProfile.getDisciplines()),
+                            ArrayUtils.convertArrayToString(tutorProfile.getTutorTypes()))
                             .withTutorRating(tutorProfile.getRating())
                             .withTutorLocation(shortFormattedAddress)
                             .build();
@@ -230,10 +228,10 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             final String[] skillSet1 = tutorProfile.getDisciplines();
 
-            skillSet.setText(skillSet1 == null || skillSet1.length == 0 ? "" : ArraysUtil.convertArrayToString(skillSet1, ", "));
+            skillSet.setText(skillSet1 == null || skillSet1.length == 0 ? "" : ArrayUtils.convertArrayToString(skillSet1, ", "));
 
             final String[] tutorTypes1 = tutorProfile.getTutorTypes();
-            tutorTypes.setText(tutorTypes1 == null || tutorTypes1.length == 0 ? "" : ArraysUtil.convertArrayToString(tutorTypes1, ", "));
+            tutorTypes.setText(tutorTypes1 == null || tutorTypes1.length == 0 ? "" : ArrayUtils.convertArrayToString(tutorTypes1, ", "));
 
             final String shortFormattedAddress = account.getLocationInfo() == null ? null : account.getLocationInfo().getShortFormattedAddress();
             location.setText(shortFormattedAddress == null || shortFormattedAddress.isEmpty() ? "" : shortFormattedAddress);
@@ -291,7 +289,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             int jobId = new JobRequest.Builder(TAG)
                     .setExecutionWindow(3000L, 7000L)
                     .setBackoffCriteria(5000L, JobRequest.BackoffPolicy.EXPONENTIAL)
-                    .setRequiresCharging(true)
+                    .setRequiresCharging(false)
                     .setRequiresDeviceIdle(false)
                     .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
                     .setExtras(extras)

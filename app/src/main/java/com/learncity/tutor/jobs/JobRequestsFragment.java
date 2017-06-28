@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.learncity.learncity.R;
 import com.learncity.tutor.jobs.model.JobRequest;
-import com.learncity.util.ArraysUtil;
+import com.learncity.util.ArrayUtils;
 import com.learncity.util.DataSetObserver;
 import com.learncity.util.DateTimeUtils;
 
@@ -76,7 +76,7 @@ public class JobRequestsFragment extends Fragment {
 
                 @Override
                 public void onChanged(@NonNull List<JobRequest> newTutorRequestRecords) {
-                    adapter.setTutorJobRequestRecordList(newTutorRequestRecords);
+                    adapter.setJobRequestsList(newTutorRequestRecords);
                     adapter.notifyDataSetChanged();
                 }
 
@@ -109,7 +109,7 @@ public class JobRequestsFragment extends Fragment {
             repo.registerJobRequestsObserver(jobRequestRecordsObserver);
         }
         if(repo.getJobRequests() != null){
-            adapter.setTutorJobRequestRecordList(repo.getJobRequests());
+            adapter.setJobRequestsList(repo.getJobRequests());
         }
         adapter.notifyDataSetChanged();
     }
@@ -158,12 +158,12 @@ public class JobRequestsFragment extends Fragment {
             return tutorJobRequestRecordList.size();
         }
 
-        public void refreshJobRequestRecordsList(@NonNull List<JobRequest> tutorRequestRecordList) {
+        public void refreshJobRequestsList(@NonNull List<JobRequest> tutorRequestRecordList) {
             this.tutorJobRequestRecordList.clear();
             this.tutorJobRequestRecordList.addAll(tutorRequestRecordList);
         }
 
-        public void setTutorJobRequestRecordList(@NonNull List<JobRequest> tutorJobRequestRecordList) {
+        public void setJobRequestsList(@NonNull List<JobRequest> tutorJobRequestRecordList) {
             this.tutorJobRequestRecordList = tutorJobRequestRecordList;
         }
     }
@@ -199,7 +199,7 @@ public class JobRequestsFragment extends Fragment {
                     shortFormattedAddress == null || shortFormattedAddress.isEmpty() ? "" : shortFormattedAddress));
 
             final String skillSet1 = jobRequest.getSubjects();
-            subjects.setText(ArraysUtil.convertArrayToString(skillSet1.split("__,__"), ", "));
+            subjects.setText(ArrayUtils.convertArrayToString(skillSet1.split("__,__"), ", "));
 
             timeRequested.setText(DateTimeUtils.timeMillisToHH_MMFormat(jobRequest.getRequestedTimeStamp(), "hh:mm a"));
         }

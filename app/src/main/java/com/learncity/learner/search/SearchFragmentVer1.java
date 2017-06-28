@@ -20,7 +20,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatMultiAutoCompleteTextView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,7 +51,7 @@ import com.learncity.backend.tutorApi.model.TutorProfileVer1;
 import com.learncity.generic.learner.account.Account;
 import com.learncity.learncity.R;
 import com.learncity.tutor.account.profile.model.TutorProfile;
-import com.learncity.util.ArraysUtil;
+import com.learncity.util.ArrayUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -198,10 +197,10 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
                 showSearchProgressDialog();
                 //Search the Tutor tutorRequestRecordList from the DB.
                 //Build and retrieve the search query
-                List<String> subjects = Arrays.asList(ArraysUtil.convertStringToArray(subjectsMultiAutoCompleteTextView.getText().toString(), ", "));
+                List<String> subjects = Arrays.asList(ArrayUtils.convertStringToArray(subjectsMultiAutoCompleteTextView.getText().toString(), ", "));
                 mSearchQuery.setSubjects(subjects);
                 Log.i(TAG, "Subjects: " + subjects);
-                List<String> tutorTypes = Arrays.asList(ArraysUtil.convertStringToArray(qualificationMultiAutoCompleteTextView.getText().toString(), ", "));
+                List<String> tutorTypes = Arrays.asList(ArrayUtils.convertStringToArray(qualificationMultiAutoCompleteTextView.getText().toString(), ", "));
                 Log.i(TAG, "Tutor types: " + tutorTypes);
                 mSearchQuery.setTutorTypes(tutorTypes);
 
