@@ -206,4 +206,21 @@ public class BaseLearnerEndpoint {
 
         return acc;
     }
+
+    public static Account getAccount(String UUID) {
+        Account acc = null;
+        Query<Account> query;
+        try {
+            query = ofy().load().type(Account.class).filter("emailBasedUUID", UUID);
+        }
+        catch (com.googlecode.objectify.NotFoundException e) {
+            logger.severe("Could not find Account with ID: " + UUID);
+            e.printStackTrace();
+            return null;
+        }
+        // There can only be 1 account per UUID
+        acc = query.first().now();
+
+        return acc;
+    }
 }

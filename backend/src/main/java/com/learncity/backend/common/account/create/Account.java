@@ -4,17 +4,13 @@ package com.learncity.backend.common.account.create;
  * Created by DJ on 3/6/2017.
  */
 
-import com.fasterxml.uuid.UUIDType;
-import com.fasterxml.uuid.impl.NameBasedGenerator;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
-import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Index;
+import com.learncity.backend.util.IdUtils;
 
 import java.io.Serializable;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
+
 import java.util.logging.Logger;
 
 /**Class encapsulating Profile, and other details/computations possibly from the _1*/
@@ -22,22 +18,6 @@ import java.util.logging.Logger;
 public class Account implements Serializable{
 
     private static final Logger logger = Logger.getLogger(Account.class.getSimpleName());
-
-    // Completely thread safe, name based, UUID generator singleton instance
-    @Ignore
-    private static NameBasedGenerator nameBasedUUIDGenerator;
-
-    static {
-        try{
-            nameBasedUUIDGenerator = new NameBasedGenerator(NameBasedGenerator.NAMESPACE_OID,
-                    MessageDigest.getInstance("SHA-1"), UUIDType.NAME_BASED_SHA1);
-        }
-        catch(NoSuchAlgorithmException nse){
-            logger.severe("Check the algorithm used for generation of MessageDigest from the list" +
-                    "of valid ones.");
-            nse.printStackTrace();
-        }
-    }
 
     /**Email Id of the User */
     @Id @Index private String mEmailID;
@@ -79,16 +59,7 @@ public class Account implements Serializable{
         // UUID based on the provided Email ID. If this instance comes in
         // contact with an existing instance corresponding to the same Email ID(or Account),
         // the UUIDs in both the instances shall match.
-        if(nameBasedUUIDGenerator != null){
-            emailBasedUUID = nameBasedUUIDGenerator.generate(mEmailID).toString();
-        }
-        else{
-            // If the name based UUID generator couldn't be initialized(NoSuchAlgorithmException)
-            // instead of thwarting the AC creation process, stash temporarily the user with a
-            // "all zeros" UUID but,
-            // TODO: mark this AC for refreshment of UUID later
-            emailBasedUUID = new UUID(0L, 0L).toString();
-        }
+        emailBasedUUID = IdUtils.getType5UUID(mEmailID);
 
         this.accountStatus = profile.getCurrentStatus();
     }

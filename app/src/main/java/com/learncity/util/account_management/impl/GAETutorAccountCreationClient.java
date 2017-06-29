@@ -9,6 +9,7 @@ import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
 import com.learncity.backend.tutorApi.TutorApi;
 import com.learncity.backend.tutorApi.model.TutorProfileVer1;
+import com.learncity.util.TutorProfileUtils;
 import com.learncity.util.account_management.AccountCreationClient;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 
@@ -45,7 +46,7 @@ public class GAETutorAccountCreationClient implements AccountCreationClient {
             setApiService();
         }
 
-        profileEntity = TutorProfile.populateProfileEntity(profile, profileEntity);
+        profileEntity = TutorProfileUtils.populateProfileEntity(profile, profileEntity);
 
         clientListener.onClientPrepared();
     }

@@ -1,13 +1,19 @@
 package com.learncity.backend.common.messaging;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.learncity.backend.common.messaging.framework.message.model.outgoing.AbstractDownstreamMessage;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Ignore;
+import com.googlecode.objectify.annotation.Index;
 import com.learncity.backend.common.messaging.framework.message.model.outgoing.DataMessage;
 import com.learncity.backend.common.messaging.framework.message.model.outgoing.NotificationMessage;
+import com.learncity.backend.common.messaging.framework.message.util.MessageUtils;
+import com.learncity.backend.util.IdUtils;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -21,12 +27,14 @@ import java.util.logging.Logger;
  * would result in the payload being ignored - This can be a bit hard
  * to debug if rules are not carefully examined.
  * */
+@Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Message implements Serializable{
 
     private static final Logger logger = Logger.getLogger(Message.class.getSimpleName());
 
     /**Message type.*/
+    @Index
     private Integer messageType;
     /**No explicit "content" - would be sent as a FCM Notification for a tutoring request.*/
     public static final int TUTORING_REQUEST = 0x0002;
@@ -43,14 +51,36 @@ public class Message implements Serializable{
     private String to;
 
     /**
+     * A Message ID for every message that is sent, depends on,
+     * the Sender's UUID, Receiver's UUID, and some timestamp.
+     */
+    @Id
+    @JsonIgnore
+    private String messageId;
+
+    /**
      * A FCM Data Message(payload)
      */
     private DataMessage dataMessage;
 
+    @JsonIgnore
+    private Integer sentStatus;
+
     /**
      * A FCM Notification Message(payload)
      */
+    @Ignore
     private NotificationMessage notificationMessage;
+
+    /**
+     * This payload is to support ad-hoc fields specific to
+     * the situation that the generator must be facing.
+     *
+     * Just DON'T confuse this field with Firebase's data payload
+     * whatsoever. This is purely for specific business case.
+     */
+    @Ignore
+    private Map<String, String> dataPayload;
 
     public Message(String from, String to, int messageType) {
         // Validate input
@@ -62,9 +92,10 @@ public class Message implements Serializable{
         this.from = from;
         this.to = to;
         this.messageType = messageType;
-    }
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+        // Assign a unique message ID to it.
+        messageId = IdUtils.getType5UUID(from + System.currentTimeMillis() + to);
+    }
 
     /**
      * @return Returns a JSON Stringified representation of this object using Jackson Object Mapper.
@@ -73,7 +104,7 @@ public class Message implements Serializable{
     public String toString(){
         String json;
         try {
-            json = objectMapper.writeValueAsString(this);
+            json = MessageUtils.objectMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw new RuntimeException("There was a problem processing Json.");
@@ -147,33 +178,31 @@ public class Message implements Serializable{
         this.notificationMessage = notificationMessage;
     }
 
-    // Message utility methods------------------------------------------------------------------------------------------
-    public static AbstractDownstreamMessage obtainFCMMessage(Message message){
+    /**
+     * Refreshes the Message ID to take current System
+     * time into account.
+     */
+    public void refreshMessageId(){
+        messageId = IdUtils.getType5UUID(from + System.currentTimeMillis() + to);
+    }
 
-        AbstractDownstreamMessage messageToBeSent;
+    public String getMessageId() {
+        return messageId;
+    }
 
-        switch(message.getMessageType()){
+    public Integer getSentStatus() {
+        return sentStatus;
+    }
 
-            case TUTORING_REQUEST:
-                //message.getNotificationMessage().put("messageType", "TUTORING_REQUEST");
-                messageToBeSent = message.getNotificationMessage();
-                break;
-            case CHAT_TEXT_MESSAGE:
-                //message.getNotificationMessage().put("messageType", "CHAT_TEXT_MESSAGE");
-                messageToBeSent = message.getNotificationMessage();
-                break;
-            case FCM_DATA_MESSAGE:
-                messageToBeSent = message.getDataMessage();
-                break;
-            case FCM_NOTIFICATION_MESSAGE:
-                messageToBeSent = message.getNotificationMessage();
-                break;
-            default:
-                throw new IllegalStateException("Invalid message type.");
+    public void setSentStatus(Integer sentStatus) {
+        this.sentStatus = sentStatus;
+    }
 
-        }
-        messageToBeSent.setDeliveryReceiptRequested(true);
+    public Map<String, String> getDataPayload() {
+        return dataPayload;
+    }
 
-        return messageToBeSent;
+    public void setDataPayload(Map<String, String> dataPayload) {
+        this.dataPayload = dataPayload;
     }
 }

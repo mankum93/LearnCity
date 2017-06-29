@@ -108,7 +108,7 @@ public class JobPostingsFragment extends Fragment {
 
             repo.registerJobPostingsObserver(jobPostingRecordsObserver);
         }
-        if(repo.getJobRequests() != null){
+        if(repo.getJobPostings() != null){
             adapter.setJobPostingsList(repo.getJobPostings());
         }
         adapter.notifyDataSetChanged();

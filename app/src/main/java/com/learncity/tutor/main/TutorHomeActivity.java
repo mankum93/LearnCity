@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -17,8 +18,15 @@ import com.learncity.learncity.R;
 import com.learncity.tutor.account.profile.MyProfileActivity;
 import com.learncity.tutor.jobs.JobPostingsFragment;
 import com.learncity.tutor.jobs.JobRequestsFragment;
+import com.learncity.tutor.jobs.Repository;
+import com.learncity.tutor.jobs.database.JobsDbHelper;
+import com.learncity.tutor.jobs.model.JobRequest;
+
+import java.util.Map;
 
 public class TutorHomeActivity extends HomeActivity {
+
+    private static final String TAG = "TutorHomeActivity";
 
     private ViewPager viewPager;
     private TutorJobsPagerAdapter requestRecordsPagerAdapter;
@@ -44,6 +52,38 @@ public class TutorHomeActivity extends HomeActivity {
         // Setup the PagerTabStrip
         PagerTabStrip pagerTabStrip = (PagerTabStrip) findViewById(R.id.tutor_jobs_pager_tab_strip);
         pagerTabStrip.setTabIndicatorColorResource(R.color.colorPrimary);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        Log.d(TAG, "FCM Push Notification received in onNewIntent()");
+
+        setIntent(intent);
+
+        // Now,
+        Bundle data = intent.getExtras();
+
+        //TODO: System.currentTimeMillis() is just temp thing
+        // Put here the actual time sent value for the message.
+
+        // Lets create a new JobRequest
+        JobRequest newRequest = new JobRequest(
+                data.getString("messageId"),
+                data.getString("name"),
+                data.getString("subjects"),
+                data.getString("location"),
+                System.currentTimeMillis()
+        );
+
+        // Stash this job request to the Cache and the Database.
+        Repository repo = Repository.getRepository();
+        // Cache
+        repo.updateJobRequestRecords(newRequest);
+        // Db
+        JobsDbHelper.insertJobRequestToDb(repo.db, newRequest);
+
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

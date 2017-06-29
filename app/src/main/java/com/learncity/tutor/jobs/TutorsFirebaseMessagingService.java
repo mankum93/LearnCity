@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -29,7 +30,10 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.learncity.learncity.R;
 import com.learncity.tutor.jobs.database.JobsDbHelper;
+import com.learncity.tutor.jobs.model.JobRequest;
 import com.learncity.tutor.main.TutorHomeActivity;
+
+import java.util.Map;
 
 
 public class TutorsFirebaseMessagingService extends FirebaseMessagingService {
@@ -67,11 +71,29 @@ public class TutorsFirebaseMessagingService extends FirebaseMessagingService {
 
             // Specifically, we are handling job requests for Tutor right now.
 
-            // Stash this job request to the Cache and the Database.
-            Repository repo = Repository.getRepository();
-            //repo.updateJobRequestRecords();
+            // Lets create a new JobRequest
+            Map<String, String> data = remoteMessage.getData();
+            String loc;
+            final JobRequest newRequest = new JobRequest(
+                    data.get("messageId"),
+                    data.get("name"),
+                    data.get("subjects"),
+                    ((loc = data.get("location")) == null ? "New Delhi" : loc),
+                    remoteMessage.getSentTime()
+                    );
 
-            //JobsDbHelper.insertJobRequestToDb(repo.db, );
+            // Stash this job request to the Cache and the Database.
+            final Repository repo = Repository.getRepository();
+            // Cache
+            Handler mainHandler = new Handler(getBaseContext().getMainLooper());
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    repo.updateJobRequestRecords(newRequest);
+                }
+            });
+            // Db
+            JobsDbHelper.insertJobRequestToDb(repo.db, newRequest);
 
             // Send a notification anyway.
             sendNotification(notification.getTitle(), notification.getBody());

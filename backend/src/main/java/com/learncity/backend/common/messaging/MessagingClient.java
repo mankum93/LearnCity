@@ -52,6 +52,8 @@ public class MessagingClient {
         return DEFAULT_INSTANCE;
     }
 
+    private MessageResponseListener messageResponseListener;
+
     public void sendMessage(String jsonMessage){
 
         // Build a HTTP Post Request
@@ -81,7 +83,29 @@ public class MessagingClient {
         }
     }
 
+    public MessageResponseListener getMessageResponseListener() {
+        return messageResponseListener;
+    }
+
+    public void setMessageResponseListener(MessageResponseListener messageResponseListener) {
+        this.messageResponseListener = messageResponseListener;
+    }
+
+    public void removeMessageResponseListener(MessageResponseListener messageResponseListener) {
+        if(this.messageResponseListener == messageResponseListener){
+            this.messageResponseListener = null;
+        }
+    }
+
     private void parseResponse(HttpResponse response){
 
+        if(this.messageResponseListener != null){
+            this.messageResponseListener.onReceiveResponse(response);
+        }
+    }
+
+    public static interface MessageResponseListener{
+
+        public void onReceiveResponse(HttpResponse response);
     }
 }

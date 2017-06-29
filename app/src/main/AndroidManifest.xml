@@ -39,7 +39,12 @@
         <activity android:name="com.learncity.generic.learner.account.create.LoginActivity" />
         <activity android:name="com.learncity.generic.learner.account.create.SignUpActivity" />
         <activity android:name="com.learncity.learner.main.LearnerHomeActivity" />
-        <activity android:name="com.learncity.tutor.main.TutorHomeActivity" />
+        <activity
+            android:name="com.learncity.tutor.main.TutorHomeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_TUTORING_REQUEST" />
+            </intent-filter>
+        </activity>
         <activity android:name="com.learncity.learner.search.ver1.SearchActivityVer1" />
         <activity android:name="com.learncity.learner.search.SearchResultsActivity" />
         <activity android:name="com.learncity.learner.account.profile.MyProfileActivity" />

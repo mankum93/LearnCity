@@ -12,9 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.uuid.EthernetAddress;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
-import com.learncity.backend.common.messaging.framework.message.model.outgoing.AbstractDownstreamMessage;
-import com.learncity.backend.common.messaging.framework.message.model.outgoing.DataMessage;
-import com.learncity.backend.common.messaging.framework.message.model.outgoing.NotificationMessage;
 
 /**
  * Includes common message utils like:
@@ -26,8 +23,8 @@ import com.learncity.backend.common.messaging.framework.message.model.outgoing.N
 public final class MessageUtils {
 
     /**Time based UUID generator from Java UUID Generator(JUG).*/
-    private static final TimeBasedGenerator gen = Generators.timeBasedGenerator(fromInterface());
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    public static final TimeBasedGenerator gen = Generators.timeBasedGenerator(ethernetAddressFromNWInterface());
+    public static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static Map<String, Object> toAttributeMap(Object object){
         return objectMapper.convertValue(object, new TypeReference<Map<String, Object>>() {
@@ -86,10 +83,9 @@ public final class MessageUtils {
 	/**
 	 * Returns a random message id to uniquely identify a message - based on time based UUID
 	 */
-	public static String getUniqueMessageId() {
+	public static String getTimeBasedUniqueMessageId() {
         return gen.generate().toString();
 	}
-
 
 
 	/**
@@ -115,7 +111,7 @@ public final class MessageUtils {
 	 *    not including local or loopback addresses; if one exists,
 	 *    null if no such interfaces are found.
 	 */
-	public static EthernetAddress fromInterface()
+	public static EthernetAddress ethernetAddressFromNWInterface()
 	{
 		try {
 			Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();

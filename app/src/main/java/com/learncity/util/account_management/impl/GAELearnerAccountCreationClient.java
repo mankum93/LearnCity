@@ -10,6 +10,7 @@ import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.learncity.backend.learnerApi.LearnerApi;
 import com.learncity.backend.learnerApi.model.LearnerProfileVer1;
 
+import com.learncity.util.LearnerProfileUtils;
 import com.learncity.util.account_management.AccountCreationClient;
 
 import com.learncity.learner.account.profile.model.LearnerProfile;
@@ -46,7 +47,7 @@ public class GAELearnerAccountCreationClient implements AccountCreationClient {
             setApiService();
         }
 
-        profileEntity = LearnerProfile.populateProfileEntity(profile, profileEntity);
+        profileEntity = LearnerProfileUtils.populateProfileEntity(profile, profileEntity);
 
         clientListener.onClientPrepared();
     }

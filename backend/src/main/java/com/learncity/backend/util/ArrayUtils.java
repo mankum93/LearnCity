@@ -1,7 +1,10 @@
 package com.learncity.backend.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -10,7 +13,7 @@ import java.util.logging.Logger;
 
 public class ArrayUtils {
 
-    private static final Logger logger = Logger.getLogger(ArrayUtils.class.getSimpleName());
+    private static Logger logger = Logger.getLogger(ArrayUtils.class.getSimpleName());
 
     private static String ARRAY_SEPARATOR = "__,__";
 
@@ -36,6 +39,13 @@ public class ArrayUtils {
     }
 
     public static String convertArrayToString(String[] stringArray, String separator) {
+
+        if(stringArray == null || stringArray.length == 0){
+            return null;
+        }
+        if(separator == null || separator.isEmpty()){
+            separator = ARRAY_SEPARATOR;
+        }
         StringBuffer stringBuffer = new StringBuffer();
         for (String str : stringArray) {
             stringBuffer.append(str).append(separator);
@@ -59,7 +69,6 @@ public class ArrayUtils {
         for (int i = 0; i < array.length; i++)
             array[i] = array[i].trim();
 
-        logger.info("Trimmed Array: " + Arrays.toString(array));
         return array;
     }
 
@@ -71,5 +80,20 @@ public class ArrayUtils {
 
         logger.info("Array with duplicates removed: " + Arrays.toString(source));
         return source;
+    }
+
+    public static <T extends U, U> List<T> toList(List<T> outList, U... items){
+
+        if(items == null || items.length == 0){
+            return null;
+        }
+
+        if(outList == null){
+            outList = new ArrayList<>(items.length);
+        }
+
+        Collections.addAll((List<U>)outList, items);
+
+        return outList;
     }
 }

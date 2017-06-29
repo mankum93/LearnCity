@@ -30,7 +30,7 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -42,28 +42,25 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.learncity.backend.tutorApi.model.LocationInfo;
 import com.learncity.backend.tutorApi.model.SearchTutorsQuery;
 import com.learncity.backend.tutorApi.model.TutorAccount;
 import com.learncity.backend.tutorApi.model.TutorAccountResponseView;
 import com.learncity.backend.tutorApi.model.TutorProfileResponseView;
-import com.learncity.backend.tutorApi.model.TutorProfileVer1;
-import com.learncity.generic.learner.account.Account;
 import com.learncity.learncity.R;
-import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.util.ArrayUtils;
+import com.learncity.util.ListUtils;
+import com.learncity.util.TutorProfileUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import static com.learncity.learner.search.SearchResultsActivity.SEARCHED_ACCOUNTS;
+import static com.learncity.learner.search.SearchResultsActivity.SEARCH_QUERY_TODO;
 
 /**
  * Created by DJ on 10/18/2016.
@@ -73,6 +70,7 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
 
     public static final String TAG = "SearchActivity";
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0X00;
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     private GoogleMap mMap;
     private SearchTutorsQuery mSearchQuery;
@@ -220,7 +218,7 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
                 //Send the Search request
                 Message search = Message.obtain(null, SearchService.SEARCH_TUTORS);
                 //Bundle b = new Bundle();
-                //b.putString(SearchService.SEARCH_QUERY, new Gson().toJson(mSearchQuery));
+                //b.putString(SearchService.SEARCH_QUERY_TODO, new Gson().toJson(mSearchQuery));
                 //search.setData(b);
                 Log.d(TAG, "Posting Search query on Search button press.");
                 EventBus.getDefault().postSticky(mSearchQuery);
@@ -262,7 +260,8 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
                 }
                 // Show these tutorRequestRecordList in a list view
                 Intent i = new Intent(getContext(), SearchResultsActivity.class);
-                i.putExtra(SEARCHED_ACCOUNTS, refactorAccountsToArray(accounts));
+                i.putExtra(SEARCH_QUERY_TODO, ListUtils.convertListToString(mSearchQuery.getSubjects()));
+                i.putExtra(SEARCHED_ACCOUNTS, TutorProfileUtils.refactorAccountsToArray(accounts));
                 startActivity(i);
             }
             else{
@@ -307,50 +306,6 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
                 }
             }
         }
-    }
-
-    private List<com.learncity.tutor.account.TutorAccount> refactorAccountsToList(List<TutorAccount> accounts){
-
-        if(accounts == null || accounts.isEmpty()){
-            return null;
-        }
-
-        // Extract the list of tutorRequestRecordList from backend
-        List<TutorProfileVer1> profiles = new ArrayList<TutorProfileVer1>(accounts.size());
-        List<Account.LocationInfo> locationInfos = new ArrayList<Account.LocationInfo>(accounts.size());
-        List<UUID> userUUIDs = new ArrayList<UUID>(accounts.size());
-        for(TutorAccount acc : accounts){
-            profiles.add(acc.getProfile());
-
-            LocationInfo li = acc.getLocationInfo();
-            if(li != null){
-                locationInfos.add(new Account.LocationInfo(li.getShortFormattedAddress()));
-            }
-            else{
-                locationInfos.add(null);
-            }
-
-            userUUIDs.add(UUID.fromString(acc.getEmailBasedUUID()));
-        }
-
-        // Populate with Account fields
-        List<com.learncity.tutor.account.TutorAccount> acc = new ArrayList<com.learncity.tutor.account.TutorAccount>(accounts.size());
-        List<TutorProfile> refactoredProfiles = TutorProfile.populateProfilesFromEntities(profiles);
-        int i = 0;
-        for(TutorProfile p : refactoredProfiles){
-            com.learncity.tutor.account.TutorAccount t = new com.learncity.tutor.account.TutorAccount(p);
-            t.setLocationInfo(locationInfos.get(i));
-            t.setEmailBasedUUID(userUUIDs.get(i));
-            acc.add(t);
-            i++;
-        }
-        return acc;
-    }
-
-    private com.learncity.tutor.account.TutorAccount[] refactorAccountsToArray(List<TutorAccount> accounts){
-
-        List<com.learncity.tutor.account.TutorAccount> refactoredProfiles = refactorAccountsToList(accounts);
-        return refactoredProfiles.toArray(new com.learncity.tutor.account.TutorAccount[refactoredProfiles.size()]);
     }
 
     private void showSearchAlertDialog(String msg){
@@ -441,9 +396,14 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
         cancelSearch = false;
     }
     private boolean areGooglePlayServicesAvailable() {
-        int errorCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getContext());
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        int errorCode = googleAPI.isGooglePlayServicesAvailable(getContext());
         if (errorCode != ConnectionResult.SUCCESS) {
-            GooglePlayServicesUtil.getErrorDialog(errorCode, getActivity(), 0).show();
+            if(googleAPI.isUserResolvableError(errorCode)) {
+                googleAPI.getErrorDialog(getActivity(), errorCode,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            }
+
             return false;
         }
         return true;

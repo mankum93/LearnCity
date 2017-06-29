@@ -57,6 +57,7 @@ import com.learncity.learner.search.SubjectMultiAutoCompleteTextView;
 import com.learncity.learner.search.SubjectSearchAdapter;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.util.ArrayUtils;
+import com.learncity.util.TutorProfileUtils;
 
 
 import org.greenrobot.eventbus.EventBus;
@@ -220,7 +221,7 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
                 //Send the Search request
                 Message search = Message.obtain(null, SearchService.SEARCH_TUTORS);
                 //Bundle b = new Bundle();
-                //b.putString(SearchService.SEARCH_QUERY, new Gson().toJson(mSearchQuery));
+                //b.putString(SearchService.SEARCH_QUERY_TODO, new Gson().toJson(mSearchQuery));
                 //search.setData(b);
                 Log.d(TAG, "Posting Search query on Search button press.");
                 EventBus.getDefault().postSticky(mSearchQuery);
@@ -332,7 +333,7 @@ public class SearchActivityVer1 extends AppCompatActivity implements OnMapReadyC
 
         // Populate with Account fields
         List<com.learncity.tutor.account.TutorAccount> acc = new ArrayList<com.learncity.tutor.account.TutorAccount>(accounts.size());
-        List<TutorProfile> refactoredProfiles = TutorProfile.populateProfilesFromEntities(profiles);
+        List<TutorProfile> refactoredProfiles = TutorProfileUtils.populateProfilesFromEntities(profiles);
         int i = 0;
         for(TutorProfile p : refactoredProfiles){
             com.learncity.tutor.account.TutorAccount t = new com.learncity.tutor.account.TutorAccount(p);

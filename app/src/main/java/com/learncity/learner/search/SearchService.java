@@ -46,7 +46,7 @@ public class SearchService extends Service {
 
     // Search query may not necessarily be Parcelable. Using the Messenger API makes it impossible
     // to send a search query as a Message component. This cont. is also fairly useless.
-    public static final String SEARCH_QUERY = "com.learncity.learner.search.SEARCH_QUERY";
+    public static final String SEARCH_QUERY = "com.learncity.learner.search.SEARCH_QUERY_TODO";
 
     private final HandlerThread thread = new HandlerThread("Search");
 

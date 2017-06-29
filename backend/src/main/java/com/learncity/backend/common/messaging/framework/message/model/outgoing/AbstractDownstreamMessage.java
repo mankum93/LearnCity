@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.googlecode.objectify.annotation.Ignore;
 import com.learncity.backend.common.messaging.framework.message.util.MessageUtils;
 import com.learncity.backend.common.messaging.framework.message.util.generator.Generator;
 
@@ -29,6 +30,7 @@ public abstract class AbstractDownstreamMessage {
      */
     @JsonProperty(value = "to")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @Ignore
 	private String to;
 
     /**
@@ -40,6 +42,7 @@ public abstract class AbstractDownstreamMessage {
      * Supported operators: &&, ||. Maximum two operators per topic message supported.
      */
     @JsonProperty(value = "condition")
+    @Ignore
 	private String condition;
 
 
@@ -49,6 +52,7 @@ public abstract class AbstractDownstreamMessage {
      * This parameter uniquely identifies a message in an XMPP connection.
      */
     @JsonProperty(value = "message_id")
+    @Ignore
 	private String messageId;
 
 
@@ -67,6 +71,7 @@ public abstract class AbstractDownstreamMessage {
      * 4 collapse keys the FCM connection server will keep.
      */
     @JsonProperty(value = "collapse_key")
+    @Ignore
 	private String collapseKey;
 
 
@@ -85,6 +90,7 @@ public abstract class AbstractDownstreamMessage {
      * For more information, see <a href = "https://firebase.google.com/docs/cloud-messaging/concept-options#setting-the-priority-of-a-message">Setting the priority of a message.</a>
      */
     @JsonProperty(value = "priority")
+    @Ignore
 	private String priority;
 
 
@@ -95,6 +101,7 @@ public abstract class AbstractDownstreamMessage {
      * client app is awakened. Data messages wake the app by default.
      */
     @JsonProperty(value = "content_available")
+    @Ignore
 	private Boolean contentAvailable;
 
 
@@ -107,6 +114,7 @@ public abstract class AbstractDownstreamMessage {
      * see <a href = "https://firebase.google.com/docs/cloud-messaging/concept-options#ttl">Setting the lifespan of a message.</a>
      */
     @JsonProperty(value = "time_to_live")
+    @Ignore
 	private Integer timeToLive;
 
 
@@ -119,6 +127,7 @@ public abstract class AbstractDownstreamMessage {
      * device confirms that it received the message. The default value is false.
      */
     @JsonProperty(value = "delivery_receipt_requested")
+    @Ignore
 	private Boolean deliveryReceiptRequested;
 
 
@@ -130,6 +139,7 @@ public abstract class AbstractDownstreamMessage {
      * The default value is false.
      */
     @JsonProperty(value = "dry_run")
+    @Ignore
 	private Boolean dryRun;
 
 	protected AbstractDownstreamMessage(String to, String messageId) {
@@ -162,7 +172,7 @@ public abstract class AbstractDownstreamMessage {
         // If there is no message ID at this point, we have simply not been
         // provided one. Use the UUID Type 1 ID generator to generate one.
         if(this.messageId == null){
-            messageId = MessageUtils.getUniqueMessageId();
+            messageId = MessageUtils.getTimeBasedUniqueMessageId();
         }
 	    String json;
         try {
@@ -344,7 +354,7 @@ public abstract class AbstractDownstreamMessage {
         private void assignMessageId(){
             if(messageId == null){
                 if(messageIdGenerator == null){
-                    messageId = MessageUtils.getUniqueMessageId();
+                    messageId = MessageUtils.getTimeBasedUniqueMessageId();
                 }
                 else{
                     messageId = messageIdGenerator.next(null);

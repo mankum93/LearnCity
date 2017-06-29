@@ -83,7 +83,7 @@ public class JobsDbHelper extends SQLiteOpenHelper{
 
     private static ContentValues getContentValues(JobRequest jobRequest){
 
-        ContentValues values = getContentValues(jobRequest);
+        ContentValues values = getContentValues((Job)jobRequest);
 
         values.put(JobSchema.JobRequestsTable.cols.TIME_REQUESTED, jobRequest.getRequestedTimeStamp());
 
@@ -92,7 +92,7 @@ public class JobsDbHelper extends SQLiteOpenHelper{
 
     private static ContentValues getContentValues(JobPosting jobPosting){
 
-        ContentValues values = getContentValues(jobPosting);
+        ContentValues values = getContentValues((Job)jobPosting);
 
         values.put(JobSchema.JobPostingsTable.cols.TIME_POSTED, jobPosting.getJobPostingTimeStamp());
 

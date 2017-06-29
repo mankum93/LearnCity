@@ -26,8 +26,8 @@ import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.learncity.backend.messagingApi.MessagingApi;
+import com.learncity.backend.messagingApi.model.JsonMap;
 import com.learncity.backend.messagingApi.model.Message;
-import com.learncity.generic.learner.account.Account;
 import com.learncity.learncity.R;
 import com.learncity.learner.Repository;
 import com.learncity.learner.search.database.LearnerDbHelper;
@@ -35,6 +35,7 @@ import com.learncity.learner.search.model.request.TutorRequestRecord;
 import com.learncity.tutor.account.TutorAccount;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.util.ArrayUtils;
+import com.learncity.util.IdUtils;
 import com.learncity.util.account_management.impl.AccountManager;
 
 import java.io.IOException;
@@ -51,6 +52,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private static final String TAG = SearchResultsActivity.class.getSimpleName();
 
     public static final String SEARCHED_ACCOUNTS = "SEARCHED_ACCOUNTS";
+    public static final String SEARCH_QUERY_TODO = "SEARCH_QUERY_TODO";
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -66,7 +68,8 @@ public class SearchResultsActivity extends AppCompatActivity {
         List<TutorAccount> list = ArrayUtils.toList(null, getIntent ().getParcelableArrayExtra(SEARCHED_ACCOUNTS));
 
         //Set the Adapter on this Recycler View
-        SearchResultsAdapter adapter = new SearchResultsAdapter(list, this);
+        String subjectsSearched = getIntent().getStringExtra(SEARCH_QUERY_TODO);
+        SearchResultsAdapter adapter = new SearchResultsAdapter(list, this, subjectsSearched);
         searchResultsView.setAdapter(adapter);
         searchResultsView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -84,10 +87,14 @@ public class SearchResultsActivity extends AppCompatActivity {
         // Source of Adapter data - from the parent Activity
         List<TutorAccount> accounts;
         Context context;
+        String subjectsSearched;
 
-        public SearchResultsAdapter(List<TutorAccount> accounts, Context context) {
+        private Repository repo = Repository.getRepository();
+
+        public SearchResultsAdapter(List<TutorAccount> accounts, Context context, String subjectsSearched) {
             this.accounts = accounts;
             this.context = context;
+            this.subjectsSearched = subjectsSearched;
         }
 
         @Override
@@ -95,72 +102,16 @@ public class SearchResultsActivity extends AppCompatActivity {
 
             // Create the view that shall hold the result
             View v = LayoutInflater.from(context).inflate(R.layout.item_tutor_search_result, parent, false);
-            return new SearchResultViewHolder(context, v);
 
-        }
+            final SearchResultViewHolder holder = new SearchResultViewHolder(v);
 
-
-        @Override
-        public void onBindViewHolder(SearchResultViewHolder holder, int position) {
-            holder.bindProfileToView(accounts.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return accounts.size();
-        }
-    }
-
-    private static class SearchResultViewHolder extends RecyclerView.ViewHolder{
-
-        private static Drawable profilePicPlaceholderDrawable;
-
-        private TextView tutorName;
-        private TextView skillSet;
-        private TextView tutorTypes;
-        private TextView location;
-        private ImageView displayPic;
-        private SimpleRatingBar rating;
-
-        private Button requestTutorButton;
-
-        private Context context;
-
-        private Repository repo = Repository.getRepository();
-
-        private View.OnClickListener requestTutorsButtonListener;
-
-        private TutorProfile tutorProfile;
-        private TutorAccount tutorAccount;
-
-        static void clearStatics(){
-            profilePicPlaceholderDrawable = null;
-        }
-
-        public SearchResultViewHolder(@NonNull final Context context, @NonNull View itemView){
-            super(itemView);
-
-            this.context = context;
-
-            // Dissect the view
-            tutorName = (TextView) itemView.findViewById(R.id.tutor_name);
-            skillSet = (TextView) itemView.findViewById(R.id.skill_set);
-            tutorTypes = (TextView) itemView.findViewById(R.id.tutor_types);
-            location = (TextView) itemView.findViewById(R.id.location);
-
-            displayPic = (ImageView) itemView.findViewById(R.id.display_pic);
-
-            rating = (SimpleRatingBar) itemView.findViewById(R.id.tutor_rating);
-
-            requestTutorButton = (Button) itemView.findViewById(R.id.request_tutor);
-
-            if(profilePicPlaceholderDrawable == null){
-                profilePicPlaceholderDrawable = ContextCompat.getDrawable(context, R.drawable.user_pic_placeholder);
-            }
-
-            requestTutorsButtonListener = new View.OnClickListener() {
+            holder.requestTutorButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    TutorAccount tutorAccount = holder.tutorAccount;
+                    TutorProfile tutorProfile = tutorAccount.getProfile();
+
                     Log.d(TAG, "Tutor requested: " + tutorProfile);
 
                     // Disable this button.
@@ -172,10 +123,10 @@ public class SearchResultsActivity extends AppCompatActivity {
                     // Create the message to be sent.
                     PersistableBundleCompat bundle = new PersistableBundleCompat();
                     bundle.putString("to", tutorAccount.getEmailBasedUUID().toString());
-                    bundle.putString("from", Account
-                            .generateType5UUID(AccountManager.getAccountDetails(context).getEmailID())
-                            .toString());
+                    bundle.putString("from", IdUtils
+                            .getType5UUID(AccountManager.getAccountDetails(context).getEmailID()));
                     bundle.putInt("messageType", com.learncity.learner.search.model.message.Message.TUTORING_REQUEST);
+                    bundle.putString("subjects", SearchResultsAdapter.this.subjectsSearched);
                         /*Message request = new Message();
                         request.setTo(tutorAccount.getEmailBasedUUID().toString());
                         request.setFrom(Account
@@ -210,18 +161,69 @@ public class SearchResultsActivity extends AppCompatActivity {
                     // Update the Repo with this new data.
                     repo.updateTutorRequestRecords(record);
                 }
-            };
+            });
 
-            requestTutorButton.setOnClickListener(requestTutorsButtonListener);
+            return holder;
 
-            // Create the table if not already created.
-            // TODO: See that helper as a static instance might not be required.
+        }
+
+
+        @Override
+        public void onBindViewHolder(SearchResultViewHolder holder, int position) {
+
+            holder.bindProfileToView(accounts.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return accounts.size();
+        }
+    }
+
+    private static class SearchResultViewHolder extends RecyclerView.ViewHolder{
+
+        private static Drawable profilePicPlaceholderDrawable;
+
+        private TextView tutorName;
+        private TextView skillSet;
+        private TextView tutorTypes;
+        private TextView location;
+        private ImageView displayPic;
+        private SimpleRatingBar rating;
+
+        Button requestTutorButton;
+
+        TutorAccount tutorAccount;
+
+        static void clearStatics(){
+            profilePicPlaceholderDrawable = null;
+        }
+
+        public SearchResultViewHolder(@NonNull View itemView){
+            super(itemView);
+
+            // Dissect the view
+            tutorName = (TextView) itemView.findViewById(R.id.tutor_name);
+            skillSet = (TextView) itemView.findViewById(R.id.skill_set);
+            tutorTypes = (TextView) itemView.findViewById(R.id.tutor_types);
+            location = (TextView) itemView.findViewById(R.id.location);
+
+            displayPic = (ImageView) itemView.findViewById(R.id.display_pic);
+
+            rating = (SimpleRatingBar) itemView.findViewById(R.id.tutor_rating);
+
+            requestTutorButton = (Button) itemView.findViewById(R.id.request_tutor);
+
+            if(profilePicPlaceholderDrawable == null){
+                profilePicPlaceholderDrawable = ContextCompat.getDrawable(itemView.getContext().getApplicationContext(), R.drawable.user_pic_placeholder);
+            }
         }
 
         public void bindProfileToView(@NonNull final TutorAccount account){
 
             this.tutorAccount = account;
-            tutorProfile = account.getProfile();
+
+            TutorProfile tutorProfile = account.getProfile();
 
             // Now, bind each part
             tutorName.setText(tutorProfile.getName());
@@ -275,6 +277,10 @@ public class SearchResultsActivity extends AppCompatActivity {
             request.setFrom(options.getString("from", ""));
             request.setMessageType(options.getInt("messageType", -1));
 
+            JsonMap dataPayload = new JsonMap();
+            dataPayload.put("subjects", options.getString("subjects", ""));
+            request.setDataPayload(dataPayload);
+
             try {
                 client.sendTutoringRequest(request);
             } catch (IOException e) {
@@ -327,7 +333,6 @@ public class SearchResultsActivity extends AppCompatActivity {
                             abstractGoogleClientRequest.setDisableGZipContent(true);
                         }
                     });
-            // end options for devappserver
 
             tutoringRequestForwardingClient = builder.build();
         }

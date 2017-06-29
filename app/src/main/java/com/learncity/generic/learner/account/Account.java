@@ -171,23 +171,4 @@ public class Account implements Parcelable {
         }
     };
 
-    // Utility methods-------------------------------------------------------------------------------------------------
-    // Completely thread safe, name based, UUID generator singleton instance
-    private static NameBasedGenerator nameBasedUUIDGenerator;
-
-    static {
-        try{
-            nameBasedUUIDGenerator = new NameBasedGenerator(NameBasedGenerator.NAMESPACE_OID,
-                    MessageDigest.getInstance("SHA-1"), UUIDType.NAME_BASED_SHA1);
-        }
-        catch(NoSuchAlgorithmException nse){
-            Log.d(TAG, "Check the algorithm used for generation of MessageDigest from the list" +
-                    "of valid ones.");
-            nse.printStackTrace();
-        }
-    }
-
-    public static UUID generateType5UUID(String emailID){
-        return nameBasedUUIDGenerator.generate(emailID);
-    }
 }

@@ -28,9 +28,6 @@ public class NotificationMessage extends DataMessage {
     @JsonProperty(value = "notification")
     private Map<String, Object> notificationPayload;
 
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
     protected NotificationMessage(Builder b){
         super(b);
         // Now get the Payload from the Payload POJO in an Attribute Map
