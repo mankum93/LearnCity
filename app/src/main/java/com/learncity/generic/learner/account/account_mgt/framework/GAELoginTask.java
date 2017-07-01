@@ -1,4 +1,4 @@
-package com.learncity.util.account_management.impl;
+package com.learncity.generic.learner.account.account_mgt.framework;
 
 import android.util.Log;
 
@@ -15,8 +15,6 @@ import com.learncity.util.account_management.Result;
 import java.io.IOException;
 
 import static com.learncity.LearnCityApplication.BACKEND_ROOT_URL;
-import static com.learncity.util.account_management.impl.LoginService.LOGIN_FAILED;
-import static com.learncity.util.account_management.impl.LoginService.LOGIN_SUCCESSFUL;
 
 /**
  * Created by DJ on 2/19/2017.
@@ -69,7 +67,7 @@ public class GAELoginTask extends AbstractTask<LoginService.LoginEventResponse> 
             //Post the result for interested parties
             //EventBus.getDefault().postSticky(loginEventResponse);
 
-            result = new Result<LoginService.LoginEventResponse>(LOGIN_FAILED, loginEventResponse);
+            result = new Result<LoginService.LoginEventResponse>(LoginService.LOGIN_FAILED, loginEventResponse);
             return result;
         }
         finally {
@@ -83,7 +81,7 @@ public class GAELoginTask extends AbstractTask<LoginService.LoginEventResponse> 
         //TODO: Remove the below statement
         //EventBus.getDefault().postSticky(loginEventResponse);
 
-        result = new Result<LoginService.LoginEventResponse>(LOGIN_SUCCESSFUL, loginEventResponse);
+        result = new Result<LoginService.LoginEventResponse>(LoginService.LOGIN_SUCCESSFUL, loginEventResponse);
 
         if(profileResponse == null){
             throw new RuntimeException("Profile response shouldn't be null. Check the logic for HTTP response in GAELoginTask");

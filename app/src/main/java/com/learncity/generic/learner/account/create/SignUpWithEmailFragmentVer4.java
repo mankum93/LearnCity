@@ -12,8 +12,6 @@ import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile
 import com.learncity.learncity.R;
 import com.learncity.util.AbstractTextValidator;
 import com.learncity.util.InputValidationHelper;
-import com.learncity.util.account_management.impl.AccountCreationService;
-import com.learncity.util.account_management.impl.AccountManager;
 
 
 /**

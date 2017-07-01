@@ -10,62 +10,81 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginBottom="8dp">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginRight="4dp"
             android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"
-            android:paddingTop="16dp"
-            android:paddingLeft="16dp"
-            android:paddingStart="16dp"
-            android:paddingRight="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp"
-            android:background="@android:drawable/dialog_holo_light_frame">
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:drawable/dialog_holo_light_frame"
+            android:orientation="vertical"
+            android:paddingEnd="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingStart="8dp"
+            android:paddingTop="8dp">
 
-            <include
-                layout="@layout/fragment_subject_search"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:background="?android:attr/listDivider"/>
-
-            <include
-                layout="@layout/fragment_qualification_search"/>
+            <include layout="@layout/layout_subject_search" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:background="?android:attr/listDivider"/>
+                android:layout_marginTop="8dp"
+                android:background="?android:attr/listDivider" />
+
+            <include layout="@layout/layout_qualification_search" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="8dp"
+                android:background="?android:attr/listDivider" />
 
             <!-- Design could be better/different if we use a MapView instead of a fragment. Then we would be able
             to insert the view instead a fragment along with another element if we like. For now, I am encapsulating the
             text view and fragment inside a fragment-->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="@string/search_by_location_label"
-                android:textStyle="bold"
-                android:textSize="15sp"/>
-
-            <FrameLayout
-                android:id="@+id/map_search_fragment"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="240dp"
-                android:background="@android:drawable/dialog_holo_light_frame">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
 
-            </FrameLayout>
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/search_by_location_label"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <FrameLayout
+                    android:id="@+id/map_search_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="240dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/textView"
+                    android:background="@android:drawable/dialog_holo_light_frame">
+
+                </FrameLayout>
+
+                <Switch
+                    android:id="@+id/location_toggle_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="4dp"
+                    android:text="" />
+
+            </RelativeLayout>
 
         </LinearLayout>
 
@@ -75,6 +94,7 @@
         android:id="@+id/search_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0"
         android:text="@string/search_tutors_string" />
 
 </LinearLayout>

@@ -1,6 +1,5 @@
 package com.learncity;
 
-import android.app.Application;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
@@ -8,7 +7,7 @@ import com.evernote.android.job.JobManager;
 import com.learncity.generic.learner.account.profile.database.ProfileDbHelperVer1;
 import com.learncity.learncity.BuildConfig;
 import com.learncity.learner.search.SearchResultsActivity;
-import com.learncity.util.account_management.impl.AccountManager;
+import com.learncity.generic.learner.account.account_mgt.framework.AccountManager;
 
 import org.greenrobot.eventbus.EventBus;
 

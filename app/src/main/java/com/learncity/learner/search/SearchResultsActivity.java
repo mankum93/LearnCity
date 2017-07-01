@@ -36,7 +36,7 @@ import com.learncity.tutor.account.TutorAccount;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.util.ArrayUtils;
 import com.learncity.util.IdUtils;
-import com.learncity.util.account_management.impl.AccountManager;
+import com.learncity.generic.learner.account.account_mgt.framework.AccountManager;
 
 import java.io.IOException;
 import java.util.List;

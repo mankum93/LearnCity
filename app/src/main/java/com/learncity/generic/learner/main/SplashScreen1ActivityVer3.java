@@ -10,7 +10,7 @@ import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile
 import com.learncity.learncity.R;
 import com.learncity.learner.main.LearnerHomeActivity;
 import com.learncity.tutor.main.TutorHomeActivity;
-import com.learncity.util.account_management.impl.AccountManager;
+import com.learncity.generic.learner.account.account_mgt.framework.AccountManager;
 
 /**
  * Created by DJ on 1/22/2017.

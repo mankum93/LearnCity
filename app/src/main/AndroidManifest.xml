@@ -31,11 +31,11 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4" />
+        <activity android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4"
+            android:screenOrientation="portrait"/>
         <activity android:name="com.learncity.generic.learner.account.create.LoginActivity" />
         <activity android:name="com.learncity.generic.learner.account.create.SignUpActivity" />
         <activity android:name="com.learncity.learner.main.LearnerHomeActivity" />

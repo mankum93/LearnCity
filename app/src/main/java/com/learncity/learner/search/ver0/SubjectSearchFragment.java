@@ -1,16 +1,11 @@
 package com.learncity.learner.search.ver0;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.AppCompatMultiAutoCompleteTextView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import com.learncity.learncity.R;
 import com.learncity.learner.search.SubjectMultiAutoCompleteTextView;
@@ -28,7 +23,7 @@ public class SubjectSearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 
         super.onCreateView(inflater, container, savedInstanceState);
-        View root = inflater.inflate(R.layout.fragment_subject_search, container, false);
+        View root = inflater.inflate(R.layout.layout_subject_search, container, false);
 
         customMultiAutoCompleteTextView = (SubjectMultiAutoCompleteTextView)root.findViewById(R.id.subject_multi_auto_complete_view);
 

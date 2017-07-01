@@ -14,8 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.learncity.util.account_management.impl.GAEAccountCreationTaskVer2;
-import com.learncity.util.account_management.impl.SQLiteAccountCreationTaskVer2;
+import com.learncity.generic.learner.account.account_mgt.framework.GAEAccountCreationTaskVer2;
+import com.learncity.generic.learner.account.account_mgt.framework.SQLiteAccountCreationTaskVer2;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
 import com.learncity.learner.account.profile.model.LearnerProfile;
@@ -23,8 +23,8 @@ import com.learncity.learner.main.LearnerHomeActivity;
 import com.learncity.tutor.account.profile.model.TutorProfile;
 import com.learncity.tutor.main.TutorHomeActivity;
 import com.learncity.util.MultiSpinner;
-import com.learncity.util.account_management.impl.AccountCreationService;
-import com.learncity.util.account_management.impl.AccountManager;
+import com.learncity.generic.learner.account.account_mgt.framework.AccountCreationService;
+import com.learncity.generic.learner.account.account_mgt.framework.AccountManager;
 
 
 /**

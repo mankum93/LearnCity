@@ -3,6 +3,7 @@ package com.learncity.generic.learner.account.create;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -32,14 +33,15 @@ import com.learncity.tutor.main.TutorHomeActivity;
 import com.learncity.util.AbstractTextValidator;
 import com.learncity.util.InputValidationHelper;
 import com.learncity.util.MultiSpinner;
-import com.learncity.util.account_management.impl.AccountCreationService;
-import com.learncity.util.account_management.impl.AccountManager;
-import com.learncity.util.account_management.impl.GAEAccountCreationTaskVer2;
-import com.learncity.util.account_management.impl.SQLiteAccountCreationTaskVer2;
+import com.learncity.generic.learner.account.account_mgt.framework.AccountCreationService;
+import com.learncity.generic.learner.account.account_mgt.framework.AccountManager;
+import com.learncity.generic.learner.account.account_mgt.framework.GAEAccountCreationTaskVer2;
+import com.learncity.generic.learner.account.account_mgt.framework.SQLiteAccountCreationTaskVer2;
 
 import java.io.IOException;
 
 import static com.learncity.LearnCityApplication.BACKEND_ROOT_URL;
+import static com.learncity.generic.learner.account.Preferences.PREFS_ACCOUNT;
 import static com.learncity.tutor.jobs.TutorsFirebaseInstanceIDService.FIREBASE_TOKEN;
 import static com.learncity.tutor.jobs.TutorsFirebaseInstanceIDService.IS_FIREBASE_TOKEN_STASH_PENDING;
 
@@ -252,10 +254,10 @@ public abstract class SignUpFragment extends Fragment {
                 Log.d(TAG, "AccountCreationService.AccountCreationListener.onAccountCreated: Account creation " +
                         "process complete.");
                 // If Firebase token stash is pending, stash it
-                boolean isFirebaseTokenStashPending = getActivity().getSharedPreferences("MISC", 0)
-                        .getBoolean(IS_FIREBASE_TOKEN_STASH_PENDING, false);
+                SharedPreferences prefs = getActivity().getSharedPreferences(PREFS_ACCOUNT, 0);
+                boolean isFirebaseTokenStashPending = prefs.getBoolean(IS_FIREBASE_TOKEN_STASH_PENDING, false);
                 if (isFirebaseTokenStashPending) {
-                    String token = getActivity().getSharedPreferences("MISC", 0).getString(FIREBASE_TOKEN, null);
+                    String token = prefs.getString(FIREBASE_TOKEN, null);
                     if (token == null) {
                         // Even though the Stash is pending, token is null
                         Log.e(TAG, "Firebase token is scheduled to be stashed but is null. Check the token" +

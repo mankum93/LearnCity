@@ -1,4 +1,4 @@
-package com.learncity.util.account_management.impl;
+package com.learncity.generic.learner.account.account_mgt.framework;
 
 import android.util.Log;
 

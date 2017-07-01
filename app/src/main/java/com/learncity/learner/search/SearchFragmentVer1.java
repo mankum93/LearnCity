@@ -1,11 +1,13 @@
 package com.learncity.learner.search;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -16,6 +18,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -26,7 +29,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -48,6 +53,7 @@ import com.learncity.backend.tutorApi.model.TutorAccountResponseView;
 import com.learncity.backend.tutorApi.model.TutorProfileResponseView;
 import com.learncity.learncity.R;
 import com.learncity.util.ArrayUtils;
+import com.learncity.util.GoogleApiHelper;
 import com.learncity.util.ListUtils;
 import com.learncity.util.TutorProfileUtils;
 
@@ -59,8 +65,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
+import static com.learncity.generic.learner.account.Preferences.PREFS_TUTOR_SEARCH;
 import static com.learncity.learner.search.SearchResultsActivity.SEARCHED_ACCOUNTS;
 import static com.learncity.learner.search.SearchResultsActivity.SEARCH_QUERY_TODO;
+import static com.learncity.util.GoogleApiHelper.DIALOG_ERROR;
+import static com.learncity.util.GoogleApiHelper.REQUEST_RESOLVE_ERROR;
+import static com.learncity.util.GoogleApiHelper.STATE_RESOLVING_ERROR;
 
 /**
  * Created by DJ on 10/18/2016.
@@ -71,6 +82,8 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
     public static final String TAG = "SearchActivity";
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0X00;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
+    private static final String IS_LOCATION_TOGGLED_ON = "isLocationSwitchToggledOn";
 
     private GoogleMap mMap;
     private SearchTutorsQuery mSearchQuery;
@@ -85,12 +98,14 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
 
     private LocationRequest mLocationRequest;
 
+    private boolean isLocationSwitchToggledOn;
+
 
     /** Messenger for communicating with the service. */
-    Messenger mService = null;
+    private Messenger mService = null;
 
     /** Flag indicating whether we have called bind on the service. */
-    boolean mBound;
+    private boolean mBound;
 
     /**
      * Class for interacting with the main interface of the service.
@@ -116,24 +131,28 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
     private boolean cancelSearch;
     private MultiAutoCompleteTextView subjectsMultiAutoCompleteTextView;
     private QualificationMultiAutoCompleteTextView qualificationMultiAutoCompleteTextView;
+    private Switch toggleLocationSwitch;
+    private boolean mResolvingError;
+    private SupportMapFragment mapFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        if(areGooglePlayServicesAvailable()){
-            if (mGoogleApiClient == null) {
-                mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                        .addConnectionCallbacks(this)
-                        .addOnConnectionFailedListener(this)
-                        .addApi(LocationServices.API)
-                        .build();
-            }
-        }
-        else {
-            Log.d("TAG", "Google Play services are not available");
-            //TODO: Use Android Location Services
-        }
+        // Checking if there has been a previous unfinsihed attempt for error resolution - in
+        // which case let it complete
+        mResolvingError = savedInstanceState != null
+                && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
+
+        // Preemptive initialization of GoogleApiClient
+        initializeGoogleApiClient();
+
+        // See if last time Location was toggled on.
+        isLocationSwitchToggledOn = getContext().getSharedPreferences(PREFS_TUTOR_SEARCH, 0)
+                .getBoolean(IS_LOCATION_TOGGLED_ON, false);
+
+        Log.d("TAG", "Google Play services are not available");
+        //TODO: Use Android Location Services
 
         // Create the LocationRequest object
         mLocationRequest = LocationRequest.create()
@@ -153,11 +172,9 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
         View view = inflater.inflate(R.layout.fragment_search_tutors, container, false);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = new LocationSearchFragment();
+        mapFragment = new LocationSearchFragment();
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.add(R.id.map_search_fragment, mapFragment).commit();
-        mapFragment.getMapAsync(this);
-
 
         // Obtain the Multi Auto Complete Text Views------------------------------------------------------------------
 
@@ -182,6 +199,44 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
 
         // NOTE: Don't forget to set the Tokenizer. The suggestions won't show without it.
         qualificationMultiAutoCompleteTextView.setTokenizer(new AppCompatMultiAutoCompleteTextView.CommaTokenizer());
+
+        //-------------------------------------------------------------------------------------------------------------------
+
+        toggleLocationSwitch = (Switch) view.findViewById(R.id.location_toggle_switch);
+
+        toggleLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if(isChecked){
+                    // Check for permission to access location for API level >=21
+                    if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.LOLLIPOP){
+                        askForLocationPermission();
+                    }
+                    else{
+                        // Check if Google Play services is installed.
+                        if(!mGoogleApiClient.isConnected()){
+                            mGoogleApiClient.connect();
+                        }
+                    }
+
+                    // When checked once, store it as a preference.
+                    getContext().getSharedPreferences(PREFS_TUTOR_SEARCH, 0)
+                            .edit()
+                            .putBoolean(IS_LOCATION_TOGGLED_ON, true)
+                            .apply();
+                }
+                else{
+                    getContext().getSharedPreferences(PREFS_TUTOR_SEARCH, 0)
+                            .edit()
+                            .putBoolean(IS_LOCATION_TOGGLED_ON, false)
+                            .apply();
+                }
+            }
+        });
+
+        // Toggle the switch to what it was last time
+        toggleLocationSwitch.setChecked(isLocationSwitchToggledOn);
 
         //-------------------------------------------------------------------------------------------------------------------
 
@@ -238,6 +293,26 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
         return view;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        outState.putBoolean(STATE_RESOLVING_ERROR, mResolvingError);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    private void initializeGoogleApiClient() {
+        //If client is already initialized then no need for it again
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
+    }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onSearch(SearchService.SearchEvent searchEvent){
@@ -368,7 +443,6 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
     @Override
     public void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
 
         EventBus.getDefault().register(this);
 
@@ -395,19 +469,24 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
         }
         cancelSearch = false;
     }
-    private boolean areGooglePlayServicesAvailable() {
-        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
-        int errorCode = googleAPI.isGooglePlayServicesAvailable(getContext());
-        if (errorCode != ConnectionResult.SUCCESS) {
-            if(googleAPI.isUserResolvableError(errorCode)) {
-                googleAPI.getErrorDialog(getActivity(), errorCode,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            }
 
-            return false;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_RESOLVE_ERROR) {
+            mResolvingError = false;
+            if (resultCode == RESULT_OK) {
+                // Make sure the app is not already connected or attempting to connect
+                if (!mGoogleApiClient.isConnecting() &&
+                        !mGoogleApiClient.isConnected()) {
+                    mGoogleApiClient.connect();
+                }
+            }
         }
-        return true;
     }
+
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -419,18 +498,15 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
     @Override
     @SuppressWarnings({"MissingPermission"})
     public void onMapReady(GoogleMap googleMap) {
+
+        Log.d(TAG, "Map is ready.");
         mMap = googleMap;
 
-        //Ask for explicit permission to access fine location for above Lollipop
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.LOLLIPOP){
-            askForLocationPermission();
-            if(mPermissionToAccessLocationGranted){
-                mMap.setMyLocationEnabled(true);
-            }
-        } else{
-            mMap.setMyLocationEnabled(true);
-        }
+        mMap.setMyLocationEnabled(true);
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
 
+        setMarkerToCurrentLocation();
     }
 
     @Override
@@ -445,6 +521,10 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
                     mPermissionToAccessLocationGranted = true;
                     Log.d(TAG, "Permission to access fine location granted");
 
+                    // Check if Google Play services is installed.
+                    if(!mGoogleApiClient.isConnected()){
+                        mGoogleApiClient.connect();
+                    }
 
                 } else {
                     mPermissionToAccessLocationGranted = false;
@@ -461,20 +541,13 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
     @SuppressWarnings({"MissingPermission"})
     public void onConnected(Bundle connectionHint) {
         Log.d(TAG, "Connected to the Google Play Services");
-        //Ask for explicit permission to access fine location for above Lollipop
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.LOLLIPOP){
-            askForLocationPermission();
-            if(mPermissionToAccessLocationGranted){
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                        mGoogleApiClient);
-                setMarkerToCurrentLocation();
 
-            }
-        }
-        else{
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-            setMarkerToCurrentLocation();
+        if(toggleLocationSwitch.isChecked()){
+            // Permission has been obtained to access fine location
+            // And, Google Play services is updated & connected
+            // And Location has been toggled to ON
+
+            mapFragment.getMapAsync(this);
         }
     }
 
@@ -523,14 +596,33 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
         else{
             //Permission is there. Make it count
             mPermissionToAccessLocationGranted = true;
+
+            if(!mGoogleApiClient.isConnected()){
+                mGoogleApiClient.connect();
+            }
         }
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
-        // onConnectionFailed.
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+        Log.e(TAG, "Connection failed" + connectionResult);
+        if (mResolvingError) {
+            // Already attempting to resolve an error.
+            return;
+        } else if (connectionResult.hasResolution()) {
+            try {
+                mResolvingError = true;
+                connectionResult.startResolutionForResult(getActivity(), REQUEST_RESOLVE_ERROR);
+            } catch (IntentSender.SendIntentException e) {
+                // There was an error with the resolution intent. Try again.
+                mGoogleApiClient.connect();
+            }
+        } else {
+            // Show dialog using GoogleApiAvailability.getErrorDialog()
+            showErrorDialog(connectionResult.getErrorCode());
+            mResolvingError = true;
+        }
     }
 
 
@@ -545,19 +637,28 @@ public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, 
     @Override
     @SuppressWarnings({"MissingPermission"})
     public void onLocationChanged(Location location) {
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.LOLLIPOP){
-            askForLocationPermission();
-            if(mPermissionToAccessLocationGranted){
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                        mGoogleApiClient);
-                setMarkerToCurrentLocation();
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        setMarkerToCurrentLocation();
+    }
 
+
+    /* Creates a dialog for an error message */
+    private void showErrorDialog(int errorCode) {
+        // Create a fragment for the error dialog
+        GoogleApiHelper.ErrorDialogFragmentWithCallback dialogFragment = new GoogleApiHelper.ErrorDialogFragmentWithCallback();
+
+        dialogFragment.setOnDialogDismissedListener(new GoogleApiHelper.OnDialogDismissedListener() {
+            @Override
+            public void onDialogDismissed() {
+                mResolvingError = false;
             }
-        }
-        else{
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-            setMarkerToCurrentLocation();
-        }
+        });
+
+        // Pass the error that should be displayed
+        Bundle args = new Bundle();
+        args.putInt(DIALOG_ERROR, errorCode);
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getActivity().getSupportFragmentManager(), "errordialog");
     }
 }

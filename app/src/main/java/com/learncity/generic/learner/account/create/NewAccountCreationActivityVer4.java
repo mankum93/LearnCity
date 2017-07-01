@@ -7,7 +7,7 @@ import android.content.IntentSender;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,20 +32,22 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
 import com.learncity.learner.account.profile.model.LearnerProfile;
+import com.learncity.util.GoogleApiHelper;
 
 import static com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4.SignUpPageTutorContentFragment.TUTOR_CONTENT_DISCIPLINES;
 import static com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4.SignUpPageTutorContentFragment.TUTOR_CONTENT_PLACEHOLDER;
 import static com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4.SignUpPageTutorContentFragment.TUTOR_CONTENT_TUTOR_TYPES;
+import static com.learncity.util.GoogleApiHelper.STATE_RESOLVING_ERROR;
 
 /**
  * Created by DJ on 1/21/2017.
  */
 
-public class NewAccountCreationActivityVer4 extends AppCompatActivity{
+public class NewAccountCreationActivityVer4 extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
     private static String TAG = "AccountCreationFragment";
 
-    private static final String STATE_RESOLVING_ERROR = "resolving_error";
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     private static final int RC_SIGN_IN = 9001;
     // Request code to use when launching the resolution activity
@@ -55,9 +57,12 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity{
     // Bool to track whether the app is already resolving an error
     private boolean mResolvingError = false;
 
-    GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
+
     private ViewPager tutorContentPager;
     private TutorSignUpPageContentPagerAdapter signUpPageContentPagerAdapter;
+    private GoogleApiAvailability googleAPI;
+    private boolean signUpWithGoogleButtonClicked;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -70,7 +75,10 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity{
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
 
-        //Set up the listeners on the buttons
+        // Preemptive initialization of GoogleApiClient
+        initializeGoogleApiClient();
+
+        // Wire up the buttons to their listeners
         Button loginButton = (Button) findViewById(R.id.login);
         loginButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -84,9 +92,12 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity{
         signUpWithGoogleButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                initializeGoogleApiClient();
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, RC_SIGN_IN);
+
+                signUpWithGoogleButtonClicked = true;
+
+                if(!mGoogleApiClient.isConnected()){
+                    mGoogleApiClient.connect();
+                }
             }
         });
         Button signUpWithEmailButton = (Button) findViewById(R.id.sign_up_with_email);
@@ -107,6 +118,39 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity{
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+
+        mGoogleApiClient.disconnect();
+
+        super.onStop();
+    }
+
+    private boolean areGooglePlayServicesAvailable() {
+        googleAPI = GoogleApiAvailability.getInstance();
+        int errorCode = googleAPI.isGooglePlayServicesAvailable(getApplicationContext());
+        if (errorCode != ConnectionResult.SUCCESS) {
+            if(googleAPI.isUserResolvableError(errorCode)) {
+                googleAPI.getErrorDialog(this, errorCode,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+                //errorUnresolvable = false;
+            }
+            else{
+                // See ya user :(
+                //errorUnresolvable = true;
+            }
+
+            return false;
+        }
+        //errorUnresolvable = false;
+        return true;
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(STATE_RESOLVING_ERROR, mResolvingError);
@@ -114,77 +158,87 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity{
 
     private void initializeGoogleApiClient() {
         //If client is already initialized then no need for it again
-        if(mGoogleApiClient != null){
-            Log.d(TAG, "GoogleApiClient already initialized");
-            return;
-        }
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestProfile()
-                .requestId()
-                .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, new GoogleApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                        Log.e(TAG, "Connection failed" + connectionResult);
-                        if (mResolvingError) {
-                            // Already attempting to resolve an error.
-                            return;
-                        } else if (connectionResult.hasResolution()) {
-                            try {
-                                mResolvingError = true;
-                                connectionResult.startResolutionForResult(NewAccountCreationActivityVer4.this, REQUEST_RESOLVE_ERROR);
-                            } catch (IntentSender.SendIntentException e) {
-                                // There was an error with the resolution intent. Try again.
-                                mGoogleApiClient.connect();
-                            }
-                        } else {
-                            // Show dialog using GoogleApiAvailability.getErrorDialog()
-                            showErrorDialog(connectionResult.getErrorCode());
-                            mResolvingError = true;
-                        }
 
-                    }
-                })
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+        if (mGoogleApiClient == null) {
+
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .requestProfile()
+                    .requestId()
+                    .build();
+
+            mGoogleApiClient = new GoogleApiClient.Builder(getApplicationContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .build();
+        }
+
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.d(TAG, "Connected to the Google Play Services");
+
+        // Google Play services must be installed and
+        // GoogleApiClient must be connected to proceed
+
+        if(signUpWithGoogleButtonClicked){
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        }
+        signUpWithGoogleButtonClicked = false;
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+        Log.e(TAG, "Connection failed" + connectionResult);
+        if (mResolvingError) {
+            // Already attempting to resolve an error.
+            return;
+        } else if (connectionResult.hasResolution()) {
+            try {
+                mResolvingError = true;
+                connectionResult.startResolutionForResult(NewAccountCreationActivityVer4.this, REQUEST_RESOLVE_ERROR);
+            } catch (IntentSender.SendIntentException e) {
+                // There was an error with the resolution intent. Try again.
+                mGoogleApiClient.connect();
+            }
+        } else {
+            // Show dialog using GoogleApiAvailability.getErrorDialog()
+            showErrorDialog(connectionResult.getErrorCode());
+            mResolvingError = true;
+        }
     }
 
     /* Creates a dialog for an error message */
     private void showErrorDialog(int errorCode) {
         // Create a fragment for the error dialog
-        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+        GoogleApiHelper.ErrorDialogFragmentWithCallback dialogFragment = new GoogleApiHelper.ErrorDialogFragmentWithCallback();
+
+        dialogFragment.setOnDialogDismissedListener(new GoogleApiHelper.OnDialogDismissedListener() {
+            @Override
+            public void onDialogDismissed() {
+                mResolvingError = false;
+            }
+        });
+
         // Pass the error that should be displayed
         Bundle args = new Bundle();
         args.putInt(DIALOG_ERROR, errorCode);
         dialogFragment.setArguments(args);
         dialogFragment.show(getSupportFragmentManager(), "errordialog");
     }
-
-    /* Called from ErrorDialogFragment when the dialog is dismissed. */
-    public void onDialogDismissed() {
-        mResolvingError = false;
-    }
-
-    /* A fragment to display an error dialog */
-    public static class ErrorDialogFragment extends DialogFragment {
-        public ErrorDialogFragment() { }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Get the error code and retrieve the appropriate dialog
-            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
-            return GoogleApiAvailability.getInstance().getErrorDialog(
-                    this.getActivity(), errorCode, REQUEST_RESOLVE_ERROR);
-        }
-
-        @Override
-        public void onDismiss(DialogInterface dialog) {
-            ((NewAccountCreationActivityVer4) getActivity()).onDialogDismissed();
-        }
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -31,7 +31,7 @@
             android:background="@android:drawable/dialog_holo_light_frame">
 
             <include
-                layout="@layout/fragment_subject_search"/>
+                layout="@layout/layout_subject_search"/>
 
             <View
                 android:layout_width="match_parent"
@@ -40,7 +40,7 @@
                 android:background="?android:attr/listDivider"/>
 
             <include
-                layout="@layout/fragment_qualification_search"/>
+                layout="@layout/layout_qualification_search"/>
 
             <View
                 android:layout_width="match_parent"

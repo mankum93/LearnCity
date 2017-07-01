@@ -1,6 +1,5 @@
 package com.learncity.tutor.jobs;
 
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -12,11 +11,12 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.learncity.backend.learnerApi.LearnerApi;
 import com.learncity.backend.tutorApi.TutorApi;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
-import com.learncity.util.account_management.impl.AccountManager;
+import com.learncity.generic.learner.account.account_mgt.framework.AccountManager;
 
 import java.io.IOException;
 
 import static com.learncity.LearnCityApplication.BACKEND_ROOT_URL;
+import static com.learncity.generic.learner.account.Preferences.PREFS_ACCOUNT;
 
 /**
  * Created by DJ on 3/19/2017.
@@ -57,7 +57,7 @@ public class TutorsFirebaseInstanceIDService extends FirebaseInstanceIdService {
             // Other possibility might be that AC creation locally was unsuccessful or
             // user data has been wiped off
             // So, in this case, stash the token with the Account Manager for now(done).
-            getSharedPreferences("MISC", 0)
+            getSharedPreferences(PREFS_ACCOUNT, 0)
                     .edit()
                     .putBoolean(IS_FIREBASE_TOKEN_STASH_PENDING, true)
                     .putString(FIREBASE_TOKEN, token)
