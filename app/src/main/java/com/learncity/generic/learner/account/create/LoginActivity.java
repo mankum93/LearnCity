@@ -15,6 +15,8 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.learncity.learncity.R;
 import com.learncity.generic.learner.account.account_mgt.framework.AccountManager;
 import com.learncity.generic.learner.account.account_mgt.framework.LoginService;
+import com.learncity.util.AbstractTextValidator;
+import com.learncity.util.InputValidationHelper;
 import com.learncity.util.account_management.Result;
 import com.learncity.util.account_management.Task;
 import com.learncity.generic.learner.account.account_mgt.framework.GAELoginTask;
@@ -41,6 +43,12 @@ public class LoginActivity extends AppCompatActivity {
     private AlertDialog loginRetryAlertDialog;
     private ProgressDialog loginProgressDialog;
 
+    private String INVALID_INPUT_ERROR_MSG_PREFIX = "";
+    StringBuilder invalidInputText = new StringBuilder(INVALID_INPUT_ERROR_MSG_PREFIX);
+    private boolean invalidEmailId;
+    private boolean invalidInput;
+    private AlertDialog invalidInputAlertDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -49,6 +57,16 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get the fields
         emailID = (EditText) findViewById(R.id.emailID);
+        emailID.addTextChangedListener(new AbstractTextValidator(emailID) {
+            @Override
+            public void validate(View view, String text) {
+                // If not a valid email, set error.
+                if(!InputValidationHelper.isValidEmail(text)){
+                    emailID.setError("Not a valid Email ID.");
+                }
+            }
+        });
+
         password = (EditText) findViewById(R.id.password);
 
         loginButton = (Button) findViewById(R.id.login_button);
@@ -56,7 +74,20 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 //Perform the login task here
+
+                // Validate the user input first.
+                validateSubmittedInput();
+
+                if (invalidInput) {
+                    // Show an Alert Dialog regarding invalid input.
+                    showInvalidInputAlertDialog();
+                    // Reset the Invalid input error message(StringBuilder)
+                    invalidInputText.setLength(0);
+                    invalidInputText.append(INVALID_INPUT_ERROR_MSG_PREFIX);
+                    return;
+                }
 
                 //Extract the data
                 loginDetails = new LoginService.LoginDetails(emailID.getText().toString(), password.getText().toString());
@@ -234,5 +265,54 @@ public class LoginActivity extends AppCompatActivity {
         //Stop the AC creation service
         loginService.shutDown();
         super.onStop();
+    }
+
+    private void validateSubmittedInput(){
+        validateEmailId(emailID.getText().toString());
+
+        if(invalidEmailId){
+            invalidInput = true;
+        }
+        else{
+            invalidInput = false;
+        }
+    }
+
+    private void validateEmailId(String emailID){
+        if(InputValidationHelper.isNullOrEmpty(emailID)){
+            invalidInputText.append("Email Id can't be left blank.").append("\n");
+            invalidEmailId = true;
+        }
+        else if(!InputValidationHelper.isValidEmail(emailID)){
+            // Not null or empty but still invalid
+            invalidInputText.append("Invalid Email Id.").append("\n");
+            invalidEmailId = true;
+        }
+        else{
+            invalidEmailId = false;
+        }
+    }
+
+    private void showInvalidInputAlertDialog() {
+        // Remove a newline from the StringBuilder.
+        invalidInputText.setLength(invalidInputText.length() - 1);
+
+        if (invalidInputAlertDialog == null) {
+            invalidInputAlertDialog = new AlertDialog.Builder(this)
+                    .setTitle("Invalid input.")
+                    .setMessage(invalidInputText.toString())
+                    .setCancelable(true)
+                    .create();
+            invalidInputAlertDialog.show();
+        } else {
+            if (!invalidInputAlertDialog.isShowing()) {
+                // But before showing, update the content to show.
+                invalidInputAlertDialog.setMessage(invalidInputText.toString());
+                invalidInputAlertDialog.show();
+            } else {
+                Log.w(TAG, "Invalid input Alert Dialog already showing and yet has been" +
+                        "asked to show again. This behavior should be checked.");
+            }
+        }
     }
 }

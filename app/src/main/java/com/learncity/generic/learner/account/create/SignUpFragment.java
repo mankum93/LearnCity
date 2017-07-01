@@ -92,27 +92,25 @@ public abstract class SignUpFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Fetch the AC creation service
+        // Fetch the AC creation service
         accountCreationService = AccountManager.fetchService(getActivity(), AccountManager.ACCOUNT_CREATION_SERVICE);
-        //Set the listener on it
+        // Set the listener on it
         setACCreationServiceListener();
-        //Set the Alertdialog
+        // Set the Alertdialog
         setACCreationRetryDialog();
-        //Set the progress dialog
+        // Set the progress dialog
         setACCreationProgressDialog();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        super.onCreateView(inflater, container, savedInstanceState);
-
         layoutInflater = inflater;
 
         rootView = (ViewGroup) inflateLayout(inflater, container, savedInstanceState);
 
         phoneNo = (EditText) rootView.findViewById(R.id.person_phoneNo);
-        //Add a PhoneNumberFormattingTextWatcher to format as a Phone Number.
+        // Add a PhoneNumberFormattingTextWatcher to format as a Phone Number.
         phoneNo.addTextChangedListener(new AbstractTextValidator(phoneNo) {
             @Override
             public void validate(View view, String text) {
@@ -155,12 +153,12 @@ public abstract class SignUpFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedStatus = (String) parent.getSelectedItem();
                 if (selectedStatus.equals("Teach")) {
-                    //Show the UI conditional to being a tutor IF not already visible
+                    // Show the UI conditional to being a tutor IF not already visible
                     if (!isConditionalTutorUIVisible()) {
                         showConditionalTutorUI();
                     }
                 } else if (selectedStatus.equals("Learn")) {
-                    //If the UI conditional to being a tutor is visible, disable it
+                    // If the UI conditional to being a tutor is visible, disable it
                     if (isConditionalTutorUIVisible()) {
                         disableConditionalTutorUI();
                     }
@@ -192,14 +190,14 @@ public abstract class SignUpFragment extends Fragment {
                     return;
                 }
 
-                //Important: Remember to validate the entity before stashing it
+                // Important: Remember to validate the entity before stashing it
                 String selectedStatus = spinner.getSelectedItem().toString();
                 profile = buildProfile(selectedStatus);
 
                 if (selectedStatus.equals("Learn")) {
                     Log.i(TAG, "User is a Learner");
 
-                    //Now, before getting onto finalizing the profile, make a final validation
+                    // Now, before getting onto finalizing the profile, make a final validation
                     profile = GenericLearnerProfile.validateGenericLearnerProfile(profile);
                 } else {
                     Log.i(TAG, "User is a Tutor");
@@ -256,13 +254,16 @@ public abstract class SignUpFragment extends Fragment {
                 // If Firebase token stash is pending, stash it
                 SharedPreferences prefs = getActivity().getSharedPreferences(PREFS_ACCOUNT, 0);
                 boolean isFirebaseTokenStashPending = prefs.getBoolean(IS_FIREBASE_TOKEN_STASH_PENDING, false);
+
                 if (isFirebaseTokenStashPending) {
                     String token = prefs.getString(FIREBASE_TOKEN, null);
+
                     if (token == null) {
                         // Even though the Stash is pending, token is null
                         Log.e(TAG, "Firebase token is scheduled to be stashed but is null. Check the token" +
                                 "generation process");
-                    } else {
+                    }
+                    else {
                         // TODO: Stash the token locally
                         Log.d(TAG, "Sending the request for stashing the Firebase token to the server...\n"
                                 + "Email ID: " + profile.getEmailID() + "\n" +
@@ -285,7 +286,8 @@ public abstract class SignUpFragment extends Fragment {
                                 Log.e(TAG, "Account couldn't be updated with Firebase token: IO Exception while performing the data-store transaction");
                                 e.printStackTrace();
                             }
-                        } else if (profile.getCurrentStatus() == GenericLearnerProfile.STATUS_TUTOR) {
+                        }
+                        else if (profile.getCurrentStatus() == GenericLearnerProfile.STATUS_TUTOR) {
                             Log.d(TAG, "Sending the request for stashing the Firebase token to the server...\n"
                                     + "Email ID: " + profile.getEmailID() + "\n" +
                                     "Token: " + token);
@@ -305,12 +307,14 @@ public abstract class SignUpFragment extends Fragment {
                                 Log.e(TAG, "Account couldn't be updated with Firebase token: IO Exception while performing the data-store transaction");
                                 e.printStackTrace();
                             }
-                        } else {
+                        }
+                        else {
                             Log.wtf(TAG, "User data locally found corrupt with symptom:\n" + "USER STATUS: " + profile.getCurrentStatus());
                             // TODO: Refresh profile from the server as and when appropriate and/or investigate the issue
                         }
                     }
-                } else {
+                }
+                else {
                     Log.i(TAG, "Firebase token has already been stashed!");
                 }
 
@@ -319,7 +323,8 @@ public abstract class SignUpFragment extends Fragment {
                             new Intent(getActivity(), LearnerHomeActivity.class)
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     );
-                } else {
+                }
+                else {
                     startActivity(
                             new Intent(getActivity(), TutorHomeActivity.class)
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -389,7 +394,8 @@ public abstract class SignUpFragment extends Fragment {
             });
             typeOfTutorMultiSpinner.setInitialDisplayText("Select status...");
             subjectsICanTeachMultiSpinner.setInitialDisplayText("Select subjects...");
-        } else {
+        }
+        else {
             // Initialized but not visible
             rootTutorConditionalLayout.setVisibility(View.VISIBLE);
         }
@@ -430,7 +436,8 @@ public abstract class SignUpFragment extends Fragment {
 
         if (!isValidInput()) {
             setValidInputStatus(true);
-        } else {
+        }
+        else {
             setValidInputStatus(false);
         }
     }
@@ -447,11 +454,25 @@ public abstract class SignUpFragment extends Fragment {
     }
 
     private void validatePwdAndRetypedPwd(String pwd, String retypedPwd) {
-        // Is the typed password valid ?
-        if (!InputValidationHelper.isValidPassword(pwd)) {
+
+        if(InputValidationHelper.isNullOrEmpty(pwd)){
+            invalidInputText.append("Password cannot be left blank.").append("\n");
+            invalidPwd = true;
+        }
+        else if(InputValidationHelper.isNullOrEmpty(retypedPwd)){
+            invalidInputText.append("Retyped Password cannot be left blank.").append("\n");
+            invalidPwd = true;
+        }
+        // Are the passwords valid and do they match ?
+        else if (!InputValidationHelper.isValidPassword(pwd)) {
             invalidInputText.append("The typed password is invalid.").append("\n");
             invalidPwd = true;
-        } else {
+        }
+        else if (!InputValidationHelper.isValidPassword(retypedPwd)) {
+            invalidInputText.append("Retyped password is invalid.").append("\n");
+            invalidPwd = true;
+        }
+        else {
             // Typed password is valid but the retyped one doesn't match the typed one.
             if (!pwd.equals(retypedPwd)) {
                 Log.w(TAG, "The retyped password didn't match the typed password.");
@@ -464,8 +485,13 @@ public abstract class SignUpFragment extends Fragment {
     }
 
     private void validatePhoneNo(String phoneNo) {
+
+        if(InputValidationHelper.isNullOrEmpty(phoneNo)){
+            invalidInputText.append("Phone No cannot be left blank.").append("\n");
+            invalidPhoneNo = true;
+        }
         // Phone No should be 10 digits exactly(Indian mobile numbers)
-        if (!InputValidationHelper.isValidIndianMobileNo(phoneNo)) {
+        else if (!InputValidationHelper.isValidIndianMobileNo(phoneNo)) {
             Log.w(TAG, "Phone No length is " + phoneNo.length() + "\n"
                     + "It should be 10 characters exactly");
             invalidInputText.append("Phone No is invalid.").append("\n");

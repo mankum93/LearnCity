@@ -104,6 +104,11 @@ public class SignUpWithEmailFragment extends SignUpFragment{
             invalidInputText.append("Email Id can't be left blank.").append("\n");
             invalidEmailId = true;
         }
+        else if(!InputValidationHelper.isValidEmail(emailID)){
+            // Not null or empty but still invalid
+            invalidInputText.append("Invalid Email Id.").append("\n");
+            invalidEmailId = true;
+        }
         else{
             invalidEmailId = false;
         }

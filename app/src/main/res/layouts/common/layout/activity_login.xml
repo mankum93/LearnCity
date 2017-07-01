@@ -7,41 +7,36 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_gravity="center_vertical">
 
-        <LinearLayout
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="EmailID"/>
-            <EditText
-                android:id="@+id/emailID"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"/>
-        </LinearLayout>
+            android:textStyle="bold"
+            android:text="Email Id"/>
+        <EditText
+            android:id="@+id/emailID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"/>
 
-        <LinearLayout
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="@string/account_person_password_label" />
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"/>
-        </LinearLayout>
+            android:layout_marginTop="8dp"
+            android:textStyle="bold"
+            android:text="@string/account_person_password_label" />
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"/>
 
     </LinearLayout>
 
@@ -51,6 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:text="Login"/>
 
 </FrameLayout>

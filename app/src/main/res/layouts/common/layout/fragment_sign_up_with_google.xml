@@ -27,7 +27,7 @@
                 android:text="@string/account_person_phoneNo_label" />
             <EditText
                 android:id="@+id/person_phoneNo"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="phone"
                 android:maxLength="10"
@@ -40,7 +40,7 @@
                 android:text="@string/account_person_password_label" />
             <EditText
                 android:id="@+id/password"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:minWidth="150dp"/>
@@ -52,7 +52,7 @@
                 android:text="@string/account_person_retypePassword_label" />
             <EditText
                 android:id="@+id/retype_password"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:minWidth="150dp"/>
