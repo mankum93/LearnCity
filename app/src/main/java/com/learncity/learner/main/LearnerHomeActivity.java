@@ -16,7 +16,7 @@ import com.learncity.generic.learner.main.model.GenericDrawerLayoutListItems;
 import com.learncity.learncity.R;
 import com.learncity.learner.account.profile.MyProfileActivity;
 import com.learncity.learner.search.RequestedTutorRecordsFragment;
-import com.learncity.learner.search.SearchFragmentVer1;
+import com.learncity.learner.search.SearchFragment;
 
 public class LearnerHomeActivity extends HomeActivity {
 
@@ -70,14 +70,14 @@ public class LearnerHomeActivity extends HomeActivity {
 
             switch(position){
                 case 0:
-                    return new SearchFragmentVer1();
+                    return new SearchFragment();
                 //break;
                 case 1:
                     return new RequestedTutorRecordsFragment();
                 //break;
             }
             // Default: Contacts list
-            return new SearchFragmentVer1();
+            return new SearchFragment();
         }
 
         @Override

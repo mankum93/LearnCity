@@ -4,7 +4,7 @@ import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.evernote.android.job.JobManager;
-import com.learncity.generic.learner.account.profile.database.ProfileDbHelperVer1;
+import com.learncity.generic.learner.account.profile.database.ProfileDbHelper;
 import com.learncity.learncity.BuildConfig;
 import com.learncity.learner.search.SearchResultsActivity;
 import com.learncity.generic.learner.account.account_mgt.framework.AccountManager;
@@ -41,7 +41,7 @@ public class LearnCityApplication extends MultiDexApplication {
         if(DEBUG){
             // Delete the existing Db if there is one
             if(AccountManager.isExistingDbOnThisDevice(this)){
-                deleteDatabase(ProfileDbHelperVer1.DATABASE_NAME);
+                deleteDatabase(ProfileDbHelper.DATABASE_NAME);
             }
         }
         // Load the AccountManager

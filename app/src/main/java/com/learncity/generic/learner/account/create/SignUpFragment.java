@@ -35,8 +35,8 @@ import com.learncity.util.InputValidationHelper;
 import com.learncity.util.MultiSpinner;
 import com.learncity.generic.learner.account.account_mgt.framework.AccountCreationService;
 import com.learncity.generic.learner.account.account_mgt.framework.AccountManager;
-import com.learncity.generic.learner.account.account_mgt.framework.GAEAccountCreationTaskVer2;
-import com.learncity.generic.learner.account.account_mgt.framework.SQLiteAccountCreationTaskVer2;
+import com.learncity.generic.learner.account.account_mgt.framework.GAEAccountCreationTask;
+import com.learncity.generic.learner.account.account_mgt.framework.SQLiteAccountCreationTask;
 
 import java.io.IOException;
 
@@ -73,8 +73,8 @@ public abstract class SignUpFragment extends Fragment {
     private String[] tutorTypes;
     private String[] subjects;
 
-    private GAEAccountCreationTaskVer2 serverACCreationTask;
-    private SQLiteAccountCreationTaskVer2 localACCreationTask;
+    private GAEAccountCreationTask serverACCreationTask;
+    private SQLiteAccountCreationTask localACCreationTask;
 
     private AccountCreationService accountCreationService;
 
@@ -209,8 +209,8 @@ public abstract class SignUpFragment extends Fragment {
                 //------------------ACCOUNT CREATION AHEAD------------------------------------------------------------
 
                 //Configure the AC creation tasks
-                serverACCreationTask = new GAEAccountCreationTaskVer2(profile);
-                localACCreationTask = new SQLiteAccountCreationTaskVer2(getContext(), profile);
+                serverACCreationTask = new GAEAccountCreationTask(profile);
+                localACCreationTask = new SQLiteAccountCreationTask(getContext(), profile);
 
                 accountCreationService.startAccountCreation(serverACCreationTask, localACCreationTask);
                 accountCreationService.finishUp();

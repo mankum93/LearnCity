@@ -1,4 +1,4 @@
-package com.learncity.generic.learner.account.profile.database.ver0;
+package com.learncity.generic.learner.account.profile.database;
 
 /**
  * Created by DJ on 10/23/2016.
@@ -15,6 +15,17 @@ public class ProfileDbSchema {
             public static final String PHONE_NO = "phoneNo";
             public static final String CURRENT_STATUS = "status";
             public static final String PASSWORD = "password";
+            public static final String DISPLAY_PIC_URI = "displayPictureURI";
+        }
+        public static final class LocationTable {
+            public static final String NAME = "learner_location_info";
+
+            public static final class cols{
+                //Foreign key
+                public static final String EMAIL_ID = "emailId";
+                public static final String LATITUDE = "latitude";
+                public static final String LONGITUDE = "longitude";
+            }
         }
     }
 
@@ -23,11 +34,29 @@ public class ProfileDbSchema {
         public static final String NAME = "tutor_profile_info";
 
         public static final class cols{
-            //Currently there are no PRIMITIVE columns other then the above 5 columns for
-            //the TutorProfile. It has embedded EducationalQualification and such that
-            //have separate tables
+            //This column will have a Tutor's types concatenated by a separator
+            //It's client's responsibility to concatenate and break down this string
+            public static final String TUTOR_TYPES = "tutorTypes";
+
+            //This column will have a list of subjects  concatenated by a separator
+            //It's client's responsibility to concatenate and break down this string
+            public static final String SUBJECT_TYPES = "subjects";
+
+            public static final String RATING = "rating";
         }
 
+        //----------------TEACHING CREDITS-----------------------------------------------------------
+        public static final class TeachingCreditsTable {
+            public static final String NAME = "teaching_credits_info";
+
+            public static final class cols{
+
+                //Foreign key
+                public static final String EMAIL_ID = "emailId";
+                public static final String AVAILABLE_CREDITS = "availableCredits";
+                public static final String DATE_OF_EXPIRY = "dateOfExpiry";
+            }
+        }
 
         //----------------EDUCATIONAL QUALIFICATION--------------------------------------------------
         public static final class EducationalQualificationTable {

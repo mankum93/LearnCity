@@ -1,6 +1,5 @@
 package com.learncity.generic.learner.account.create;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
@@ -27,12 +26,12 @@ public class SignUpActivity extends AppCompatActivity {
         SignUpFragment fragment;
         String signUpMode = getIntent().getStringExtra(SIGN_UP_METHOD);
 
-        if(signUpMode.equals(SignUpWithGoogleAccountFragmentVer4.SIGN_UP_WITH_GOOGLE)){
-            fragment = new SignUpWithGoogleAccountFragmentVer4();
+        if(signUpMode.equals(SignUpWithGoogleAccountFragment.SIGN_UP_WITH_GOOGLE)){
+            fragment = new SignUpWithGoogleAccountFragment();
         }
         else{
             //EMAIL method
-            fragment = new SignUpWithEmailFragmentVer4();
+            fragment = new SignUpWithEmailFragment();
         }
 
         //Make a fragment transaction

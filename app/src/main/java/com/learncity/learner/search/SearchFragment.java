@@ -77,7 +77,7 @@ import static com.learncity.util.GoogleApiHelper.STATE_RESOLVING_ERROR;
  * Created by DJ on 10/18/2016.
  */
 
-public class SearchFragmentVer1 extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class SearchFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     public static final String TAG = "SearchActivity";
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 0X00;

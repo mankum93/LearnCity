@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.learncity.generic.learner.account.profile.model.ver0.GenericLearnerProfileParcelable;
+import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
 
 /**
@@ -18,7 +18,7 @@ import com.learncity.learncity.R;
 
 public class MyProfileActivity extends AppCompatActivity {
 
-    private GenericLearnerProfileParcelable myProfile;
+    private GenericLearnerProfile myProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

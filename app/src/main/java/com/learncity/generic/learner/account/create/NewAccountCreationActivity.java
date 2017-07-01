@@ -1,14 +1,11 @@
 package com.learncity.generic.learner.account.create;
 
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -34,16 +31,16 @@ import com.learncity.learncity.R;
 import com.learncity.learner.account.profile.model.LearnerProfile;
 import com.learncity.util.GoogleApiHelper;
 
-import static com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4.SignUpPageTutorContentFragment.TUTOR_CONTENT_DISCIPLINES;
-import static com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4.SignUpPageTutorContentFragment.TUTOR_CONTENT_PLACEHOLDER;
-import static com.learncity.generic.learner.account.create.NewAccountCreationActivityVer4.SignUpPageTutorContentFragment.TUTOR_CONTENT_TUTOR_TYPES;
+import static com.learncity.generic.learner.account.create.NewAccountCreationActivity.SignUpPageTutorContentFragment.TUTOR_CONTENT_DISCIPLINES;
+import static com.learncity.generic.learner.account.create.NewAccountCreationActivity.SignUpPageTutorContentFragment.TUTOR_CONTENT_PLACEHOLDER;
+import static com.learncity.generic.learner.account.create.NewAccountCreationActivity.SignUpPageTutorContentFragment.TUTOR_CONTENT_TUTOR_TYPES;
 import static com.learncity.util.GoogleApiHelper.STATE_RESOLVING_ERROR;
 
 /**
  * Created by DJ on 1/21/2017.
  */
 
-public class NewAccountCreationActivityVer4 extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
+public class NewAccountCreationActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
     private static String TAG = "AccountCreationFragment";
 
@@ -68,7 +65,7 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState){
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_account_creation_ver4);
+        setContentView(R.layout.activity_new_account_creation);
 
         // Checking if there has been a previous unfinsihed attempt for error resolution - in
         // which case let it complete
@@ -84,7 +81,7 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity implements
             @Override
             public void onClick(View v){
                 //Launch the Login Activity
-                Intent loginIntent = new Intent(NewAccountCreationActivityVer4.this, LoginActivity.class);
+                Intent loginIntent = new Intent(NewAccountCreationActivity.this, LoginActivity.class);
                 startActivity(loginIntent);
             }
         });
@@ -105,8 +102,8 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity implements
             @Override
             public void onClick(View v){
                 //This will lead to the full sign up page
-                Intent createACWithEmail = new Intent(NewAccountCreationActivityVer4.this, SignUpActivity.class);
-                createACWithEmail.putExtra(SignUpActivity.SIGN_UP_METHOD, SignUpWithEmailFragmentVer4.SIGN_UP_WITH_EMAIL);
+                Intent createACWithEmail = new Intent(NewAccountCreationActivity.this, SignUpActivity.class);
+                createACWithEmail.putExtra(SignUpActivity.SIGN_UP_METHOD, SignUpWithEmailFragment.SIGN_UP_WITH_EMAIL);
                 startActivity(createACWithEmail);
             }
         });
@@ -209,7 +206,7 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity implements
         } else if (connectionResult.hasResolution()) {
             try {
                 mResolvingError = true;
-                connectionResult.startResolutionForResult(NewAccountCreationActivityVer4.this, REQUEST_RESOLVE_ERROR);
+                connectionResult.startResolutionForResult(NewAccountCreationActivity.this, REQUEST_RESOLVE_ERROR);
             } catch (IntentSender.SendIntentException e) {
                 // There was an error with the resolution intent. Try again.
                 mGoogleApiClient.connect();
@@ -285,8 +282,8 @@ public class NewAccountCreationActivityVer4 extends AppCompatActivity implements
                     .build();
 
             Intent createACWithGoogle = new Intent(this, SignUpActivity.class);
-            createACWithGoogle.putExtra(SignUpActivity.SIGN_UP_METHOD, SignUpWithGoogleAccountFragmentVer4.SIGN_UP_WITH_GOOGLE);
-            createACWithGoogle.putExtra(SignUpWithGoogleAccountFragmentVer4.EXTRAS_GENERIC_PROFILE_INCOMPLETE, profile);
+            createACWithGoogle.putExtra(SignUpActivity.SIGN_UP_METHOD, SignUpWithGoogleAccountFragment.SIGN_UP_WITH_GOOGLE);
+            createACWithGoogle.putExtra(SignUpWithGoogleAccountFragment.EXTRAS_GENERIC_PROFILE_INCOMPLETE, profile);
 
             startActivity(createACWithGoogle);
         } else {

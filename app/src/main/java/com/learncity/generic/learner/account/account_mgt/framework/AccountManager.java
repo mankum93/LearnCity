@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.learncity.generic.learner.account.profile.database.ProfileDbHelperVer1;
+import com.learncity.generic.learner.account.profile.database.ProfileDbHelper;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.util.account_management.Service;
 
@@ -13,7 +13,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 
-import static com.learncity.generic.learner.account.profile.database.ProfileDbHelperVer1.DATABASE_NAME;
+import static com.learncity.generic.learner.account.profile.database.ProfileDbHelper.DATABASE_NAME;
 
 /**
  * Created by DJ on 2/16/2017.
@@ -46,7 +46,7 @@ public class AccountManager {
      * device.*/
     public static String userDeviceFirebaseToken;
 
-    private static ProfileDbHelperVer1 profileDbHelperVer1;
+    private static ProfileDbHelper profileDbHelper;
 
     private Thread shutDownThread;
 
@@ -222,7 +222,7 @@ public class AccountManager {
 
     //-------------------------------------------------------------------------------------------------------------------
     public static boolean isExistingDbOnThisDevice(Context context) {
-        File dbPath = ProfileDbHelperVer1.isExistingDatabase(context, DATABASE_NAME);
+        File dbPath = ProfileDbHelper.isExistingDatabase(context, DATABASE_NAME);
         if(dbPath == null){
             return false;
         }
@@ -232,14 +232,14 @@ public class AccountManager {
     }
 
     public static GenericLearnerProfile isExistingAccountLocally(Context context){
-        if(profileDbHelperVer1 == null){
-            profileDbHelperVer1 = new ProfileDbHelperVer1(context);
+        if(profileDbHelper == null){
+            profileDbHelper = new ProfileDbHelper(context);
         }
         //Proactively preparing the profile if there is an existing AC on ths device
         if(isExistingDbOnThisDevice(context)){
             //Stash the profile
             if(profile == null){
-                profile = profileDbHelperVer1.isExistingUserAccount();
+                profile = profileDbHelper.isExistingUserAccount();
             }
         }
         return profile;

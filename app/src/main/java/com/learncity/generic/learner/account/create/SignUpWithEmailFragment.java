@@ -18,7 +18,7 @@ import com.learncity.util.InputValidationHelper;
  * Created by DJ on 10/30/2016.
  */
 
-public class SignUpWithEmailFragmentVer4 extends SignUpFragment{
+public class SignUpWithEmailFragment extends SignUpFragment{
 
     public static String TAG = "SignUpWithEmailFragment";
 
@@ -32,8 +32,8 @@ public class SignUpWithEmailFragmentVer4 extends SignUpFragment{
 
     private ViewGroup rootView;
 
-    public SignUpWithEmailFragmentVer4 newInstance(){
-        return new SignUpWithEmailFragmentVer4();
+    public SignUpWithEmailFragment newInstance(){
+        return new SignUpWithEmailFragment();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SignUpWithEmailFragmentVer4 extends SignUpFragment{
 
     @Override
     protected View inflateLayout(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_sign_up_with_email_ver2, container, false);
+        return inflater.inflate(R.layout.fragment_sign_up_with_email, container, false);
     }
 
     @Override

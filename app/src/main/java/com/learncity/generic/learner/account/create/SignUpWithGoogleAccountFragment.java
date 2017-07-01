@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.learncity.generic.learner.account.create.ver1.SignUpWithGoogleAccountActivityVer1;
 import com.learncity.generic.learner.account.profile.model.GenericLearnerProfile;
 import com.learncity.learncity.R;
 
@@ -14,7 +13,7 @@ import com.learncity.learncity.R;
  * Created by DJ on 10/30/2016.
  */
 
-public class SignUpWithGoogleAccountFragmentVer4 extends SignUpFragment{
+public class SignUpWithGoogleAccountFragment extends SignUpFragment{
 
     public static String TAG = "SignUpWithGoogleFrag";
 
@@ -23,21 +22,21 @@ public class SignUpWithGoogleAccountFragmentVer4 extends SignUpFragment{
 
     private GenericLearnerProfile profileFromGoogleAccount;
 
-    public SignUpWithGoogleAccountFragmentVer4 newInstance(){
-        return new SignUpWithGoogleAccountFragmentVer4();
+    public SignUpWithGoogleAccountFragment newInstance(){
+        return new SignUpWithGoogleAccountFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState){
 
         super.onCreate(savedInstanceState);
-        profileFromGoogleAccount = getActivity().getIntent().getParcelableExtra(SignUpWithGoogleAccountActivityVer1.EXTRAS_GENERIC_PROFILE_INCOMPLETE);
+        profileFromGoogleAccount = getActivity().getIntent().getParcelableExtra(EXTRAS_GENERIC_PROFILE_INCOMPLETE);
 
     }
 
     @Override
     protected View inflateLayout(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_sign_up_with_google_ver2, container, false);
+        return inflater.inflate(R.layout.fragment_sign_up_with_google, container, false);
     }
 
     @Override
