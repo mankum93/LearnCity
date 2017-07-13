@@ -7,11 +7,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE"/>
     <permission
-        android:name="com.example.gcm.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-
-    <uses-permission android:name="com.example.gcm.permission.C2D_MESSAGE" />
+        android:name="${applicationId}.permission.C2D_MESSAGE"
+        android:protectionLevel="signature"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
@@ -38,14 +37,14 @@
             android:screenOrientation="portrait"/>
         <activity android:name="com.learncity.generic.learner.account.create.LoginActivity" />
         <activity android:name="com.learncity.generic.learner.account.create.SignUpActivity" />
-        <activity android:name="com.learncity.learner.main.LearnerHomeActivity" />
+        <activity
+            android:name="com.learncity.learner.main.LearnerHomeActivity"/>
         <activity
             android:name="com.learncity.tutor.main.TutorHomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_TUTORING_REQUEST" />
             </intent-filter>
         </activity>
-        <activity android:name="com.learncity.learner.search.ver1.SearchActivityVer1" />
         <activity android:name="com.learncity.learner.search.SearchResultsActivity" />
         <activity android:name="com.learncity.learner.account.profile.MyProfileActivity" />
         <activity android:name="com.learncity.tutor.account.profile.MyProfileActivity" />
@@ -56,12 +55,12 @@
             android:exported="false" />
 
         <!-- Tutors only -->
-        <service android:name="com.learncity.tutor.jobs.TutorsFirebaseMessagingService">
+        <service android:name="com.learncity.tutor.main.TutorsFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="com.learncity.tutor.jobs.TutorsFirebaseInstanceIDService">
+        <service android:name="com.learncity.tutor.main.TutorsFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>

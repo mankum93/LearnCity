@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.learncity.generic.learner.main.HomeActivity;
 import com.learncity.generic.learner.main.model.GenericDrawerLayoutListItems;
@@ -50,8 +51,23 @@ public class LearnerHomeActivity extends HomeActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            if(GenericDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMS[position].getFeatureName().equals("MY PROFILE")){
-                startActivity(new Intent(LearnerHomeActivity.this, MyProfileActivity.class));
+            String drawerItemSelected = GenericDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMS[position].getFeatureName();
+
+            if(drawerItemSelected.equals("MY PROFILE")){
+
+                // TODO: Start an Activity representing user profile
+                Toast.makeText(getBaseContext(), "Currently under development...", Toast.LENGTH_SHORT).show();
+
+                //startActivity(new Intent(LearnerHomeActivity.this, MyProfileActivity.class));
+            }
+            else if(drawerItemSelected.equals("MY MATERIAL")){
+                // TODO: Start an Activity representing material
+                Toast.makeText(getBaseContext(), "Currently under development...", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                // For SETTINGS
+                // TODO: Start an Activity representing Settings
+                Toast.makeText(getBaseContext(), "Currently under development...", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -42,8 +42,8 @@ import java.io.IOException;
 
 import static com.learncity.LearnCityApplication.BACKEND_ROOT_URL;
 import static com.learncity.generic.learner.account.Preferences.PREFS_ACCOUNT;
-import static com.learncity.tutor.jobs.TutorsFirebaseInstanceIDService.FIREBASE_TOKEN;
-import static com.learncity.tutor.jobs.TutorsFirebaseInstanceIDService.IS_FIREBASE_TOKEN_STASH_PENDING;
+import static com.learncity.tutor.main.TutorsFirebaseInstanceIDService.FIREBASE_TOKEN;
+import static com.learncity.tutor.main.TutorsFirebaseInstanceIDService.IS_FIREBASE_TOKEN_STASH_PENDING;
 
 /**
  * Created by DJ on 2/23/2017.

@@ -49,6 +49,10 @@ android {
     }
 }
 
+configurations {
+    compile.exclude group: "org.apache.httpcomponents", module: "httpclient"
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(path: ':backend', configuration: 'android-endpoints')
@@ -71,6 +75,8 @@ dependencies {
     compile 'com.evernote:android-job:1.1.8'
     compile 'com.fasterxml.uuid:java-uuid-generator:3.1.4'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    annotationProcessor 'com.google.appengine:appengine-api-1.0-sdk:1.9.50'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -1,7 +1,6 @@
 package com.learncity.learner.search;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -28,14 +28,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -89,17 +91,25 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
     private SearchTutorsQuery mSearchQuery;
     private GoogleApiClient mGoogleApiClient;
 
-    private ProgressDialog searchProgressDialog;
+    //private ProgressDialog searchProgressDialog;
     private AlertDialog searchRetryAlertDialog;
 
     private Location mLastLocation;
 
-    boolean mPermissionToAccessLocationGranted = false;
+    private boolean mPermissionToAccessLocationGranted = false;
 
     private LocationRequest mLocationRequest;
 
     private boolean isLocationSwitchToggledOn;
 
+    private boolean cancelSearch;
+    private MultiAutoCompleteTextView subjectsMultiAutoCompleteTextView;
+    private QualificationMultiAutoCompleteTextView qualificationMultiAutoCompleteTextView;
+    private Switch toggleLocationSwitch;
+    private boolean mResolvingError;
+    private SupportMapFragment mapFragment;
+
+    private View rootView;
 
     /** Messenger for communicating with the service. */
     private Messenger mService = null;
@@ -128,12 +138,8 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
             mBound = false;
         }
     };
-    private boolean cancelSearch;
-    private MultiAutoCompleteTextView subjectsMultiAutoCompleteTextView;
-    private QualificationMultiAutoCompleteTextView qualificationMultiAutoCompleteTextView;
-    private Switch toggleLocationSwitch;
-    private boolean mResolvingError;
-    private SupportMapFragment mapFragment;
+    private SearchIndicatorDialogFragment searchDialogFragment;
+    private Button searchButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -169,7 +175,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_search_tutors, container, false);
+        rootView = inflater.inflate(R.layout.fragment_search_tutors, container, false);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = new LocationSearchFragment();
@@ -178,7 +184,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
 
         // Obtain the Multi Auto Complete Text Views------------------------------------------------------------------
 
-        subjectsMultiAutoCompleteTextView = (SubjectMultiAutoCompleteTextView) view.findViewById(R.id.subject_multi_auto_complete_view);
+        subjectsMultiAutoCompleteTextView = (SubjectMultiAutoCompleteTextView) rootView.findViewById(R.id.subject_multi_auto_complete_view);
 
         // Initialize the adapter with dummy data and set it up
         subjectsMultiAutoCompleteTextView.setAdapter(new SubjectSearchAdapter(getContext(),
@@ -190,7 +196,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
 
         // Now, the Qualifications one,
 
-        qualificationMultiAutoCompleteTextView = (QualificationMultiAutoCompleteTextView) view.findViewById(R.id.qualification_multi_auto_complete_view);
+        qualificationMultiAutoCompleteTextView = (QualificationMultiAutoCompleteTextView) rootView.findViewById(R.id.qualification_multi_auto_complete_view);
 
         //Initialize the adapter with dummy data and set it up
         qualificationMultiAutoCompleteTextView.setAdapter(new QualificationSearchAdapter(getContext(),
@@ -202,7 +208,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
 
         //-------------------------------------------------------------------------------------------------------------------
 
-        toggleLocationSwitch = (Switch) view.findViewById(R.id.location_toggle_switch);
+        toggleLocationSwitch = (Switch) rootView.findViewById(R.id.location_toggle_switch);
 
         toggleLocationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -241,7 +247,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
         //-------------------------------------------------------------------------------------------------------------------
 
         // Lets handle the click of the floating search button
-        Button searchButton = (Button) view.findViewById(R.id.search_button);
+        searchButton = (Button) rootView.findViewById(R.id.search_button);
 
         searchButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -290,7 +296,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
             }
         });
 
-        return view;
+        return rootView;
     }
 
     @Override
@@ -400,7 +406,27 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
 
     private void showSearchProgressDialog(){
         //If dialog already in progress, no use invoking it again
-        if(searchProgressDialog == null){
+
+        searchButton.setEnabled(false);
+
+        if(searchDialogFragment == null){
+            searchDialogFragment = new SearchIndicatorDialogFragment();
+
+            searchDialogFragment.setOnDialogDismissedListener(new GoogleApiHelper.OnDialogDismissedListener() {
+                @Override
+                public void onDialogDismissed() {
+                    cancelSearch = true;
+                    Log.d(TAG, "Requesting Search cancellation on Search Progress dialog dismissal");
+                    EventBus.getDefault().postSticky(new SearchService.CancelSearchEvent(SearchService.SEARCH_TUTORS));
+                    // Try cancelling the search
+                }
+            });
+
+        }
+
+        searchDialogFragment.show(getFragmentManager(), SearchIndicatorDialogFragment.FRAGMENT_TAG);
+
+        /*if(searchProgressDialog == null){
             searchProgressDialog = new ProgressDialog(getContext());
             searchProgressDialog.setIndeterminate(true);
             searchProgressDialog.setCancelable(true);
@@ -417,23 +443,36 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
         if(!searchProgressDialog.isShowing()){
             Log.d(TAG, "Showing the search progress dialog...");
             searchProgressDialog.show();
-        }
+        }*/
     }
 
     private void dismissSearchProgressDialog(){
+
+        searchButton.setEnabled(true);
+
+        if(searchDialogFragment == null){
+            Log.e(TAG, "Search Dialog fragment invoked without showing it first." +
+                    "Check the caller.");
+
+            return;
+        }
+        searchDialogFragment.dismiss();
+
         //If dialog already dismissed, no use dismissing it again
-        if(searchProgressDialog != null){
+        /*if(searchProgressDialog != null){
             if(searchProgressDialog.isShowing()){
                 Log.d(TAG, "Dismissing the search progress dialog...");
                 searchProgressDialog.dismiss();
             }
-        }
+        }*/
     }
 
     @Override
     public void onResume(){
         super.onResume();
     }
+
+
     @Override
     public void onPause() {
         Log.d(TAG, "Calling SearchActivity.onPause()");
@@ -660,5 +699,79 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
         args.putInt(DIALOG_ERROR, errorCode);
         dialogFragment.setArguments(args);
         dialogFragment.show(getActivity().getSupportFragmentManager(), "errordialog");
+    }
+
+
+    // Search Indicator Dialog Fragment----------------------------------------------------------------------------------
+
+    public static class SearchIndicatorDialogFragment extends DialogFragment{
+
+        public static String FRAGMENT_TAG = "searchIndDiaFragTag";
+
+        private View alphaSearchIndicator;
+        private ProgressBar progressBar;
+
+        private GoogleApiHelper.OnDialogDismissedListener onDialogDismissedListener;
+
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            setStyle(DialogFragment.STYLE_NO_FRAME, android.R.style.Theme_DeviceDefault_Dialog);
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+            View dialogRootView = inflater.inflate(R.layout.fragment_search_dialog, container, false);
+
+            // Obtain the ProgressBar
+            progressBar = (ProgressBar) dialogRootView.findViewById(R.id.search_tutors_progress_bar);
+
+            // Obtain the Alpha search indicator
+            alphaSearchIndicator = dialogRootView.findViewById(R.id.search_progress_alpha_indicator);
+
+            return dialogRootView;
+        }
+
+        @Override
+        public void onStop() {
+
+            progressBar.setVisibility(View.GONE);
+
+            alphaSearchIndicator.setBackgroundColor(0x00ffffff);
+
+            super.onStop();
+        }
+
+        @Override
+        public void onResume() {
+            progressBar.setVisibility(View.VISIBLE);
+
+            alphaSearchIndicator.setBackgroundColor(0xA6ffffff);
+
+            /*Window window = getDialog().getWindow();
+            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);*/
+
+            super.onResume();
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            if(this.onDialogDismissedListener != null){
+                this.onDialogDismissedListener.onDialogDismissed();
+            }
+        }
+
+        public void setOnDialogDismissedListener(GoogleApiHelper.OnDialogDismissedListener onDialogDismissedListener) {
+            this.onDialogDismissedListener = onDialogDismissedListener;
+        }
+
+        public void removeOnDialogDismissedListener() {
+            this.onDialogDismissedListener = null;
+        }
+
     }
 }

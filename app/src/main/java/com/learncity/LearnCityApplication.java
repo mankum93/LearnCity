@@ -22,7 +22,7 @@ public class LearnCityApplication extends MultiDexApplication {
     public static final String BACKEND_ROOT_URL_LIVE = "https://1-dot-unified-surfer-147104.appspot.com/_ah/api/";
     public static final String BACKEND_ROOT_URL_LOCALHOST = "http://10.0.2.2:8080/_ah/api/";
     //public static final String BACKEND_ROOT_URL = BACKEND_ROOT_URL_LIVE;
-    public static final String BACKEND_ROOT_URL = BACKEND_ROOT_URL_LIVE;
+    public static final String BACKEND_ROOT_URL = BACKEND_ROOT_URL_LOCALHOST;
 
     private static final String TAG = "LearnCityApplication";
 

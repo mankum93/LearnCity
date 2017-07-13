@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.learncity.tutor.jobs;
+package com.learncity.tutor.main;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -29,6 +29,7 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.learncity.learncity.R;
+import com.learncity.tutor.jobs.Repository;
 import com.learncity.tutor.jobs.database.JobsDbHelper;
 import com.learncity.tutor.jobs.model.JobRequest;
 import com.learncity.tutor.main.TutorHomeActivity;
