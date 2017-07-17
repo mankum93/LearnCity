@@ -16,14 +16,11 @@ import android.widget.Toast;
 import com.learncity.generic.learner.main.HomeActivity;
 import com.learncity.generic.learner.main.model.GenericDrawerLayoutListItems;
 import com.learncity.learncity.R;
-import com.learncity.tutor.account.profile.MyProfileActivity;
 import com.learncity.tutor.jobs.JobPostingsFragment;
 import com.learncity.tutor.jobs.JobRequestsFragment;
 import com.learncity.tutor.jobs.Repository;
 import com.learncity.tutor.jobs.database.JobsDbHelper;
 import com.learncity.tutor.jobs.model.JobRequest;
-
-import java.util.Map;
 
 public class TutorHomeActivity extends HomeActivity {
 
@@ -36,6 +33,9 @@ public class TutorHomeActivity extends HomeActivity {
     public void onCreate(Bundle savedInstanceState){
 
         setContentView(R.layout.activity_tutor_home);
+
+        // TODO: Set the current credits fresh from Network rather than
+        // local storage.
 
         // Drawer Layout setup
         setGenericDrawerLayoutItems(GenericDrawerLayoutListItems.TUTOR_DRAWER_LAYOUT_ITEMS);
@@ -91,7 +91,7 @@ public class TutorHomeActivity extends HomeActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            String drawerItemSelected = GenericDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMS[position].getFeatureName();
+            String drawerItemSelected = GenericDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMS[position].getNavItemName();
 
             if(drawerItemSelected.equals("MY PROFILE")){
 

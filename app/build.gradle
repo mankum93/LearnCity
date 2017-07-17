@@ -11,6 +11,8 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -56,6 +58,7 @@ configurations {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(path: ':backend', configuration: 'android-endpoints')
+
     compile 'com.android.support:appcompat-v7:25.3.0'
     compile 'com.google.code.findbugs:jsr305:2.0.1'
     compile 'com.google.android.gms:play-services-maps:10.2.0'
@@ -69,13 +72,12 @@ dependencies {
     compile 'com.iarcuschin:simpleratingbar:0.1.5'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.google.firebase:firebase-messaging:10.2.0'
-    testCompile 'junit:junit:4.12'
     compile 'com.google.http-client:google-http-client-android:1.22.0'
     compile 'com.android.support:design:25.3.0'
     compile 'com.evernote:android-job:1.1.8'
     compile 'com.fasterxml.uuid:java-uuid-generator:3.1.4'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-
+    testCompile 'junit:junit:4.12'
     annotationProcessor 'com.google.appengine:appengine-api-1.0-sdk:1.9.50'
 }
 

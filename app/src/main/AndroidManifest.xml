@@ -6,11 +6,12 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
 
-    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE"/>
     <permission
         android:name="${applicationId}.permission.C2D_MESSAGE"
-        android:protectionLevel="signature"/>
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
@@ -30,17 +31,17 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.learncity.generic.learner.account.create.NewAccountCreationActivity"
+            android:screenOrientation="portrait" />
         <activity android:name="com.learncity.generic.learner.account.create.LoginActivity" />
         <activity android:name="com.learncity.generic.learner.account.create.SignUpActivity" />
-        <activity
-            android:name="com.learncity.learner.main.LearnerHomeActivity"/>
-        <activity
-            android:name="com.learncity.tutor.main.TutorHomeActivity">
+        <activity android:name="com.learncity.learner.main.LearnerHomeActivity" />
+        <activity android:name="com.learncity.tutor.main.TutorHomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_TUTORING_REQUEST" />
             </intent-filter>
@@ -80,6 +81,7 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
+
     </application>
 
 </manifest>

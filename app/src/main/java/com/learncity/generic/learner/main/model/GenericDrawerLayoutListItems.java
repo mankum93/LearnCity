@@ -4,22 +4,27 @@ package com.learncity.generic.learner.main.model;
  * Created by DJ on 10/13/2016.
  */
 
-import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+
+import com.learncity.learncity.R;
 
 /**
  * This class stores the Drawer List items for different user types on the User Home Page.
  */
-public class GenericDrawerLayoutListItems {
+public final class GenericDrawerLayoutListItems {
 
     public static final GenericDrawerLayoutItem[] LEARNER_DRAWER_LAYOUT_ITEMS = new GenericDrawerLayoutItem[]{
-            new GenericDrawerLayoutItem("MY MATERIAL", null),
-            new GenericDrawerLayoutItem("MY PROFILE", null),
-            new GenericDrawerLayoutItem("SETTINGS", null)
+            new GenericDrawerLayoutItem("Home", R.drawable.ic_home_black_24dp),
+            new GenericDrawerLayoutItem("My Material", R.drawable.ic_text_book_opened_from_top_view),
+            new GenericDrawerLayoutItem("My Profile", R.drawable.ic_person_black_24dp),
+            new GenericDrawerLayoutItem("Settings", R.drawable.ic_settings_24px)
     };
     public static final GenericDrawerLayoutItem[] TUTOR_DRAWER_LAYOUT_ITEMS = new GenericDrawerLayoutItem[]{
-            new GenericDrawerLayoutItem("MY MATERIAL", null),
-            new GenericDrawerLayoutItem("MY PROFILE", null),
-            new GenericDrawerLayoutItem("SETTINGS", null)
+            new GenericDrawerLayoutItem("Home", R.drawable.ic_home_black_24dp),
+            new GenericDrawerLayoutItem("My Material", R.drawable.ic_text_book_opened_from_top_view),
+            new GenericDrawerLayoutItem("My Profile", R.drawable.ic_person_black_24dp),
+            new GenericDrawerLayoutItem("Settings", R.drawable.ic_settings_24px)
     };
 
 
@@ -28,28 +33,29 @@ public class GenericDrawerLayoutListItems {
      */
     public static class GenericDrawerLayoutItem {
 
-        private String featureName;
-        private Drawable featureIcon;
+        private String navItemName;
+        @DrawableRes
+        private int navItemIconRes;
 
-        public String getFeatureName() {
-            return featureName;
+        public String getNavItemName() {
+            return navItemName;
         }
 
-        public void setFeatureName(String mSearchFeatureName) {
-            this.featureName = mSearchFeatureName;
+        public void setNavItemName(@NonNull String mSearchFeatureName) {
+            this.navItemName = mSearchFeatureName;
         }
 
-        public Drawable getFeatureIcon() {
-            return featureIcon;
+        public int getNavItemIconRes() {
+            return navItemIconRes;
         }
 
-        public void setFeatureIcon(Drawable featureIcon) {
-            this.featureIcon = featureIcon;
+        public void setNavItemIconRes(@DrawableRes int navItemIconRes) {
+            this.navItemIconRes = navItemIconRes;
         }
 
-        public GenericDrawerLayoutItem(String featureName, Drawable featureIcon) {
-            this.featureName = featureName;
-            this.featureIcon = featureIcon;
+        public GenericDrawerLayoutItem(@NonNull String navItemName, @DrawableRes int navItemIconRes) {
+            this.navItemName = navItemName;
+            this.navItemIconRes = navItemIconRes;
         }
     }
 }

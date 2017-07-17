@@ -1,6 +1,5 @@
 package com.learncity.learner.main;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 import com.learncity.generic.learner.main.HomeActivity;
 import com.learncity.generic.learner.main.model.GenericDrawerLayoutListItems;
 import com.learncity.learncity.R;
-import com.learncity.learner.account.profile.MyProfileActivity;
 import com.learncity.learner.search.RequestedTutorRecordsFragment;
 import com.learncity.learner.search.SearchFragment;
 
@@ -51,7 +49,7 @@ public class LearnerHomeActivity extends HomeActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            String drawerItemSelected = GenericDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMS[position].getFeatureName();
+            String drawerItemSelected = GenericDrawerLayoutListItems.LEARNER_DRAWER_LAYOUT_ITEMS[position].getNavItemName();
 
             if(drawerItemSelected.equals("MY PROFILE")){
 
