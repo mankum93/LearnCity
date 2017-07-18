@@ -1,6 +1,7 @@
 package com.learncity;
 
 import android.support.multidex.MultiDexApplication;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 
 import com.evernote.android.job.JobManager;
@@ -31,6 +32,8 @@ public class LearnCityApplication extends MultiDexApplication {
     @Override
     public void onCreate(){
         super.onCreate();
+
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         // Instantiating a singleton instance of EverNote JobManager
         JobManager.create(this).addJobCreator(new SearchResultsActivity.TutoringRequestForwardingJobCreator());
