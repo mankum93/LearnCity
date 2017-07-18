@@ -58,11 +58,11 @@ public class JobRequestsFragment extends Fragment {
         List<JobRequest> jobRequestList = repo.getJobRequests();
 
         // Setup the LayoutManager
-        layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
+        layoutManager = new LinearLayoutManager(getContext());
         jobRequests.setLayoutManager(layoutManager);
 
         // Setup the Adapter
-        adapter = new JobRequestsRecyclerViewAdapter(jobRequestList, getContext().getApplicationContext());
+        adapter = new JobRequestsRecyclerViewAdapter(jobRequestList, getContext());
         jobRequests.setAdapter(adapter);
     }
 

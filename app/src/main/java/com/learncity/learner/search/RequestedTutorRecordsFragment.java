@@ -63,10 +63,10 @@ public class RequestedTutorRecordsFragment extends Fragment {
         List<TutorRequestRecord> records = repo.getTutorRequestRecords();
 
         // Adapter setup
-        adapter = new TutorRequestsRecyclerViewAdapter(records, getContext().getApplicationContext());
+        adapter = new TutorRequestsRecyclerViewAdapter(records, getContext());
         tutorRequestRecords.setAdapter(adapter);
 
-        tutorRequestRecords.setLayoutManager(new LinearLayoutManager(getContext().getApplicationContext()));
+        tutorRequestRecords.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     @Override

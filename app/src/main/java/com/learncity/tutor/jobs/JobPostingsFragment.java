@@ -58,11 +58,11 @@ public class JobPostingsFragment extends Fragment {
         List<JobPosting> jobPostingList = repo.getJobPostings();
 
         // Setup the LayoutManager
-        layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
+        layoutManager = new LinearLayoutManager(getContext());
         jobPostings.setLayoutManager(layoutManager);
 
         // Setup the Adapter
-        adapter = new JobPostingsRecyclerViewAdapter(jobPostingList, getContext().getApplicationContext());
+        adapter = new JobPostingsRecyclerViewAdapter(jobPostingList, getContext());
         jobPostings.setAdapter(adapter);
     }
 
